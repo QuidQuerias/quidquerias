@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>quidquerias</title>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;1,400&family=Playfair+Display:wght@700&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a1a1a;
+      color: #c8c8c8;
+      font-family: 'Courier Prime', 'Courier New', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(0,0,0,0.75) 100%);
+      pointer-events: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      max-width: 520px;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #e8e8e8;
+      letter-spacing: 0.03em;
+      margin-bottom: 40px;
+    }
+
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: #D84D06;
+      margin: 0 auto 40px;
+      opacity: 0.8;
+    }
+
+    .message {
+      font-size: 15px;
+      line-height: 1.9;
+      color: rgba(200,200,200,0.6);
+      margin-bottom: 48px;
+    }
+
+    .message em {
+      color: #c8c8c8;
+      font-style: italic;
+    }
+
+    .links {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .link {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(200,200,200,0.3);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      padding-bottom: 2px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    .link:hover {
+      color: #D84D06;
+      border-color: rgba(216,77,6,0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <div class="logo">quidquerias</div>
+    <div class="divider"></div>
+    <p class="message">
+      Pardon the appearance — rebuilding from the ground up.<br>
+      <em>Adapting this portfolio to reflect a shift<br>
+      from video editing into game design.</em><br><br>
+      Something more interesting is on its way. (But I mean...what a low bar!)
+    </p>
+    <div class="links">
+      <a href="https://www.linkedin.com/in/david-riemer-32958139/" class="link">LinkedIn</a>
+      <a href="https://www.instagram.com/quidquerias/" class="link">Instagram</a>
+      <a href="mailto:driemer10@gmail.com" class="link">Get in touch</a>
+    </div>
+  </div>
+</body>
+</html>
