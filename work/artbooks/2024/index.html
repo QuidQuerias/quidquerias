@@ -110,9 +110,10 @@
   }
 
   #nav-cover img {
-    width: 240px;
-    height: auto;
     display: block;
+    /* Height matches book page height — set by JS */
+    height: var(--book-h, 600px);
+    width: auto;
     box-shadow: 0 16px 48px rgba(0,0,0,0.6);
     transition: transform 0.2s, box-shadow 0.2s;
   }
@@ -122,13 +123,17 @@
     box-shadow: 0 20px 56px rgba(0,0,0,0.75);
   }
 
-  /* Chapter list */
+  /* Chapter list — height matches cover */
   #nav-chapters {
     flex: 0 1 420px;
     display: flex;
     flex-direction: column;
     gap: 2px;
     padding-top: 4px;
+    height: var(--book-h, 600px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
   }
 
   #nav-chapters h2 {
@@ -260,47 +265,23 @@
     transform: perspective(2000px) rotateX(3deg);
     transform-origin: center bottom;
     filter: drop-shadow(0 24px 48px rgba(0,0,0,0.55));
-  }
-
-  /* Spine shadow — dark gradient from center outward on both sides */
-  #book-wrapper::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to right,
-      rgba(0,0,0,0.18) 0%,
-      transparent 18%,
-      transparent 82%,
-      rgba(0,0,0,0.18) 100%
-    ),
-    linear-gradient(
-      to bottom,
-      transparent 70%,
-      rgba(0,0,0,0.10) 100%
-    );
-    pointer-events: none;
-    z-index: 5;
-  }
-
-  /* Center spine crease */
-  #spine-shadow {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    background: linear-gradient(
-      to right,
-      transparent,
-      rgba(0,0,0,0.22) 40%,
-      rgba(0,0,0,0.28) 50%,
-      rgba(0,0,0,0.22) 60%,
-      transparent
-    );
-    pointer-events: none;
-    z-index: 6;
+    /* Spine shadow as background — sits behind StPageFlip canvas */
+    background:
+      linear-gradient(
+        to right,
+        rgba(0,0,0,0.15) 0%,
+        transparent 20%,
+        transparent 80%,
+        rgba(0,0,0,0.15) 100%
+      ),
+      linear-gradient(
+        to right,
+        transparent 44%,
+        rgba(0,0,0,0.20) 48%,
+        rgba(0,0,0,0.28) 50%,
+        rgba(0,0,0,0.20) 52%,
+        transparent 56%
+      );
   }
 
   #flipbook { display: block; }
@@ -464,7 +445,6 @@
   <div id="stage">
     <div id="book-wrapper">
       <div id="flipbook"></div>
-      <div id="spine-shadow"></div>
       <!-- Edge click zones -->
       <div id="zone-prev"   title="Previous page"></div>
       <div id="zone-next"   title="Next page"></div>
@@ -729,6 +709,10 @@ function calcDims() {
     single,
   };
 }
+
+// Set nav height to match book height immediately
+const _initDims = calcDims();
+document.documentElement.style.setProperty('--book-h', _initDims.h + 'px');
 
 function initFlipbook(startFileIndex) {
   const dims = calcDims();
