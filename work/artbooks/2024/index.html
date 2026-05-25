@@ -267,29 +267,6 @@
     filter: drop-shadow(0 24px 48px rgba(0,0,0,0.55));
   }
 
-  /* Spine crease — narrow overlay only at the center seam.
-     Sits above pages but is narrow enough to never cover the flip animation
-     since pages always peel away from center outward. */
-  #book-wrapper::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 48px;
-    background: linear-gradient(
-      to right,
-      transparent 0%,
-      rgba(0,0,0,0.18) 35%,
-      rgba(0,0,0,0.32) 50%,
-      rgba(0,0,0,0.18) 65%,
-      transparent 100%
-    );
-    pointer-events: none;
-    z-index: 50;
-  }
-
   #flipbook { display: block; }
 
   .page-img {
