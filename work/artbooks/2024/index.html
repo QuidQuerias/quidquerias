@@ -93,20 +93,20 @@
   /* ── NAV VIEW ── */
   #nav-view {
     justify-content: center;
-    align-items: stretch;
+    align-items: center;
     padding: 40px 32px 48px;
     gap: 48px;
-    max-width: 1000px;
-    margin: 0 auto;
+    width: 100%;
     flex-wrap: wrap;
   }
 
-  /* Cover */
+  /* Cover — clickable to open book */
   #nav-cover {
     flex: 0 0 auto;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
+    cursor: pointer;
   }
 
   #nav-cover img {
@@ -114,6 +114,12 @@
     height: auto;
     display: block;
     box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  #nav-cover:hover img {
+    transform: scale(1.02);
+    box-shadow: 0 20px 56px rgba(0,0,0,0.75);
   }
 
   /* Chapter list */
@@ -256,6 +262,47 @@
     filter: drop-shadow(0 24px 48px rgba(0,0,0,0.55));
   }
 
+  /* Spine shadow — dark gradient from center outward on both sides */
+  #book-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      rgba(0,0,0,0.18) 0%,
+      transparent 18%,
+      transparent 82%,
+      rgba(0,0,0,0.18) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 70%,
+      rgba(0,0,0,0.10) 100%
+    );
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* Center spine crease */
+  #spine-shadow {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(0,0,0,0.22) 40%,
+      rgba(0,0,0,0.28) 50%,
+      rgba(0,0,0,0.22) 60%,
+      transparent
+    );
+    pointer-events: none;
+    z-index: 6;
+  }
+
   #flipbook { display: block; }
 
   .page-img {
@@ -310,19 +357,19 @@
   /* ── Footer hint ── */
   #book-footer {
     width: 100%;
-    padding: 10px 32px 18px;
+    padding: 12px 32px 20px;
     display: flex;
     justify-content: center;
+    background: rgba(0,0,0,0.3);
     border-top: 1px solid var(--border);
     flex-shrink: 0;
   }
 
   #hint {
-    font-size: 0.52rem;
+    font-size: 0.62rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--text-dim);
-    opacity: 0.75;
+    color: rgba(200,200,200,0.75);
   }
 
   /* ── Loader ── */
@@ -417,7 +464,8 @@
   <div id="stage">
     <div id="book-wrapper">
       <div id="flipbook"></div>
-      <!-- Edge click zones, repositioned by JS after flipbook renders -->
+      <div id="spine-shadow"></div>
+      <!-- Edge click zones -->
       <div id="zone-prev"   title="Previous page"></div>
       <div id="zone-next"   title="Next page"></div>
       <div id="zone-header" title="Back to contents"></div>
@@ -480,9 +528,9 @@ const CHAPTERS = [
 // ── Config ───────────────────────────────────────────────
 const CONFIG = {
   totalFiles:   318,
-  pageOffset:   7,       // file index 7 = printed page 1
+  pageOffset:   7,
   printedTotal: 311,
-  imageDir: 'https://pub-7e97d4a3ee494d50a4475dc4c910717a.r2.dev/artbook-2024',
+  imageDir:     'https://pub-7e97d4a3ee494d50a4475dc4c910717a.r2.dev/artbook-2024',
   pageWidth:    825,
   pageHeight:   1275,
 };
@@ -744,9 +792,18 @@ function skim(direction) {
 
 // ── Keyboard ──────────────────────────────────────────────
 document.addEventListener('keydown', e => {
-  if (!bookInitialized) return;
-  if (e.key === 'ArrowRight') { e.preventDefault(); e.shiftKey ? skim(1)  : pageFlip.flipNext('top'); }
-  if (e.key === 'ArrowLeft')  { e.preventDefault(); e.shiftKey ? skim(-1) : pageFlip.flipPrev('top'); }
+  if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    if (!bookInitialized || bookView.classList.contains('hidden')) {
+      showBook(0); return;
+    }
+    e.shiftKey ? skim(1) : pageFlip.flipNext('top');
+  }
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    if (!bookInitialized || bookView.classList.contains('hidden')) return;
+    e.shiftKey ? skim(-1) : pageFlip.flipPrev('top');
+  }
 });
 
 // ── Zone listeners (added after flipbook renders) ─────────
@@ -761,6 +818,9 @@ function bindZones() {
     showNav();
   });
 }
+
+// Cover click opens book at page 0
+document.getElementById('nav-cover').addEventListener('click', () => showBook(0));
 
 // ── Initial load ──────────────────────────────────────────
 buildPages();
