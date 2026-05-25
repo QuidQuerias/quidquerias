@@ -265,23 +265,29 @@
     transform: perspective(2000px) rotateX(3deg);
     transform-origin: center bottom;
     filter: drop-shadow(0 24px 48px rgba(0,0,0,0.55));
-    /* Spine shadow as background — sits behind StPageFlip canvas */
-    background:
-      linear-gradient(
-        to right,
-        rgba(0,0,0,0.15) 0%,
-        transparent 20%,
-        transparent 80%,
-        rgba(0,0,0,0.15) 100%
-      ),
-      linear-gradient(
-        to right,
-        transparent 44%,
-        rgba(0,0,0,0.20) 48%,
-        rgba(0,0,0,0.28) 50%,
-        rgba(0,0,0,0.20) 52%,
-        transparent 56%
-      );
+  }
+
+  /* Spine crease — narrow overlay only at the center seam.
+     Sits above pages but is narrow enough to never cover the flip animation
+     since pages always peel away from center outward. */
+  #book-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 48px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0,0,0,0.18) 35%,
+      rgba(0,0,0,0.32) 50%,
+      rgba(0,0,0,0.18) 65%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 50;
   }
 
   #flipbook { display: block; }
@@ -453,7 +459,7 @@
   </div>
 
   <div id="book-footer">
-    <div id="hint">← → turn &nbsp;·&nbsp; shift + ← → skim &nbsp;·&nbsp; tap top of page for contents</div>
+    <div id="hint">← → Turn &nbsp;·&nbsp; Hold Shift to Skim &nbsp;·&nbsp; Tap top of page for contents</div>
   </div>
 
 </div>
@@ -779,7 +785,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') {
     e.preventDefault();
     if (!bookInitialized || bookView.classList.contains('hidden')) {
-      showBook(0); return;
+      showBook(1); return;
     }
     e.shiftKey ? skim(1) : pageFlip.flipNext('top');
   }
@@ -803,7 +809,7 @@ function bindZones() {
   });
 }
 
-// Cover click opens book at page 0
+// Cover click opens book at page 0 (cover)
 document.getElementById('nav-cover').addEventListener('click', () => showBook(0));
 
 // ── Initial load ──────────────────────────────────────────
