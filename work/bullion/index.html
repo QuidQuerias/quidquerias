@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trouble in Bullion — Interactive Map</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Crimson+Text:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:        #1a1208;
+      --parchment:  #f2e8d5;
+      --aged:       #d4c4a0;
+      --rust:       #8b3a1a;
+      --gold:       #c8972a;
+      --gold-light: #e8c060;
+      --shadow:     rgba(26, 18, 8, 0.55);
+      --panel-bg:   rgba(18, 12, 4, 0.82);
+      --panel-w:    30vw;
+      --panel-max:  500px;
+      --panel-h:    82vh;
+      --panel-min:  200px;
+      --ctrl-w:     36px;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Crimson Pro', Georgia, serif;
+      color: var(--parchment);
+    }
+
+    /* ─── MAP ──────────────────────────────────────────── */
+    #map { position: fixed; inset: 0; z-index: 1; cursor: crosshair; }
+    .leaflet-control-attribution {
+      background: rgba(18,12,4,0.7) !important; color: var(--aged) !important;
+      font-family: 'Crimson Pro', serif; font-size: 10px;
+    }
+
+    /* ─── ZOOM CONTROL ─────────────────────────────────── */
+    .leaflet-control-zoom {
+      border: 1px solid var(--gold) !important; border-radius: 2px 2px 0 0 !important;
+      overflow: hidden !important; box-shadow: none !important; margin: 0 !important;
+    }
+    .leaflet-control-zoom a {
+      background: var(--panel-bg) !important; color: var(--gold) !important;
+      font-family: 'Cinzel', serif !important; font-size: 20px !important;
+      width: var(--ctrl-w) !important; height: var(--ctrl-w) !important;
+      line-height: var(--ctrl-w) !important;
+      border-bottom: 1px solid rgba(200,151,42,0.3) !important;
+      display: flex !important; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .leaflet-control-zoom a:hover { background: var(--rust) !important; color: var(--gold-light) !important; }
+    .zoom-badge {
+      width: var(--ctrl-w);
+      text-align: center; padding: 4px 0;
+      background: var(--panel-bg);
+      border: 1px solid var(--gold); border-top: none;
+      border-radius: 0 0 2px 2px;
+      box-shadow: 0 2px 10px var(--shadow);
+      font-family: 'Cinzel', serif; font-size: 11px;
+      letter-spacing: 0.08em; color: var(--gold-light);
+      margin-top: -6px;
+    }
+    .leaflet-top.leaflet-left { display: none; }
+    .leaflet-top.leaflet-right {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 6px; top: 14px !important; right: 14px !important;
+    }
+    .leaflet-top.leaflet-right .leaflet-control { margin: 0 !important; float: none !important; }
+
+    /* ─── CUSTOM CONTROL BUTTONS ───────────────────────── */
+    .map-ctrl-btn {
+      width: var(--ctrl-w); height: var(--ctrl-w);
+      display: flex; align-items: center; justify-content: center;
+      background: var(--panel-bg);
+      border: 1px solid rgba(200,151,42,0.45);
+      border-radius: 2px;
+      box-shadow: 0 2px 10px var(--shadow);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .map-ctrl-btn:hover { background: var(--rust); border-color: var(--gold); }
+    .map-ctrl-btn.active { background: rgba(200,151,42,0.18); border-color: var(--gold); }
+
+    /* ─── HOVER ZONE NAME ──────────────────────────────── */
+    #zone-name {
+      position: fixed; top: 18px; left: 50%; transform: translateX(-50%);
+      z-index: 10; pointer-events: none;
+      font-family: 'Cinzel', serif; font-weight: 600;
+      font-size: clamp(14px, 1.8vw, 22px);
+      color: var(--gold); letter-spacing: 0.08em;
+      white-space: nowrap; opacity: 0; transition: opacity 0.2s;
+      background: rgba(14,9,3,0.82); border: 1px solid rgba(200,151,42,0.35);
+      padding: 8px 24px 7px;
+    }
+    #zone-name.visible { opacity: 1; }
+
+    /* ─── ZONE POLYGONS ────────────────────────────────── */
+    .zone-polygon {
+      fill: transparent; stroke: var(--gold); stroke-width: 28;
+      stroke-opacity: 0; fill-opacity: 0; cursor: pointer;
+      transition: stroke-opacity 0.25s, fill-opacity 0.25s;
+    }
+    .zone-polygon.hover  { stroke-opacity: 0.55; fill-opacity: 0.10; fill: var(--gold); }
+    .zone-polygon.active { stroke-opacity: 0.72; fill-opacity: 0.14; fill: var(--gold); }
+    .zone-polygon.layer-region {
+      stroke-width: 0; fill: var(--gold-light); fill-opacity: 0;
+      visibility: hidden; pointer-events: none;
+    }
+    .zoom-far .zone-polygon.layer-region { visibility: visible; pointer-events: auto; }
+    .zone-polygon.layer-region.hover  { fill-opacity: 0.18; }
+    .zone-polygon.layer-region.active { fill-opacity: 0.26; }
+    .zone-polygon.always-visible      { visibility: visible !important; }
+    .zoom-far .zone-polygon.layer-zone { pointer-events: none; }
+    .zoom-far .zone-polygon.layer-zone.always-visible { pointer-events: auto !important; }
+    .zoom-far .zone-polygon.layer-extra { pointer-events: none; }
+
+    /* ─── INFO PANEL ───────────────────────────────────── */
+    #info-panel {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%) translateX(-100%);
+      width: var(--panel-w);
+      max-width: var(--panel-max);
+      height: auto;
+      max-height: var(--panel-h);
+      min-height: var(--panel-min);
+      z-index: 20;
+      opacity: 1;
+      /* Only transition transform — opacity is controlled inline */
+      transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+    #info-panel.open {
+      transform: translateY(-50%) translateX(0);
+      pointer-events: all;
+    }
+
+    /* Panel main area — auto height, close affordance is the right edge itself */
+    #panel-inner {
+      width: 100%;
+      background: var(--panel-bg);
+      backdrop-filter: blur(8px);
+      border-right: 1px solid rgba(200,151,42,0.25);
+      border-top: 1px solid rgba(200,151,42,0.25);
+      border-bottom: 1px solid rgba(200,151,42,0.25);
+      border-left: 3px solid var(--gold);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Full-height right-edge close strip — no box, no protrusion, flush with panel */
+    #panel-fold {
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: background 0.2s, opacity 0.2s;
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+    #info-panel.open #panel-fold { opacity: 1; pointer-events: all; }
+    #panel-fold:hover { background: rgba(139,58,26,0.18); }
+    /* Thin visible line on the very right edge */
+    #panel-fold::before {
+      content: '';
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 1px;
+      background: rgba(200,151,42,0.22);
+      transition: background 0.2s;
+    }
+    #panel-fold:hover::before { background: rgba(200,151,42,0.5); }
+
+    /* Open tab — same treatment: full-height strip on viewport left edge */
+    #panel-open-tab {
+      position: fixed;
+      left: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 18px; height: 64px;
+      background: var(--panel-bg);
+      border: 1px solid rgba(200,151,42,0.3);
+      border-left: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 19;
+      transition: background 0.2s, opacity 0.2s;
+    }
+    #info-panel.open ~ #panel-open-tab { opacity: 0; pointer-events: none; }
+    #panel-open-tab:hover { background: rgba(139,58,26,0.5); border-color: var(--gold); }
+
+    .tab-arrow { opacity: 0.55; transition: opacity 0.2s; }
+    #panel-fold:hover .tab-arrow,
+    #panel-open-tab:hover .tab-arrow { opacity: 1; }
+
+    /* ─── PANEL HEADER ─────────────────────────────────── */
+    #panel-header {
+      flex-shrink: 0;
+      padding: 18px 28px 12px 18px;
+      border-bottom: 1px solid rgba(200,151,42,0.15);
+    }
+    #panel-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    #panel-name {
+      font-family: 'Cinzel', serif; font-weight: 600;
+      font-size: clamp(18px, 2.2vw, 28px); color: var(--parchment);
+      letter-spacing: 0.08em; line-height: 1.15;
+      flex: 1; min-width: 0;
+    }
+    /* View buttons — right-aligned in header */
+    #panel-icons {
+      display: flex; gap: 6px; align-items: center;
+      flex-shrink: 0;
+    }
+    .view-btn {
+      position: relative; width: 36px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: 1px solid rgba(200,151,42,0.3);
+      cursor: pointer; border-radius: 2px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .view-btn svg { flex-shrink: 0; opacity: 0.7; transition: opacity 0.2s; }
+    .view-btn:hover { border-color: var(--gold); background: rgba(200,151,42,0.08); }
+    .view-btn:hover svg { opacity: 1; }
+    .view-btn.active { border-color: var(--gold); background: rgba(200,151,42,0.12); }
+    .view-btn.active svg { opacity: 1; }
+    .view-btn .btn-tip {
+      position: absolute; top: calc(100% + 6px); right: 0;
+      background: rgba(14,9,3,0.92); border: 1px solid rgba(200,151,42,0.3);
+      color: var(--aged); font-family: 'Crimson Pro', serif; font-style: italic;
+      font-size: 11px; padding: 3px 8px; white-space: nowrap;
+      opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 30;
+    }
+    .view-btn:hover .btn-tip { opacity: 1; }
+
+    #panel-logline {
+      font-family: 'Crimson Pro', serif; font-style: italic; font-weight: 300;
+      font-size: clamp(14px, 1.35vw, 17px); color: var(--gold-light);
+      letter-spacing: 0.04em; opacity: 0.85;
+    }
+
+    /* ─── PANEL BODY (scrollable) ──────────────────────── */
+    #panel-body {
+      flex: 1;
+      min-height: 80px;
+      max-height: calc(var(--panel-h) - 180px); /* cap so portraits/header always fit */
+      padding: 14px 28px 12px 20px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--rust) transparent;
+    }
+    #panel-body::-webkit-scrollbar { width: 4px; }
+    #panel-body::-webkit-scrollbar-thumb { background: var(--rust); border-radius: 2px; }
+    #panel-description {
+      font-family: 'Crimson Pro', serif; font-weight: 300;
+      font-size: clamp(14px, 1.35vw, 17px); line-height: 1.72; color: var(--aged);
+    }
+    #panel-description a { color: var(--gold-light); }
+    #panel-description .zone-link { color: var(--gold-light); cursor: pointer; text-decoration: underline; }
+
+    /* ─── PORTRAITS ────────────────────────────────────── */
+    #panel-portraits-wrap {
+      flex-shrink: 0;
+      padding: 10px 28px 16px 14px;
+      border-top: 1px solid rgba(200,151,42,0.12);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      overflow: visible;
+    }
+    #panel-portraits-wrap.has-portraits { display: flex; }
+
+    .portrait-nav {
+      flex-shrink: 0;
+      width: 22px; height: 78px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: 1px solid rgba(200,151,42,0.25);
+      border-radius: 2px; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      opacity: 0.65;
+    }
+    .portrait-nav:hover { border-color: var(--gold); background: rgba(200,151,42,0.08); opacity: 1; }
+    .portrait-nav.hidden { visibility: hidden; pointer-events: none; }
+
+    #portrait-track-wrap {
+      flex: 1; min-width: 0;
+      overflow-x: hidden;
+      overflow-y: visible;
+    }
+    #portrait-track {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .portrait-wrap { position: relative; flex-shrink: 0; }
+    .portrait-wrap img {
+      width: 78px; height: 78px; object-fit: cover;
+      border: 1px solid rgba(200,151,42,0.3); display: block;
+      filter: sepia(0.15) contrast(1.05); transition: border-color 0.2s, filter 0.2s;
+    }
+    .portrait-wrap:hover img { border-color: var(--gold); filter: sepia(0) contrast(1.1); }
+
+    /* Single shared portrait tooltip — fixed so it escapes all overflow contexts */
+    #portrait-tooltip {
+      position: fixed;
+      background: rgba(14,9,3,0.92); border: 1px solid rgba(200,151,42,0.4);
+      color: var(--parchment); font-family: 'Crimson Pro', serif; font-style: italic;
+      font-size: 12px; padding: 4px 10px; white-space: nowrap;
+      pointer-events: none; z-index: 100;
+      opacity: 0; transition: opacity 0.15s;
+    }
+    #portrait-tooltip.visible { opacity: 1; }
+
+    .leaflet-image-layer { transition: opacity 0.35s ease; }
+
+    /* ─── CREDITS ──────────────────────────────────────── */
+    #credits-panel {
+      position: fixed; inset: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(14,9,3,0.65); backdrop-filter: blur(4px);
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    #credits-panel.open { opacity: 1; pointer-events: all; }
+    #credits-inner {
+      background: var(--panel-bg); border: 1px solid rgba(200,151,42,0.35);
+      padding: 28px 36px 24px; max-width: 500px; width: 90%; position: relative;
+    }
+    #credits-inner::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold) 70%, transparent);
+    }
+    #credits-close {
+      position: absolute; top: 10px; right: 14px;
+      background: none; border: none; color: var(--aged);
+      font-size: 20px; cursor: pointer; line-height: 1; transition: color 0.2s;
+    }
+    #credits-close:hover { color: var(--gold); }
+    #credits-headline {
+      font-family: 'Crimson Pro', serif; font-weight: 300; font-style: italic;
+      font-size: clamp(24px, 3vw, 38px);
+      color: var(--parchment); line-height: 1.1; margin-bottom: 16px;
+    }
+    #credits-section-label {
+      font-family: 'Crimson Pro', serif; font-style: italic;
+      font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 10px; padding-bottom: 10px;
+      border-bottom: 1px solid rgba(200,151,42,0.15);
+    }
+    .credits-item {
+      display: flex; gap: 14px; align-items: baseline; margin-bottom: 8px;
+      font-family: 'Crimson Pro', serif; font-size: 14px;
+      color: var(--aged); line-height: 1.4;
+    }
+    .credits-item .role {
+      font-style: italic; color: var(--gold-light); white-space: nowrap;
+      min-width: 120px; font-size: 13px; opacity: 0.85;
+    }
+    .credits-item a { color: var(--parchment); transition: color 0.2s; }
+    .credits-item a:hover { color: var(--gold-light); }
+
+    /* ═══════════════════════════════════════════════════
+       INTRO / LANDING
+       z-index 100 — sits above map, panel, everything.
+       Removed from DOM entirely on entry.
+    ═══════════════════════════════════════════════════ */
+    #landing {
+      position: fixed; inset: 0; z-index: 100;
+      background: #111; overflow: hidden;
+      cursor: pointer; /* whole surface is clickable */
+    }
+    #landing-viewport {
+      position: absolute; left: 0; width: 100vw;
+      height: 56.25vw; top: 50%; transform: translateY(-50%);
+      overflow: hidden;
+    }
+    #landing-scene {
+      position: absolute; top: 0; left: 0; width: 100%;
+      filter: brightness(0.65) blur(0.75px);
+      will-change: transform;
+    }
+    #landing-world { position: relative; width: 100vw; height: auto; display: block; }
+    #landing-world #people > *, #landing-world #boat > *, #landing-world #carts > * { display: none; }
+
+    #landing-vignette {
+      position: fixed; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 75% 75% at 50% 50%, transparent 20%, rgba(0,0,0,0.85) 100%);
+      z-index: 110;
+    }
+    #landing-grain {
+      position: absolute; inset: 0; pointer-events: none; z-index: 106;
+      opacity: 0.58;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-repeat: repeat; background-size: 256px 256px;
+      mix-blend-mode: soft-light;
+    }
+    #landing-tiltshift {
+      position: absolute; inset: 0; pointer-events: none;
+      backdrop-filter: blur(3.5px); -webkit-backdrop-filter: blur(3.5px);
+      -webkit-mask-image: linear-gradient(to bottom, black 0%, black 25%, transparent 35%, transparent 65%, black 75%, black 100%);
+      mask-image: linear-gradient(to bottom, black 0%, black 25%, transparent 35%, transparent 65%, black 75%, black 100%);
+      z-index: 105;
+    }
+    #landing-fade-cover {
+      position: fixed; inset: 0; background: #000; z-index: 115;
+      transition: opacity 4.5s ease-out;
+    }
+    #landing-title-overlay {
+      position: fixed; inset: 0; z-index: 120;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; pointer-events: none; gap: 0.5vw;
+    }
+    #landing-title-top { display: flex; align-items: baseline; gap: 1.2vw; }
+    #landing-trouble-svg {
+      height: 4.5vw; width: auto; fill: #d6c9a8;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));
+      opacity: 0; animation: landingWordFadeIn 3s ease-out 1.2s forwards;
+    }
+    #landing-in-svg {
+      height: 4.2vw; width: auto; fill: #d6c9a8;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));
+      opacity: 0; animation: landingWordFadeIn 3s ease-out 2.2s forwards;
+    }
+    @keyframes landingWordFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    #landing-bullion-wrap { line-height: 0; }
+    #landing-bullion-svg {
+      height: 11.7vw; width: auto; fill: #c8972a; opacity: 0;
+      filter: drop-shadow(0 0 18px rgba(200,151,42,0.35)) drop-shadow(0 4px 16px rgba(0,0,0,0.9));
+      /* Two animations: fade in once, then oscillate scale indefinitely */
+      animation:
+        landingBullionFadeIn 6s ease-in-out 2.5s forwards,
+        landingBullionBreath 10s ease-in-out 8.5s infinite alternate;
+    }
+    @keyframes landingBullionFadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to   { opacity: 0.9; transform: scale(1); }
+    }
+    @keyframes landingBullionBreath {
+      from { transform: scale(1); }
+      to   { transform: scale(0.97); }
+    }
+    #landing-subtitle {
+      font-family: 'Crimson Text', Georgia, serif; font-size: 1.8vw;
+      font-style: italic; letter-spacing: 0.12em;
+      color: rgba(214,201,168,0.75); text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+      opacity: 0; margin-top: 0.8vw;
+      animation: landingWordFadeIn 2s ease-out 7s forwards;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     INTRO / LANDING  — removed from DOM on entry
+═══════════════════════════════════════════════════ -->
+<div id="landing">
+  <div id="landing-viewport">
+    <div id="landing-scene">
+      <svg id="world"
+       xmlns="http://www.w3.org/2000/svg"
+       xmlns:xlink="http://www.w3.org/1999/xlink"
+       viewBox="0 15.23 1150 1150">
+
+    <defs>
+
+      <!-- Clip everything to the slate image bounds: 1150x1150 at y=15.23 -->
+      <clipPath id="slateBounds">
+        <rect x="0" y="15.23" width="1150" height="1150"/>
+      </clipPath>
+
+      <!-- Drop shadow applied to all sprites -->
+      <filter id="spriteShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0.7" dy="0.7" stdDeviation="0.6"
+                      flood-color="black" flood-opacity="0.5"/>
+      </filter>
+
+      <!-- Masks: white canvas = visible, black blocker shapes = hidden -->
+
+      <mask id="upperMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <path d="M312.43,817.66c.78.26-3.65,21.65-3.65,21.65l13.04,10.43,22.7-8.61v-19.57s-18-5.74-17.22-5.48-14.87,1.57-14.87,1.57Z" fill="black"/>
+        <path d="M298.09,986.7l-16.7,7.83-2.35,17.74,16.96,10.17s21.13-4.7,21.91-4.43,2.35-24.78,2.35-24.78l-22.17-6.52Z" fill="black"/>
+      </mask>
+
+      <mask id="keepMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <path d="M434.78,898.01s-9.57,2.53-10.35,3.84-6.78,15.39-6.78,15.39l7.22,14.68s18.78,6.78,20.09,6.26,12.52-12.52,12.52-12.52v-18.78l-22.7-8.87Z" fill="black"/>
+        <path d="M370.17,770.95c.52.78,1.3,15.91,1.3,15.91,0,0,4.96,5.74,5.74,6s15,9.78,15,9.78l17.48-4.17,1.61-19.42-1.3-13.04-10.17-6.78-12.78,3.39-16.87,8.34Z" fill="black"/>
+      </mask>
+
+      <mask id="gateMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <polygon points="448.87 852.61 448.61 898.01 495.04 900.88 496.09 852.88 448.87 852.61" fill="black"/>
+        <path d="M449.13,751.92c.52.78.26,46.43.26,46.43,0,0,45.39-1.3,46.17-1.04s1.04-46.96,1.04-46.96l-47.48,1.57Z" fill="black"/>
+      </mask>
+
+      <mask id="harborMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <path d="M366.43,944.31c1.04.52,12,18.26,12,18.26l14.87-8.61-11.74-16.96-15.13,7.3Z" fill="black"/>
+        <path d="M461.13,959.18l-17.22,16.7s-12-10.17-10.7-15.91-.52-9.13,3.91-8.87,24,8.09,24,8.09Z" fill="black"/>
+      </mask>
+
+      <mask id="watchMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <path d="M1064.78,1074.22c-5.87-.39-11.74-3.13-17.22,2.35s-14.09,19.96-14.09,26.22,4.3,24.65,18.39,26.61,27-6.65,34.43-19.57-21.52-35.61-21.52-35.61Z" fill="black"/>
+        <path d="M643.74,1062.88c3.13,7.43,6.26,15.26,4.3,22.7s2.35,13.7-9.78,18.78-18.78,11.35-34.83,2.35-18.78-8.22-18.78-22.7-4.3-19.96,6.65-27.39,14.48-19.96,30.52-13.3,21.91,19.57,21.91,19.57Z" fill="black"/>
+      </mask>
+
+      <mask id="apothecaryMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <path d="M858.7,531.74l-19.96,26.61-27-20.35s.78-17.22,1.96-17.61,16.83-11.35,16.83-11.35l28.17,22.7Z" fill="black"/>
+        <polygon points="1007.78 532.92 992.13 593.96 1023.83 601.79 1041.43 542.31 1007.78 532.92" fill="black"/>
+      </mask>
+
+      <mask id="plateauMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <polygon points="944.39 648.74 914.26 670.27 942.04 698.83 968.26 683.57 944.39 648.74" fill="black"/>
+        <path d="M633.3,687.88c1.17,1.57,9.78,27.78,9.78,27.78l35.61-10.57-5.87-28.96-39.52,11.74Z" fill="black"/>
+      </mask>
+
+      <mask id="boatMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <path d="M685.93,362.67c.39.59.2,37.37.59,37.76.2.2,31.49-1.41,57.13-4.11,24.62-2.59,46.37-6.26,46.37-6.26v-38.74l-104.09,11.35Z" fill="black"/>
+        <path d="M496.54,786.26c.2,1.96-1.96,67.11-.2,67.7s17.61-5.09,21.33-7.04,12.33-5.87,14.67-5.87,1.76-1.57,5.09-1.96,3.13.2,6.07-.59,1.37-1.57,5.09-2.35,12.91-1.57,16.83-2.15,6.85-3.13,10.17-3.52,3.33.39,6.65.39,5.87.2,8.61.2,6.65-1.37,9.59-.98,4.89,0,7.63,1.17,9.2,2.54,8.8.2,6.65-54.98,6.46-56.54-9,6.65-10.37,8.8-12.33,5.48-15.26,6.46-23.67,2.54-27.39,2.93-11.15.59-20.54.2-16.04.98-22.89-.59-21.91-1.76-23.48-2.15-6.85-4.3-6.85-4.3Z" fill="black"/>
+      </mask>
+
+      <mask id="mineMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <path d="M496.93,791.86l-.2,58.11-39.91.2s-1.17-15.26-.59-15.07,16.63.39,16.63.39v-21.13l-38.15-.2s-2.35-22.11-1.76-21.91,63.98-.39,63.98-.39Z" fill="black"/>
+        <path d="M371.13,866.41c.2.59-11.74,19.17-11.74,19.17l39.33,25.63,12.72-17.8-40.3-27Z" fill="black"/>
+        <polygon points="634.32 725.9 633.54 766.08 688.58 767.12 689.62 724.6 634.32 725.9" fill="black"/>
+        <path d="M288.67,907.47l-25.83,31.57s-25.04-26.87-25.83-26.87,31.83-25.83,31.83-25.83l19.83,21.13Z" fill="black"/>
+      </mask>
+
+      <mask id="deliveryMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <path d="M836.98,592.69s-22.17,31.04-21.65,31.83,18.26,10.96,21.39,13.04,12.26,9.91,12,14.87.78,6,4.43,5.74,14.35,1.57,17.74-.26,15.91-23.48,16.43-30.26,1.83-23.22,4.17-24.26-16.43,1.3-21.13.52-9.65-5.74-11.48-8.09-9.91-2.09-12.78-2.35-9.13-.78-9.13-.78Z" fill="black"/>
+        <polygon points="625.91 859.5 662.95 923.41 705.47 897.07 689.56 869.41 625.91 859.5" fill="black"/>
+        <polygon points="823.91 639.59 802.26 660.2 775.91 674.28 756.08 650.54 810.08 615.85 823.91 639.59" fill="black"/>
+      </mask>
+
+      <mask id="basilicaMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <path d="M837.11,592.92s-22.17,31.04-21.65,31.83,18.26,10.96,21.39,13.04,12.26,9.91,12,14.87.78,6,4.43,5.74,14.35,1.57,17.74-.26,15.91-23.48,16.43-30.26,1.83-23.22,4.17-24.26-16.43,1.3-21.13.52-9.65-5.74-11.48-8.09-9.91-2.09-12.78-2.35-9.13-.78-9.13-.78Z" fill="black"/>
+        <path d="M496.93,791.86l-.2,58.11-39.91.2s-1.17-15.26-.59-15.07,16.63.39,16.63.39v-21.13l-38.15-.2s-2.35-22.11-1.76-21.91,63.98-.39,63.98-.39Z" fill="black"/>
+        <path d="M369.57,779.44c.52,2.09,1.04,9.65,4.7,11.74s15.13,10.96,20.09,11.74,9.39-1.3,9.65,0-23.74,26.87-25.3,27.65-42.52-19.04-39.91-21.65,30.78-29.48,30.78-29.48Z" fill="black"/>
+        <path d="M273.3,733.01c4.96,3.13,22.7,17.74,26.61,18.52s10.7-5.48,11.74-6,13.57,4.7,15.39,5.48.26-14.35,1.57-15.39,11.48-8.35,12.26-8.35-11.22-22.7-10.43-22.96-26.87-43.04-26.87-43.04l-49.83,23.48,19.57,48.26Z" fill="black"/>
+      </mask>
+
+      <mask id="dairyMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <path d="M837.11,592.82s-22.17,31.04-21.65,31.83,18.26,10.96,21.39,13.04,12.26,9.91,12,14.87.78,6,4.43,5.74,14.35,1.57,17.74-.26,15.91-23.48,16.43-30.26,1.83-23.22,4.17-24.26-16.43,1.3-21.13.52-9.65-5.74-11.48-8.09-9.91-2.09-12.78-2.35-9.13-.78-9.13-.78Z" fill="black"/>
+      </mask>
+
+      <mask id="woodsMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <path d="M393.08,104.8c3.13,3.91,9.39,6.52,10.17,9.91s3.39,13.57-1.83,15.91-18,5.22-19.57,3.65-9.39-3.13-13.57-1.04c-2.1,1.05-11.74.78-14.87-.52s-11.22-2.09-11.22-5.48-2.09-6.78.52-15.65,8.61-22.17,13.57-22.17,29.22,1.83,31.04,5.74,5.74,9.65,5.74,9.65Z" fill="black"/>
+        <polygon points="497.69 135.2 513.86 164.15 553.52 142.11 535.12 112.24 497.69 135.2" fill="black"/>
+      </mask>
+
+
+      <mask id="orchardMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <polygon points="514.97 233.87 524.76 270.46 573.67 257.93 565.26 222.13 514.97 233.87" fill="black"/>
+        <path d="M556.06,45.07l-5.09,40.11s36.98,5.09,36.98,4.11.78-26.41.78-26.41l-6.65-.59,1.17-15.85-27.2-1.37Z" fill="black"/>
+      </mask>
+
+      <mask id="treeMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <path d="M181.39,211.37c-6.46,4.5-14.87,3.52-16.83,5.67s-9.59,9.59-10.76,13.7-1.17,14.67,0,19.76,10.17,7.83,13.3,7.83,9.98-4.89,11.93-6.65,2.35-.59,3.52-3.72,2.54-5.87,4.3-5.87,9,.39,9.78,1.57.2,5.48,3.33,2.93,9.39-12.91,9.39-12.91c0,0,0-9.59-.98-12.13s2.35-9.59-1.17-11.15-4.5-5.09-5.67-6.26-4.7-3.52-5.67-3.52-7.04.78-7.04.78l-7.43,9.98Z" fill="black"/>
+        <path d="M397.58,364.76l-24.85,13.5s-2.35,3.72-.2,6.85,5.67,4.7,5.28,8.61-2.93,8.41-5.87,9.78-5.28,3.52-3.52,5.87,10.76,9.78,11.54,11.74,6.65,4.89,10.37,1.17,7.24-8.02,9.59-7.63,9.59-.2,10.57-.98,4.11.39,4.7-5.67-2.74-10.96-4.11-13.89-2.74-11.74-3.33-13.89-10.17-15.46-10.17-15.46Z" fill="black"/>
+        <path d="M277.26,366.13c.39-2.74,3.33-6.07-.59-7.43s-5.09-.78-4.89-4.3,1.76-8.02.78-9.78-5.09-6.46-8.41-3.52-3.13,7.63-6.85,4.7-8.61-3.72-9.39-2.93-2.35,3.13-3.52,5.09.39.78-3.91,4.5-3.91,2.54-7.83,5.48-1.96,6.26-1.37,6.85,8.02,6.46,8.02,6.46c0,0-4.3,6.65-3.91,8.22s5.09,8.02,5.87,8.61,6.26,1.37,9.78,1.37,11.93-1.37,12.72,1.17,9.59-3.13,9.98-4.7-.59-7.83,1.37-8.22,7.63-1.57,8.02-3.13-5.87-8.41-5.87-8.41Z" fill="black"/>
+        <path d="M199.97,94.57c-.78.59-4.5,5.28-5.09,5.67s-5.48,6.26-5.28,9.2.98,4.11,1.17,5.67-.39,3.91-1.57,5.87-2.35,6.26-2.35,6.85-1.17,1.57-4.3,3.52-9.59,1.57-11.15,4.5-3.33,6.26-3.33,9.39,2.15,7.04,3.13,8.8,2.54,1.37,6.46,2.74,5.28,1.37,8.41,4.11,8.61,1.57,9.59,5.09-1.17,6.85-1.76,7.83-2.93,2.93-1.96,4.3.39,4.7,5.48,4.89,6.65-2.74,8.02-5.48-.78-18.59,3.52-18.39,12.13,1.76,13.5,1.37,12.13-3.13,14.28-5.09-.78-9.59-3.13-13.89-6.07-12.33-5.48-15.07-.59-11.15-1.96-12.13-7.15-9.44-7.83-10.17c-.41-.45-3.62-2.45-4.3-9.78-.32-3.4-14.09.2-14.09.2Z" fill="black"/>
+        <path d="M278.76,426.13c0-.78,1.57-5.28,2.74-7.04s1.96-6.07,3.91-6.85,8.61-2.15,9.59-3.33,3.72,2.54,4.5,4.5,6.65,2.15,7.83,4.3-.2,1.96-2.93,5.28-2.15,3.91-6.65,6.65-4.5,4.3-8.8,2.15-10.17-5.67-10.17-5.67Z" fill="black"/>
+        <path d="M324.73,387.78c-1.37,2.35-3.13,2.35-4.5,4.7s-1.96,6.46-3.13,9.59-.39,6.07.98,6.85,4.3,1.37.78,3.33-.59.39-4.11,4.89-4.5,4.11-4.5,5.48,0,3.33.59,5.87-2.54,2.35,3.33,6.85.98,6.85,14.87,6.85,16.04,3.33,17.22,3.52,7.43.59,9.98-3.33,4.3-4.11,5.87-6.65,7.04-.98,0-6.85-1.57-6.46-8.61-6.65-10.96-3.13-13.7-5.48-4.89-5.48-3.91-7.83-1.96-6.07,2.93-5.28,11.74-2.54,7.83-6.85-7.63-8.8-10.17-10.57-11.74,1.57-11.74,1.57Z" fill="black"/>
+      </mask>
+
+      <mask id="fishMask">
+        <rect x="0" y="0" width="1180.52" height="1188.49" fill="white"/>
+        <path d="M555.47,683.74l-20.09,13.04,46.96,23.74s2.87-20.61,0-24.26-13.3-12-16.17-12-10.7-.52-10.7-.52Z" fill="black"/>
+        <polygon points="641.3 604.17 648.6 627.39 711.21 605.22 699.99 582.52 641.3 604.17" fill="black"/>
+        <polygon points="811.91 421.3 837.73 494.09 892.78 478.43 880.78 438.52 859.39 443.22 850.78 411.13 811.91 421.3" fill="black"/>
+        <polygon points="924.6 450.52 924.08 493.57 958.26 495.65 963.21 446.61 924.6 450.52" fill="black"/>
+        <polygon points="830.95 552.78 835.65 584.61 805.12 586.7 801.47 554.09 830.95 552.78" fill="black"/>
+      </mask>
+
+    </defs>
+
+    <g clip-path="url(#slateBounds)">
+    <!-- Background map -->
+    <g id="Layer_1">
+      <image id="slate" width="1150" height="1150"
+             transform="translate(0 15.23)"
+             href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/bullion-slate.jpg"/>
+    </g>
+
+    <!-- Path guides (hidden by CSS, referenced by animateMotion) -->
+    <g id="people">
+      <path id="upperPathA" d="M290.35,1005.67s-68.35-7.83-71.48-10.96-24-24.52-25.3-33.65.52-49.57,5.74-57.39,20.87-32.87,28.7-35.22,30-14.61,31.57-20.09,5.74-19.83,11.48-19.83,51.91,1.83,51.91,1.83" fill="none" stroke="none"/>
+      <path id="upperPathB" d="M323.74,831.93s-52.43-7.3-55.04-3.91-8.35,19.83-14.35,25.83-36.26,15.91-41.22,26.09-20.87,36.78-20.61,46.7,2.09,36.78,6.78,45.65,20.09,22.7,30.26,25.04,66,8.61,66,8.61" fill="none" stroke="none"/>
+      <path id="keepPathA" d="M396,776.89s-53.22,81.13-51.39,82.96,43.83,35.22,46.96,36.26,48.26,21.65,48.26,21.65" fill="none" stroke="none"/>
+      <path id="keepPathB" d="M440.09,922.45s-54-31.3-58.17-34.17-37.04-25.04-35.48-30,52.17-80.35,52.17-80.35" fill="none" stroke="none"/>
+      <polyline id="gatePathA" points="474.26 787.84 474.26 805.58 483.39 805.32 483.13 846.54 474 846.54 474.26 865.06" fill="none" stroke="none"/>
+      <polyline id="gatePathB" points="469.3 863.49 469.04 845.23 482.87 845.49 483.39 805.32 477.65 805.58 477.65 787.32" fill="none" stroke="none"/>
+      <path id="harborPathA" d="M445.96,962.23l13.43,16.83-13.3,10.43s-25.3-35.74-27.91-34.96-24,15.39-27.13,13.04-23.87-40.3-24.13-42.39,11.87-13.17,15-11.61" fill="none" stroke="none"/>
+      <path id="harborPathB" d="M381.78,912.67s-13.57,7.96-14.35,12.13,19.7,40.17,23.61,42.78,22.43-10.96,24.78-12,30,32.35,30.26,33.91,15.39-10.96,15.39-10.96l-13.3-17.87" fill="none" stroke="none"/>
+      <path id="watchPathA" d="M630,1085.49l71.74,33.13,150.78-10.17,77.22-33.13,97.83,11.48s11.48-9.91,13.83-10.17,12.78,12.78,12.78,12.78" fill="none" stroke="none"/>
+      <path id="watchPathB" d="M1057.57,1089.67s-12-17.48-13.3-15.91-14.09,13.57-20.35,13.04-90.26-13.57-94.17-11.48-71.74,32.61-77.22,33.13-146.61,11.74-150.78,10.17-73.83-33.65-73.83-33.65" fill="none" stroke="none"/>
+      <path id="skirtsPathA" d="M1037.82,985.12c-4.47,1.23-11.02-.5-16.36-1.1-7.01-.84-14.57-2.49-21.36-.08-3.41,1.39-5.44,4.48-8.72,7.74-4.19,4.19-9.06,8.15-14.52,10.5-5.07,2.3-11.15,2.31-15.56-.85-11-8.14-28.78-28.62-43.16-41.69-10.94-9.77-13.2-12.07-27.05-7.14-8.72,3.29-16.21,8.84-19.2,17.85-2.36,6.57-6.03,13.71-1.62,19.6,3.77,5.07,9.69,8.51,14.7,12.12,6.22,4.29,12.17,8.18,18.05,12.78,7.17,5.53,15.46,12.07,11.39,22.01-3.43,10.43-15.6,12.44-26.08,11.99-18.63-1.34-36.13-9.33-52.97-10.59-6.86-.98-13.31-1.98-18.6,1.56-2.78,1.77-5.46,4.08-8.64,5.09-3.53,1.2-7.28.71-10.84,1.63-7.9,2.09-12.88,10.33-16.22,17.37-1.64,3.83-4.22,6.22-8.35,7.95-8.5,3.71-19.27,5.53-28.58,5.5-4.64-.02-8.86-.79-13.26-2.02-14.15-4.15-26.72-8.83-34.77-19.99-5.53-6.96-10.18-15.29-7.17-24.17,4.08-11.16,11.09-23.82,20.22-30,6.74-4.19,13.39-6.83,21.61-9.01,7.79-2.01,16.46-2.29,24.54-2.65,13.51-.72,28.93-2.65,39.28-5.15,13.07-3.74,27.04-7.17,39.45-12.54,3.68-1.77,7.38-4.17,9.33-7.81,2.52-5.18,3.66-11.76,4.39-17.41-.02-6.92,4.83-8.92,10.53-11.51,8.12-3.39,14.59-9.2,21.47-.78,2.04,2.11,3.43,5.13,5.81,6.65,1.78.96,3.54.9,5.75.74,3.51-.34,7.42-1.09,11.01-1.43,4.7-.51,7.96-.47,11.39-1.76,5.38-2.05,10.59-7.19,15.08-11.46,7.51-7.6,15.33-14.56,23.97-21.06,4.2-3.31,7.3-5.86,11.73-6.83,16.38-2.43,29.74,7.45,43.75,16.06,10.01,6.33,20.9,11.73,31.51,16.97,3.27,1.6,6.35,3.1,9.07,4.41,3.08,1.78,7.33,2.62,7.28,5.1-1.8,6.82-9.82,39.37-18.16,43.39l-.12.04Z" fill="none" stroke="none"/>
+      <path id="apothecaryPathA" d="M840,536.1c14.62,4.01,34.73,10.65,49.57,11.12,5.77-.14,10.34-2.89,15.57-5.4,5.03-2.35,10.29-5.16,15.81-5.94,4.14-.64,7.81,2.06,11.25,4.93,2.78,2.26,5.87,4.73,8.96,6.47,5.14,3.14,10.12,2.84,15.53,1.37,7.58-1.9,18.46-5.46,25.72-7.22,2.48-.54,5.3-1.14,7.57-.07,5.94,3.63,3.25,16.38,1.13,21.96-1.46,5.18-7.89,13.4-4.86,17.72,1.05,1.39,2.83,2.2,4.5,2.84,3.9,1.42,9.63,2.7,13.89,3.74,2.88.68,5.74,1.32,8.58,1.94" fill="none" stroke="none"/>
+      <path id="apothecaryPathB" d="M1009.57,583.32c-7.52-.87-15.79-2.85-23.21-2.99-2.05.16-3.02,1.52-4.19,3.19-1.55,2.34-3.89,6.08-6.36,10.16-14.18,22.99-8.71,19.32-4.21,43.24,2.11,10.28-.56,17.47-11.07,12.13-9.46-5.93-10-19.75-23.9-18.44-10.77,1.27-5.38,15.41-11.72,20.93-5.96,4.59-17.29,7.23-24.22,4.44-11.42-6.53-23.64-20.37-34.69-28.99-2.15-1.71-4.14-2.94-6.58-4.14-11.03-5.38-31.04-14.12-44.08-15.7-17.42-2.24-30.3-21.62-31.91-38.92-.39-13.7,8.51-34.81,13.64-46.83,3.61-6.66,8.18-16.19,1.69-22.74-4.16-4.29-12.98-5.4-16.49-8.62-5-4.51,3.34-13.88,5.22-18.82,3.09-5.41,2.33-10.4,1.73-16.87-.62-7.84-1.53-16.97-.63-24.25.54-4.43,1.9-8.49,3.19-12.76,1.67-5.47,3.25-11.19,5.73-16.39,5.55-10.86,13.51-20.66,21.14-30.3,5.41-6.92,12.1-11.69,17.47-18.44,7.03-9.87,12.43-22.88,12.46-35.13-.33-8.21-4.67-16.53-6.25-25.27-1.07-6.07-.78-12.33-.66-18.52.17-4.49.03-10.12,2.17-13.31,1.68-2.31,4.71-2.02,9.02-1.43,7.02,1,17.54,3.08,26.06,5.5,11.25,3.61,27.79,8.09,38.15,7.53,5.37-.15,9.33-.29,15.01.83,12.94,2.55,29.59,6.02,40.54,10.86,10.3,5.83,17.62,17.67,23.22,27.97,3.43,6.71,4.03,11.89,5.37,19.99.84,4.75,1.83,9.52,2.78,14.29,1.27,6.38,4.79,12.07-.32,22.36-4.36,8.78-39.17,9.62-49.7,13.7-16.17,6.26-56.08,28.91-58.62,55.19-1.79,12.94,10.67,23.29,4.56,54.21-4.43,22.43-19.65,23.9-26.2,35.29-9.46,16.52-16.26,16.5-32.38,8.52" fill="none" stroke="none"/>
+      <path id="plateauPathA" d="M655.3,686.63c-.51-10.18,2.74-20.11,7.44-29.04,3.05-5.75,5.97-11.65,10.5-16.39,14.1-13.21,35.42-15.27,51.49-24.69,22.27-10.8,31.24-44.24,60.09-33.25,9.93,3.62,14.88,13.33,23.3,19.3,8.2,5.86,18.96,6.95,28.49,9.68,6.56,1.81,12.61,5.29,18.7,9.5,6.28,4.3,12.74,8.94,18.19,14.24,6.72,6.42,11.26,13.7,17.93,18.06,7.64,5.08,17.14,5.42,26,6.79,8.29,1.03,17.18,3.55,23.77,7.03" fill="none" stroke="none"/>
+      <path id="plateauPathB" d="M938.09,668.89c-19.05-20.24-32.28-12.49-51.48-25.1-13.77-9.93-26.94-23.03-42.53-29.93-14.3-6.38-32.2-6.31-43.87-17.23-4.83-4.29-9.02-9.8-14.52-13.2-10.77-7.15-21.88.9-30.76,8.38-7.82,6.38-15.46,13.39-23.64,19.22-6.58,4.73-13.13,6.94-21.09,9.71-5.68,1.98-12.81,4.69-18.77,7.23-10.41,4.48-22.34,9.24-27.43,19.64-6.83,13.54-10.3,29.36-11.82,44.24" fill="none" stroke="none"/>
+      <path id="orchardPathA" d="M531.21,257.54c-8.69,17.39-12.94,22.61-32.79,24.65-12.27,1.8-23.5,1.54-36.24,1.12-10.25-.26-22.63-.52-32.31-.73" fill="none" stroke="none"/>
+      <path id="orchardPathB" d="M431.23,282.39c-5.61-.07-12.77,1.23-17.24-2.96-4.35-5.39-.29-14.55-9.85-15.65-8.02-.76-17.3-1.02-24.96-2.91" fill="none" stroke="none"/>
+      <path id="orchardPathC" d="M379.39,262.04c-1.13-5.53-2.57-12.63-3.34-17.6-.45-4.19-.72-6.92,2.11-9.01,1.86-1.29,4.4-1.81,6.73-2.12,4.4-.52,10.14-.83,16.82-1.16,7.05-.33,15.08-.6,23.46-.85,21.92-.74,44.29-.89,66.04-2.57,12.8-.95,23.11-4.95,35.65-8.13,15.25-4.18,32.11-8.73,46.55-14.67,6.71-2.81,12.03-5.75,16.04-10.09,11.24-12.61,12.98-36.49,12.77-53.01-.4-12.23-3.69-21.92-4.36-34.08-1.12-10.85-.08-22.81.48-33.22.31-13.39-12.76-15.67-23.89-18.94" fill="none" stroke="none"/>
+      <path id="orchardPathD" d="M574.84,59.15c20.41,1.64,49.76,4.21,67.98,4.56,4.03.08,7.99-.62,11.92.02,10.59,1.98,5.8,13.3,3.17,20.09-3.96,10.46-7.76,23.2-11.07,32.7-1.66,4.78-2.99,7.66-6.15,10.82-5.8,6.01-14.62,10.61-18.4,18.15-2.11,4.69-3.02,11.2-4.41,16.89-6.66,30.71-8.37,28.47-32.2,46.94-4.28,3.51-7.34,5.85-7.38,10.99-.11,4.26,2.01,10.31.56,14.78-2.52,7.12-11.17,8.05-17.53,10.33" fill="none" stroke="none"/>
+      <path id="treePath" d="M387.07,383.78c-2.54-2.89-7.94-3.48-11.85-4.46-10.52-2.38-20.63-1.01-31.38-.89-4.07-.01-8.52-.15-12.35-1.07-3.29-.79-6.21-2.3-9.31-3.61-3.81-1.66-8.95-3.49-12.54-5.29-3.87-1.92-7.23-4.01-11.53-5.01-10.72-2.83-24.54-4.28-34.6-9.53-3.99-2.08-6.32-5.45-7.45-9.66-3.58-11.38-3.79-32.08-11.64-43.1-1.66-2.2-3.7-3.94-5.9-5.66-11.16-8.6-33.82-24.26-42.47-30.48-3.71-2.44-5.35-5.06-7.11-9.48-4.67-11.45-9.21-25.86-14.84-37.39-8.17-17.89-14.24-13.63-25-26.73-6.57-7.96-22.73-32.09-10.37-38.87,7.6-5.14,33.16-7.21,42.88-3.83,4.51,1.97,7.83,5.41,10.82,9.75,5.63,8.23,8.03,18.86,6.65,28.8-1.86,11.2-2.55,22.16-2.73,33.51-.75,11.38.64,41.77-9.03,47.95-14.16,7.93-49.91,14.38-53.18,24.13-2.99,7.17,31.53,27.46,34.82,42.75,2.38,9.4-2.63,20.38-4.58,29.47-.98,5.08-2.4,8.44,1.6,10.37,5.14,1.95,13.75,1.71,18.48,3.42,3.97,1.13,3.88,5.45,4.61,8.9.59,3.11,1.97,7.08,5.27,7.47,4.55.12,9.54-3.06,14.03-4.55,6.82-2.77,13.47-4.86,19.89-7.85,2.09-.93,4.2-1.83,6.4-2.6,8.26-2.93,17.36-4.02,20.1,6.67,1.95,6.16,2.59,15.12,3.84,21.3.72,4.66,2.9,7.55,7.31,8.72,5.94,1.86,16.4,4.14,23.5,3.82,10.05.07,14.43-11.14,20.37-17.32,4.83-5.81,9.75-2.23,15.12.56,4.06,2.14,8.51,4.2,13.02,5.4,7.86,2.17,15.84,1.96,24.26,1.63,7.19-.41,15.25-.96,21.8-3.62,3.5-1.29,4.55-4.08,4.45-7.42.03-2.96-.33-6.92-.38-10.03-.08-2.88-.08-4.78-.93-6.04l-.06-.09Z" fill="none" stroke="none"/>
+      <path id="gravePathA" d="M576.02,325.57c-3.91.39-25.43-.78-28.57,2.74s-17.22,14.48-16.04,19.96,7.43,14.48,10.17,17.61,1.17,21.52,8.61,22.7,26.22-1.96,29.35-.78,7.83,10.96,5.87,16.83-9.39,20.74-3.52,21.52,26.22,1.96,28.57,7.04,20.74,23.87,22.3,21.52" fill="none" stroke="none"/>
+      <path id="gravePathB" d="M634.58,455.48s-6.65-21.26-2.87-28.57,13.3-15.91,12.91-26.09-18.65-17.02-26.87-26.8-21.91-35.15-23.09-39.85-10.43-9.78-18.65-8.61" fill="none" stroke="none"/>
+      <path id="fishPathA" d="M564.08,696.78c1.83-3.91,8.35-19.3,8.35-19.3,0,0-16.96-9.65-21.13-13.3s-9.39-19.3-7.83-27.39,6.52-19.57,12.52-20.87,36.52-10.96,49.83-12,43.57-9.39,45.39-11.22,7.3,16.7,7.3,16.7" fill="none" stroke="none"/>
+      <path id="fishPathB" d="M660.08,606.78l-4.7-15.13s49.3-19.04,52.43-22.7,9.39-12.78,12.78-13.3,13.3-12,12.52-22.7,20.35-42.52,29.74-50.87,32.09-68.09,38.87-68.09,32.87-10.96,36-10.96,8.35,21.39,8.35,21.39" fill="none" stroke="none"/>
+      <line id="fishPathC" x1="871.12" y1="460.96" x2="947.3" y2="470.35" fill="none" stroke="none"/>
+      <path id="fishPathD" d="M944.43,473.22c-14.04-.06-27.41-1.54-30.79,15.33-3.7,15.68-5.58,31.21-8.04,47.07-2.13,9.77-3.42,26.06-13.28,29.91-7.49,2.58-16.05.41-23.78-.27-14.04-2.02-26.83.24-40.72,2.14" fill="none" stroke="none"/>
+      <path id="testPath" d="M599.39,955.66c-7.13-6.03-123.47,156.56-116.09,161.48,4.7,3.13,126.26-152.87,116.09-161.48Z" fill="none" stroke="none"/>
+    </g>
+    <g id="boat">
+      <path id="boatPath" d="M1106.91.52c-12.91,35.22-28.17,62.22-82.17,72.78s-163.17,3.52-200.74,19.96-86.87,23.48-95.09,59.87,0,130.3,8.22,154.96,10.57,120.91-1.17,144.39-31.7,71.61-66.91,93.91c-19.76,12.51-91.57,22.3-132.65,44.61-23.53,12.77-44.61,44.61-38.74,97.43,2.83,25.48,30.48,77.44,46.96,93.91,31.7,31.7,48.13,132.65,32.87,179.61s-66.91,123.26-64.57,152.61,27,66.91,34.04,72.78" fill="none" stroke="none"/>
+    </g>
+    <g id="carts">
+      <path id="woodsPathA" d="M512.69,151.76c-14.87,9.26,4.96,24.3,7.17,31.17,4.25,12.08.24,25.32-8.09,34.17-7.02,7.47-20.69,6.58-34.96,7.17-9.67.4-21.53,1.27-29.25-4.38-9.31-6.79-15.4-17.5-17.83-28.66-2.52-11.12-.78-21.96-6.98-30.9-5.94-8.38-17.33-13.34-27.22-11.99-15.15,2.07-31.28-21.35-26.98-34.42" fill="none" stroke="none"/>
+      <path id="woodsPathB" d="M378.6,120.07c-3.13,9-9.91,51.26-4.43,61.04,4.11,7.33-1.2,34.64,9,41.09,12.39,7.83,35.31,4.3,54.39,3.52,7.06-.5,35.29-.85,42.2-1.43,10.39-.9,23.02.29,31.63-5.72,15.01-10.29,26.12-30.86,27.64-49.23.65-7.91-.89-14.84-2.6-21.61" fill="none" stroke="none"/>
+      <path id="deliveryPathA" d="M689.1,891.42c7.63-6.2,16.69-12.3,25.18-18.46,12.52-9.05,21.98-19.62,19.04-35.95-2.47-16.45-13.07-35.47-5.71-43.73,5.85-6.4,17.7-5.35,26.23-4.16,14.17,2.35,28.04,6.45,42.55,6.68,27.69,1.46,37.81-12.9,15.67-40.56-6.46-8.72-16.16-18.09-15.51-29.32,1.46-10.7,13.03-16.96,16.8-26.5,7.03-18.94-11.95-37.68-24.06-50.87" fill="none" stroke="none"/>
+      <path id="deliveryPathB" d="M789.73,649.5c5.9,7.25,20.32,23.26,17.38,33.12-1.26,3.32-4.63,5.11-8.58,8.06-14.46,10.52-38.6,29.45-47.9,41.12-4.89,6.08-5.89,13.57-9.23,20.79-3.17,7.41-6.83,14.84-10.88,21.78-3.37,5.61-7.11,10.34-7.61,16.89-1.23,16.82,15.36,37.24,17.77,52.22.77,5.27-3.29,8.8-7.06,11.98-3.41,2.86-7.3,6.09-10.6,9.18-4.5,4.05-7.63,8.49-11.76,12.71-7.02,6.91-16.62,11.21-25.03,14.86" fill="none" stroke="none"/>
+      <path id="minePathA" d="M265.19,912.68c7.06,4.63,13.91,9.65,20.6,14.86,8.11,6.02,17.51,14.31,27.09,14.55,8.08.19,15.13-4.57,21.82-8.59,11.28-7.07,22.79-14.93,31.07-24.88,9.63-12.29,18.29-25.77,27.47-38.47,2.95-4.29,5.74-8.67,8.29-13.19,4.2-7.36,7.87-15.4,14.15-21.32,6.45-6.43,16.18-9.42,24.51-9.72,51.07-5.71,210.74-20.06,262.09-31.71,4.66-1.95,10.86-6.39,13.56-11.36,5.84-10.8-5.45-17.7-16.17-23.86-6.8-3.71-13.7-7.19-20.47-10.91" fill="none" stroke="none"/>
+      <path id="minePathB" d="M678.93,749.12c10.43,5.13,28.55,12.25,33.35,22.89,2.76,5.98-1.13,14.03-6.65,16.2-47.49,13.53-228.73,30.81-275.04,38.67-10.47.52-16.3,11.55-21.46,19.54-22.6,35.14-48.9,69.33-85.06,91.64-10.22,6.34-19.42,5.03-29.66-1.36-10.49-6.17-20.55-14.25-29.75-22.19" fill="none" stroke="none"/>
+      <path id="dairyPathA" d="M719.39,10.49c-25.42,19.56-50.47,41.42-64.06,70.81-5.99,12.02-10.52,24.91-17.79,36.25-8.06,12.94-19.43,23.37-26.23,36.71-4.4,8.4-7.41,17.4-10.91,26.2-14.28,34.63-12.08,38.85-2.14,73.12,7.02,25.48-.86,51.91,3.51,77.74,3.78,22.93,20.07,45.22,43.14,51.1,14.81,3.86,30.32,1.47,45.38.09,40.65-3.83,81.98-10.34,122.79-13.92,41.92-3.06,67.45,4.84,82.61,47.18,12.43,31.73,9.47,66.57,1.35,98.97-7.32,31.6-15.46,62.85-30.25,91.73-12.05,24.97-25.46,49.04-44.31,69.38-11.19,12.36-23.46,24.01-36.13,34.77-14.89,13.13-33.24,24.59-44.52,41.22-13.95,21.43,2.03,34.07,22.22,40.23,17.57,5.52,35.69,9.14,53.55,13.58,20.7,4.9,43.27,12.37,63.12,15.99,22.47,4.55,44.72-.08,67.35-3.54,19.31-2.98,39.09-3.59,57.68,2.86,69.07,24.87,46.32,73.41,79.65,88.74,24.45,9.46,38.18-14.31,56.48-25.28,7.66-4.54,16.44-6.36,25.15-7.86" fill="none" stroke="none"/>
+      <path id="basilicaPathA" d="M1179.83,309.16c-33,16.61-72.28,37.02-107.2,51.53-11.29,4.5-22.04,7.75-33.74,9.87-17.91,3.21-38.41,4.81-56.75,9.59-29.9,6.9-58.63,24.8-69.08,54.71-4.84,13.46-5.98,28.35-7.27,41.97-1.38,16.79-4.35,31.93-9.54,47.77-12.76,37.91-28.41,84.84-50.08,122.2-8.37,13.85-19.03,25.31-31.63,35.48-14.39,11.82-31.92,23.08-44.9,36.06-11.63,11.39-19.43,24.58-28.42,38.16-16.57,25.52-33.09,39.95-63.56,46.02-49.41,9.54-93.32,12.54-144.42,18.19-35.2,3.59-70.96,7.5-99.24,9.41-5.62.35-11.08.47-16.48.08-14.21-.92-26.65-6.92-38.72-14.97-8.83-5.91-17.35-12.59-24.85-20.13-18.08-17.83-27.68-42.76-39.33-65.27-4.73-9.35-9.58-18.59-14.44-27.81" fill="none" stroke="none"/>
+    </g>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SPRITES
+         All sprites face west; rotate(180) orients them along path.
+         Chained legs: begin="prevLeg.end+Xs" for delays between legs.
+         Single-path assets use repeatCount="indefinite" directly.
+         ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- upper person — upperBlocker1 & 2 -->
+    <g mask="url(#upperMask)" filter="url(#spriteShadow)">
+      <g>
+        <animateMotion id="upperLegA" begin="0s;upperLegB.end+7s" dur="35s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#upperPathA"/></animateMotion>
+        <animateMotion id="upperLegB" begin="upperLegA.end+7s"    dur="32s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#upperPathB"/></animateMotion>
+        <g transform="rotate(180)"><image id="upperImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/person.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- keep person — keepBlocker1 & 2 -->
+    <g mask="url(#keepMask)" filter="url(#spriteShadow)">
+      <g>
+        <animateMotion id="keepLegA" begin="0s;keepLegB.end+5s" dur="25s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#keepPathA"/></animateMotion>
+        <animateMotion id="keepLegB" begin="keepLegA.end+6s"    dur="23s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#keepPathB"/></animateMotion>
+        <g transform="rotate(180)"><image id="keepImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/person.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- gate person — gateBlocker1 & 2 -->
+    <g mask="url(#gateMask)" filter="url(#spriteShadow)">
+      <g>
+        <animateMotion id="gateLegA" begin="0s;gateLegB.end+7s" dur="15s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#gatePathA"/></animateMotion>
+        <animateMotion id="gateLegB" begin="gateLegA.end+5s"    dur="15s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#gatePathB"/></animateMotion>
+        <g transform="rotate(180)"><image id="gateImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/person.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- harbor person — harborBlocker1 & 2 -->
+    <g mask="url(#harborMask)" filter="url(#spriteShadow)">
+      <g>
+        <animateMotion id="harborLegA" begin="0s;harborLegB.end+10s" dur="20s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#harborPathA"/></animateMotion>
+        <animateMotion id="harborLegB" begin="harborLegA.end+3s"     dur="17s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#harborPathB"/></animateMotion>
+        <g transform="rotate(180)"><image id="harborImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/person.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- watch person — watchBlocker1 & 2 -->
+    <g mask="url(#watchMask)" filter="url(#spriteShadow)">
+      <g>
+        <animateMotion id="watchLegA" begin="0s;watchLegB.end+11s" dur="50s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#watchPathA"/></animateMotion>
+        <animateMotion id="watchLegB" begin="watchLegA.end+10s"    dur="55s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#watchPathB"/></animateMotion>
+        <g transform="rotate(180)"><image id="watchImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/person.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- skirts person x2 — closed loop, no blockers, two sprites offset by half duration -->
+    <g filter="url(#spriteShadow)">
+      <g><animateMotion dur="75s" repeatCount="indefinite" rotate="auto" calcMode="paced"><mpath href="#skirtsPathA"/></animateMotion>
+        <g transform="rotate(180)"><image id="skirtsImg1" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/person.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+    <g filter="url(#spriteShadow)">
+      <g><animateMotion dur="85s" begin="32.5s" repeatCount="indefinite" rotate="auto" calcMode="paced"><mpath href="#skirtsPathA"/></animateMotion>
+        <g transform="rotate(180)"><image id="skirtsImg2" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/person.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- apothecary person — apothecaryBlocker1 & 2 -->
+    <g mask="url(#apothecaryMask)" filter="url(#spriteShadow)">
+      <g>
+        <animateMotion id="apothecaryLegA" begin="0s;apothecaryLegB.end+6s" dur="25s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#apothecaryPathA"/></animateMotion>
+        <animateMotion id="apothecaryLegB" begin="apothecaryLegA.end+8s"    dur="115s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#apothecaryPathB"/></animateMotion>
+        <g transform="rotate(180)"><image id="apothecaryImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/person.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- plateau person — plateauBlocker1 & 2 -->
+    <g mask="url(#plateauMask)" filter="url(#spriteShadow)">
+      <g>
+        <animateMotion id="plateauLegA" begin="0s;plateauLegB.end+8s" dur="45s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#plateauPathA"/></animateMotion>
+        <animateMotion id="plateauLegB" begin="plateauLegA.end+10s"   dur="41s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#plateauPathB"/></animateMotion>
+        <g transform="rotate(180)"><image id="plateauImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/person.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- boat — boatBlocker1 & 2, single one-way path, loops -->
+    <g mask="url(#boatMask)" filter="url(#spriteShadow)">
+      <g><animateMotion dur="100s" repeatCount="indefinite" rotate="auto" calcMode="paced"><mpath href="#boatPath"/></animateMotion>
+        <g transform="rotate(180)"><image id="boatImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/boat.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- handCart: mine — mineBlocker1 & 2 -->
+    <g mask="url(#mineMask)" filter="url(#spriteShadow)">
+      <g>
+        <animateMotion id="mineLegA" begin="0s;mineLegB.end+6s" dur="55s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#minePathA"/></animateMotion>
+        <animateMotion id="mineLegB" begin="mineLegA.end+5s"    dur="47s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#minePathB"/></animateMotion>
+        <g transform="rotate(180)"><image id="mineImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/handCart.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- handCart: delivery — deliveryBlocker -->
+    <g mask="url(#deliveryMask)" filter="url(#spriteShadow)">
+      <g>
+        <animateMotion id="deliveryLegA" begin="0s;deliveryLegB.end+6s" dur="47s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#deliveryPathA"/></animateMotion>
+        <animateMotion id="deliveryLegB" begin="deliveryLegA.end+7s"    dur="42s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#deliveryPathB"/></animateMotion>
+        <g transform="rotate(180)"><image id="deliveryImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/handCart.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- handCart: woods — woodsBlocker1 & 2 -->
+    <g mask="url(#woodsMask)" filter="url(#spriteShadow)">
+      <g>
+        <animateMotion id="woodsLegA" begin="0s;woodsLegB.end+6s" dur="28s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#woodsPathA"/></animateMotion>
+        <animateMotion id="woodsLegB" begin="woodsLegA.end+8s"    dur="35s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#woodsPathB"/></animateMotion>
+        <g transform="rotate(180)"><image id="woodsImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/handCart.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- horseCart: basilica — 4 blockers, single one-way path, loops -->
+    <g mask="url(#basilicaMask)" filter="url(#spriteShadow)">
+      <g><animateMotion dur="104s" repeatCount="indefinite" rotate="auto" calcMode="paced"><mpath href="#basilicaPathA"/></animateMotion>
+        <g transform="rotate(180)"><image id="basilicaImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/horseCart.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- oxCart: dairy — dairyBlocker, single one-way path, loops -->
+    <g mask="url(#dairyMask)" filter="url(#spriteShadow)">
+      <g><animateMotion dur="133s" repeatCount="indefinite" rotate="auto" calcMode="paced"><mpath href="#dairyPathA"/></animateMotion>
+        <g transform="rotate(180)"><image id="dairyImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/oxCart.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- orchard person — orchardBlocker1 & 2 -->
+    <g mask="url(#orchardMask)" filter="url(#spriteShadow)">
+      <g>
+        <animateMotion id="orchardLegA" begin="0s;orchardLegD.end+5s" dur="10s"  fill="freeze" rotate="auto" calcMode="paced"><mpath href="#orchardPathA"/></animateMotion>
+        <animateMotion id="orchardLegB" begin="orchardLegA.end+4s"    dur="9s"  fill="freeze" rotate="auto" calcMode="paced"><mpath href="#orchardPathB"/></animateMotion>
+        <animateMotion id="orchardLegC" begin="orchardLegB.end+3s"    dur="50s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#orchardPathC"/></animateMotion>
+        <animateMotion id="orchardLegD" begin="orchardLegC.end+7s"    dur="42s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#orchardPathD"/></animateMotion>
+        <g transform="rotate(180)"><image id="orchardImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/person.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- tree person — 6 tree blockers, closed loop -->
+    <g mask="url(#treeMask)" filter="url(#spriteShadow)">
+      <g>
+        <animateMotion dur="110s" repeatCount="indefinite" rotate="auto" calcMode="paced"><mpath href="#treePath"/></animateMotion>
+        <g transform="rotate(180)"><image id="treeImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/person.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- grave person — no blockers -->
+    <g filter="url(#spriteShadow)">
+      <g>
+        <animateMotion id="graveLegA" begin="0s;graveLegB.end"  dur="30s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#gravePathA"/></animateMotion>
+        <animateMotion id="graveLegB" begin="graveLegA.end+10s" dur="28s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#gravePathB"/></animateMotion>
+        <g transform="rotate(180)"><image id="graveImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/person.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    <!-- fish person — fishBlocker1–5 -->
+    <g mask="url(#fishMask)" filter="url(#spriteShadow)">
+      <g>
+        <animateMotion id="fishLegA" begin="0s;fishLegD.end+4s" dur="20s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#fishPathA"/></animateMotion>
+        <animateMotion id="fishLegB" begin="fishLegA.end+8s"    dur="28s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#fishPathB"/></animateMotion>
+        <animateMotion id="fishLegC" begin="fishLegB.end+6s"    dur="9s"  fill="freeze" rotate="auto" calcMode="paced"><mpath href="#fishPathC"/></animateMotion>
+        <animateMotion id="fishLegD" begin="fishLegC.end+10s"    dur="22s" fill="freeze" rotate="auto" calcMode="paced"><mpath href="#fishPathD"/></animateMotion>
+        <g transform="rotate(180)"><image id="fishImg" href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/person.webp" x="0" y="0" width="1" height="1" style="image-rendering:pixelated"/></g>
+      </g>
+    </g>
+
+    </g><!-- end slateBounds clip -->
+  </svg>
+    </div>
+    <div id="landing-tiltshift"></div>
+    <div id="landing-grain"></div>
+  </div>
+  <div id="landing-vignette"></div>
+  <div id="landing-title-overlay">
+    <div id="landing-title-top">
+      <svg id="landing-trouble-svg" viewBox="0 0 319.94 51.59" xmlns="http://www.w3.org/2000/svg">
+        <path d="M51.98,16.99c0-.8-1.71-2.74-2.05-4.45-.57-2.91-2.96-5.93-4.1-9.86-.11-.34-.4-.51-.63-.51-.34,0-1.54,1.2-2.05,1.6-1.48,1.25-3.71,1.2-5.24,1.77-2.57.57-5.76.57-8.66.57-.91,0-1.54-.23-2.39-.23s-1.37.23-2.22.23c-.97,0-1.71-.28-2.79-.28-.4,0-.74.06-1.2.06-.85,0-1.31-.17-2.11-.17s-1.25.23-2.05.23c-4.22,0-6.27-3.14-7.52-3.31-2.22.06-2.28,2.74-3.08,4.16-.97,1.6-2.28,3.53-2.85,5.41C2.28,13.91,0,16.42,0,17.78c0,.11.06.17.11.17.68,0,2.45-2.45,3.48-3.25,1.08-.8,2.17-1.82,3.42-2.45,2.68-1.25,2.51-2.45,8.15-2.45,1.31,0,2.45.46,3.82.46.57,0,1.03-.11,1.65-.11,1.6,0,2.34.23,2.34,2.22,0,1.65-.17,3.53-.34,5.19,0,.97.17,2.05.17,2.91,0,1.03-.23,1.65-.23,2.68,0,1.31.4,3.42.4,5.07,0,1.2-.46,2.05-.46,3.31,0,.51.11,1.77.11,2.51-.17,1.54-.11,2.96-.11,4.5,0,1.25.23,2.05.23,3.25,0,2.96-3.14,6.78-5.36,8.38-.63.4-1.99,1.2-1.99,1.37,0,0,.97-.17,1.42-.17.8,0,1.2.23,1.99.23,1.6,0,3.02-.74,4.9-.74,2.17-.23,4.33-.4,6.9-.4,1.08,0,2.22.34,3.48.34s1.94-.46,3.14-.46c.4,0,.8.06,1.25.06.63,0,1.25,0,1.25-.28,0-1.08-5.02-3.36-5.19-3.48-1.37-1.14-3.99-2.22-3.99-3.65s-.34-2.74-.46-4.1c0-2.11.4-4.1.4-6.27,0-1.42-.57-2.79-.57-4.22,0-2.17-.06-4.22.34-6.27.06-.23.11-.57.11-.91,0-1.71-.34-3.36-.34-5.3.17-1.82.23-5.02,1.31-5.13,2.11-.23,4.1-.4,6.21-.4s2.85,1.08,5.24,1.71c1.31.34,2.05,1.54,3.42,1.99l.28.11c1.14.4,2.34.74,3.25,1.65.51.46,1.82,1.31,2.11,1.31.11,0,.11-.06.11-.17ZM94.96,10.37c-1.6-1.31-3.71-1.6-5.53-2.57-1.2-.63-2.96-.91-2.96-.91,0,.11-.8.34-1.54.34-1.03,0-1.65-.46-2.68-.46-.85,0-1.54.34-2.51.34-.51,0-1.03-.17-1.65-.17-1.37,0-3.14.17-4.9.17-1.37-.11-2.74-.57-4.1-.57-1.25,0-2.45.57-3.76.57-.8,0-2.34-.23-3.08-.23-.8,0-1.31.23-2.11.23s-1.2-.28-1.94-.28c-1.03,0-1.65.51-2.62.51-.63,0-1.37-.17-2.17-.17-.57,0-.97.06-.97.34,0,.63,2.85,2.28,3.65,2.85,1.03.74,2.17,1.54,2.11,2.96,0,.34-.06.8-.06,1.37,0,1.03.17,2.05.17,3.13-.06.57-.11,1.54-.11,2.11,0,.8.06,2.05.06,2.62,0,1.03-.28,1.77-.28,2.68s.28,1.48.28,2.45c0,1.37-.51,3.02-.51,4.96l.17,2.11c0,.91-.28,2.11-.28,2.85,0,.91.28,1.48.28,2.34,0,2.96-2.68,4.22-4.22,5.93-.57.63-1.94,1.88-1.88,2.28,0,.63,1.31.63,2.39.63.51,0,.91-.11,1.48-.11.86,0,1.31.23,2.17.23.97,0,1.48-.28,2.45-.28,2.85,0,6.21.46,9.63.46.34,0,.51-.17.51-.46,0-.74-1.71-2.39-2.22-3.36-.57-1.03-1.48-1.77-1.48-3.19,0-2.34.74-4.5.97-6.84,0-1.37.57-2.51.57-4.05v-.51c0-.51.34-.91.85-.91.34,0,.8.06,1.25.06.34,0,.68,0,.97-.06,1.42,0,2.56.11,3.82.68,3.14,1.42,6.27-.29,6.27,5.59v.34c0,1.14.28,1.94.28,3.08,0,.68-.11,1.14-.11,1.94,0,.51.06.97.06,1.31,0,2.39-1.65,3.42-3.59,4.27-.23.11-.34.23-.34.29,0,.17,3.53.68,4.45,1.03.8.34,1.88.51,2.57.57.74,0,1.42-.17,2.05-.17,1.31,0,2.34.57,3.53.57,1.82.17,3.65.91,5.36.91.51,0,.8-.11,1.25-.11.68,0,1.54.34,1.88.34.4,0-2.22-3.08-2.62-3.82-.86-.97-2.05-1.82-2.62-3.08-.46-1.77-1.08-3.02-1.88-4.79l-.34-.74c-1.08-2.22-.51-4.62-2.39-7.58-.11-.17-.11-.34-.11-.51,0-.34.17-.68.63-.86l.68-.28.85-.4c2.34-.97,5.02-2.11,5.7-3.31,1.08-1.99,1.37-3.42,2.22-5.64.11-.34.23-.8.23-1.25,0-2.57-2.91-6.67-4.22-7.75ZM87.5,17.96c-.06,1.08-.23,2.11-.97,2.62-1.2.8-1.71,2.34-3.08,2.57-1.88.63-3.48,1.37-5.81,1.37-1.37,0-2.85-.51-4.27-.51-.97,0-1.71.34-2.74.34s-1.82-.23-1.82-1.14c0-.4.17-1.03.17-1.65,0-.51-.06-.8-.06-1.25,0-1.08.46-1.71.46-2.74,0-.85-.28-1.37-.28-2.22,0-2.62,2.96-2.17,5.59-2.68.97-.17,2.11-.34,2.96-.34,1.82,0,3.53.68,5.53.86,2.62,0,4.5,2.51,4.73,4.84l-.4-.06ZM156.98,23.83c.06-.57.06-1.48.06-2.05-.06-.57-.06-1.03-.06-1.03l-.28.06c.8-.63-2.62-6.78-2.45-6.61-.86-1.03-1.2-2.51-2.57-3.14-1.77-.8-3.02-2.45-4.9-3.59-1.14-.68-2.22-1.82-3.48-2.05-1.37-.4-2.57-1.14-3.88-1.25-2.05-.23-3.93-.68-5.98-.91-2,0-3.99-.51-5.99-.51-.68,0-1.88-.06-2.39-.06-2.11,0-3.71,1.03-5.53,1.42-4.05.86-8.32,4.16-9.01,4.85-1.6,2.17-3.99,3.76-4.85,6.61-.4,1.31-1.48,2.28-1.65,3.71-.28,1.94-1.54,3.36-1.54,5.41,0,1.2.51,2.91.51,4.56v.34c0,1.25,0,2.51.51,3.65.86,1.94.51,3.99,2.17,5.64,1.08.8,1.42,2.28,2.28,3.36,1.31,1.71,2.11,2.57,4.73,3.71,1.37.57,2.11,1.82,3.48,2.11,1.25.28,2.39,1.03,3.88,1.14,2.11,0,3.82,1.2,5.93,1.2.86,0,1.99-.11,2.51-.11,1.25,0,2.22.23,3.53.23,2.57-.23,4.73-1.2,7.92-1.48,1.48-.11,2.28-1.54,3.7-1.88,1.37-.34,2.17-1.48,3.42-2.22,1.99-.91,2.85-2.79,4.33-4.27l.17-.17c1.37-1.37,2.68-2.68,3.36-4.73.63-1.94,1.65-3.65,2.05-5.81.11-.8.29-1.99.29-2.57,0-.51-.06-1.14-.11-1.54-.06-.57-.17-1.48-.17-1.99ZM145.12,28.16c-.29,1.2-.68,2.28-.68,3.53,0,.23.06.46.06.68,0,2.79-2.68,5.76-3.19,7.07-.46,1.2-1.08,2.57-2.28,3.14-1.2.57-2.45,1.71-2.45,1.77-.17.17-3.53,1.14-4.79,1.14s-3.25-.06-4.45-.68c-2.57-1.31-3.65-.4-7.07-4.45-.91-1.08-1.31-2.51-2.17-3.59-.91-1.14-1.08-2.57-1.82-3.76-1.25-2.05-1.65-4.96-1.65-7.24,0-7.07,4.22-12.37,4.39-12.54,1.37-1.37,3.14-4.22,6.9-4.22,1.14-.11,2.22-.46,3.36-.46,2.79,0,7.18,1.71,8.49,3.19,1.48,1.71,2.57,1.94,3.88,4.96,1.08,2.62,3.25,3.48,3.25,7.41,0,1.03.34,2.05.34,3.02,0,.4-.06.74-.11,1.03ZM202.92,4.5c-.28.06-.57.06-.91.06-1.14,0-1.71-.17-2.79-.17-1.03,0-2.74.28-3.88.28-.63,0-1.03-.11-1.65-.11-.85,0-1.25.17-2.05.17-1.2,0-2.22-.28-3.36-.28-1.03,0-2.51.17-2.51,1.14,0,1.25,1.48,3.02,2.05,4.5.51,1.37,1.37,2.34,1.37,3.76v.68c0,1.42.68,2.39.68,3.82,0,1.71.97,3.08.97,4.62,0,.97-.29,1.65-.29,2.62,0,.8.23,1.25.23,1.99,0,1.14-.46,1.88-.46,3.02v.68c0,3.02-3.14,7.12-5.19,8.04-1.2.51-2.39.51-3.59.51h-.34c-2.17,0-2.74-.46-4.62-1.99l-.63-.51c-1.6-1.25-2.05-3.76-2.68-5.3-1.03-2.39-1.2-4.85-1.77-7.92-.11-.34-.17-.97-.17-1.48,0-.57.17-1.77.17-2.57,0-.74-.11-1.94-.11-2.57,0-2.11.57-3.59.57-5.59,0-1.88,2.91-3.82,4.33-4.62.8-.4,2.34-1.6,2.34-1.99,0-.17-.17-.28-.57-.28-1.82.17-3.19.23-4.85.23-.85,0-1.48-.28-2.22-.28-.97,0-1.48.28-2.39.28-.97,0-1.54-.34-2.57-.34-.51,0-.8.11-1.37.11-1.08,0-2.11-.23-3.25-.23-.57.06-1.54.11-2.22.11-.4,0-.63.17-.63.46,0,.85,2.45,3.25,3.14,3.76,1.25,1.03,2.34,2.91,2.34,4.62,0,.57-.11.86-.11,1.48,0,.91.23,1.42.23,2.34,0,.85-.23,1.54-.23,2.45,0,1.88.17,4.28.68,6.5v.74c0,.97-.28,1.48-.28,2.45,0,.8.23,1.48.23,2.39,0,.51-.06.8-.06,1.31,0,.74.17,1.2.17,1.88,0,1.6-.8,2.68-.8,4.1,0,2.51,1.48,2.79,4.73,5.3,1.08.85,2.51.97,3.88,1.48,1.94,1.08,3.99.63,6.04,1.31.51.17,1.25.29,1.82.29,1.25,0,3.02.11,4.33-.06,1.03,0,2.11.34,2.85.34,1.08,0,2.05-.57,3.25-.57,2.28,0,5.93-1.94,7.18-3.59,1.14-1.48,1.71-4.27,1.71-5.81,0-2.45-.97-5.64-.97-7.98.11-1.37.29-2.62.29-4.05,0-1.82,0-4.1-.57-6.04-.11-.4-.17-1.08-.17-1.65v-2.34c0-1.25-.34-2.57-.34-3.88,0-2.68,2.68-3.08,3.71-5.13.4-.8,1.88-2.05,1.88-2.28,0-.17-.23-.23-.57-.23ZM247.27,26.33l-.46-.29c-.29-.17-.46-.4-.46-.63,0-.51,1.48-1.31,1.94-2.05,1.54-2.45,2.96-3.65,2.96-7.47,0-5.93-5.53-9.01-6.5-9.23-1.42-.28-2.34-1.42-3.76-1.54-2.11-.23-3.53-.91-6.1-1.2-1.25,0-2.34-.46-3.65-.46-.57,0-1.71.17-2.51.17-1.42,0-2.74-.63-4.1-.63-2.96,0-5.64.91-9.23.91-.51,0-.91-.06-1.31-.06-1.88,0-3.14.63-5.19.63-.23,0-.4-.06-.57-.06-.8,0-2.57.17-2.57.57,0,.06,3.02,2.39,3.59,2.91.86.8,2.17,1.6,2.11,2.96,0,.57-.06,1.6-.06,2.22,0,1.25.4,2.34.4,3.65,0,.63-.06,2.11-.06,2.85,0,1.31.28,2.05.28,3.31,0,.91-.46,2.68-.46,4.1,0,1.08.57,2.57.57,3.93,0,.57-.11.91-.11,1.54,0,1.14.4,2.05.4,3.19,0,2.22-.57,4.05-.57,6.16,0,.63.11,1.65.11,2.11,0,1.48-3.02,3.76-3.93,4.1-.85.34-2.22,1.25-2.22,1.6,0,.17.17.23.4.23,1.6,0,2.96-.4,4.39-.4,2.05.23,3.88.68,6.16.68,1.99,0,3.88-.8,6.1-.8h.57c1.77,0,3.53,0,5.53.4.17.06.4.11.68.11,1.2,0,1.94-.57,3.19-.57h.34c1.48,0,2.74-.06,4.16-.51,2.51-1.08,5.36-.46,7.98-2.45,2.51-2.22,5.24-1.94,6.84-9.8.06-.63.23-1.88.23-2.39,0-4.56-3.48-6.78-5.13-7.81ZM223.9,8.09c2.51,0,4.84.8,7.92.8,4.56,0,7.52,4.28,8.21,5.87.17.4.29,1.03.29,1.54,0,3.25-2.51,5.24-7.98,5.81-1.31,0-2.22.4-3.65.4-.4,0-.63-.06-1.03-.06-1.08,0-1.71.29-2.74.29-2.28,0-4.22-.51-4.22-2.62,0-.68.17-.97.17-1.65,0-1.03-.34-1.65-.34-2.68,0-.4.06-.8.06-1.31,0-1.31-.4-2.62-.4-3.99,0-1.65,1.03-2.39,3.71-2.39ZM235.41,43.95c-1.48.97-3.65,1.37-5.3,1.42-.17,0-.34-.06-.51-.06-.97,0-2,.17-2.96.17-2.17,0-4.67-.91-6.16-2.68-.34-.4-.51-1.14-.51-1.71,0-.34.06-.8.06-1.31,0-.97-.17-1.42-.17-2.45,0-1.48.34-3.36.34-5.3,0-.23-.06-.46-.06-.68v-.29c0-1.65,0-2.45,2.05-2.45.63,0,1.03.11,1.6.11,1.08,0,1.77-.34,2.85-.34,1.03,0,2.57.46,3.76.46.57,0,.97-.11,1.42-.11,1.37,0,2.34.85,3.59.97,3.08.34,5.76,3.71,5.76,5.07,0,.97.46,2.11.4,2.85,0,2.68-2.45,3.88-6.16,6.33ZM314.47,35.62c-.06,0-.17.06-.34.17-.97.97-2.57,1.14-3.82,1.77-2.57,1.37-5.59,1.65-8.09,3.02-2.05,1.08-3.99.4-6.27,1.14h-.34c-1.08,0-4.33-.28-4.79-.28-1.88,0-4.33-.06-6.21-.28-1.03,0-2.05.17-2.85.17-.97,0-1.42-.23-2.39-.23-.4,0-.68.06-1.03.06-1.37,0-2.39-.51-3.48-.51-.57,0-.8-.46-.8-1.03.06-.51.11-1.43.11-1.99,0-1.03-.4-2.17-.4-3.14,0-.86.23-1.37.23-2.28,0-.8-.17-1.54-.17-2.51,0-1.25.74-2.96.74-4.45-.06-.57-.06-1.48-.06-2.05v-.46c0-.86-.23-1.54-.23-2.22,0-1.14.51-1.82.51-2.96,0-.51-.17-1.14-.17-1.99s.29-2.51.29-3.59c0-.34-.06-.74-.06-1.03,0-4.22,8.26-5.81,8.26-6.38,0-.34-2.85-.34-11.74-.34-2.11,0-3.99.4-6.33.4-.29,0-.68-.06-1.03-.06-1.03,0-2.11.17-3.14.17-1.42,0-3.31-.4-4.67-.4h-.57l-.17.57c0,.68,3.53,1.88,4.56,3.36.85,1.31,2.51,1.77,2.51,3.31,0,.57-.06,1.54-.11,2.11,0,2.11.46,4.27.68,6.38,0,1.14-.29,2.22-.29,3.36,0,1.2.46,2.74.46,3.76,0,1.14-.28,1.94-.28,3.14,0,.97.4,2.57.4,3.71,0,.8-.17,1.25-.17,2.11,0,.97.29,2.28.29,3.25,0,1.6-2.57,3.76-3.53,4.67-.85.8-3.36,3.36-3.36,3.36,0,.06.06.11.17.11.23,0,.46-.06.74-.06,1.48,0,2.62.51,3.99.51,1.25,0,2.17-.46,3.48-.46.91,0,2.34.51,3.36.51.91,0,1.48-.28,2.45-.28.68,0,1.42.28,2.39.28,1.14,0,2.57-.23,3.88-.23,3.53,0,7.58.91,10.83.91.28,0,.57-.06.97-.06,1.88,0,4.9.34,7.01.34,1.08,0,1.65-.23,2.45-.23,1.31,0,2.45.63,3.82.63,3.42,0,4.9-.23,6.1-2.91.57-1.31,1.2-2.51,2.11-3.48,1.42-1.54,1.6-3.31,3.14-5.3.4-.46,1.08-1.71,1.08-1.99,0-.11-.06-.11-.11-.11ZM319.37,20.75c-.97,0-2.45,2.17-3.59,2.96-2.22,1.54-1.14,3.08-4.45,3.48-1.37.17-2.96.51-4.45.51-1.03,0-1.6-.34-2.57-.34-.8,0-2.05.23-2.85.23-1.31,0-2.51-.74-3.7-.74-.51,0-.74-.34-.74-.86.11-1.54-.23-6.67,1.82-6.67,1.14,0,1.82.51,2.96.51.34,0,.68-.06,1.08-.06,3.71,0,3.93,1.77,5.36,3.13.28.29.51.46.74.46.28,0,.46-.34.46-.86,0-2.74-1.88-6.9-2.22-8.09-.4-1.31-.8-3.65-.97-3.65,0,0-.46.8-1.31,1.03-1.71.46-2.05,1.71-4.56,1.77-.34,0-.51-.06-.8-.06-.68,0-1.54.28-1.88.28-.4,0-.63-.34-.63-.91,0-2.34-.17-5.47,1.14-5.47.63,0,1.65.28,2.22.28,1.03-.11,2.05-.34,3.08-.34.63,0,.97.11,1.6.11,1.31,0,2.62-.17,3.82-.17,1.71,0,2.96.23,4.05,2.05.74,1.31,1.65.8,2.62,1.99.51.68,1.48,1.54,1.82,1.54.11,0,.17-.11.17-.28,0-1.94-1.25-2.96-1.48-5.02-.11-1.37-.34-2.62-.46-4.05,0-1.25-.85-2.79-.85-3.19,0-.17-.11-.29-.28-.34-.29,0-1.71.06-2.74.91-.4.34-1.03.51-1.54.51h-.57c-2.28,0-4.56.68-6.84.68-1.14,0-2.39.06-3.59.17-.97,0-1.82-.17-2.74-.17-.68,0-1.03.11-1.6.11-.63,0-1.03-.17-1.54-.17-1.03,0-1.65.46-2.68.46-.51,0-1.54-.17-2.28-.17-1.25,0-3.53.68-3.53.68,0,1.2,3.93,1.42,3.93,4.84,0,.34-.11.68-.11,1.08,0,1.14.17,1.71.17,2.79,0,.51-.11,1.03-.11,1.65,0,.57.06.91.06,1.54,0,.8-.17,1.31-.17,2.11,0,7.7.51,8.72.51,9.86-.34,2.79-4.39,4.45-4.39,6.16,0,.46.46.57,1.14.57,1.54,0,3.53-.51,5.24-.51,1.37,0,2.51.57,4.16.57,1.08,0,2.34-.51,3.65-.51.63,0,2.17.34,2.91.34.97,0,1.42-.29,2.34-.29.85,0,2.05.34,3.08.34.91,0,1.42-.17,2.22-.17.74,0,1.03.11,1.82.11,5.93,0,4.16-3.31,6.67-7.7l.23-.34c.68-1.14,1.71-2.96,1.71-3.99,0-.51-.23-.74-.57-.74Z"/>
+      </svg>
+      <svg id="landing-in-svg" viewBox="0 0 80.6 49.08" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19.84,42.64c-1.37-.74-2.22-2.28-2.22-3.65,0-1.03-.51-2.05-.51-3.25,0-.74.23-1.2.23-1.99,0-1.37-.46-2.85-.46-4.1,0-.63.06-1.03.06-1.54,0-1.42-.51-2.51-.51-3.76s.46-2.34.46-3.7c0-1.2-.57-2.51-.57-3.59,0-.86.28-1.37.28-2.22,0-.97-.4-1.71-.4-2.79,0-1.65.74-3.02,1.6-4.39.63-.97,3.02-3.42,3.02-4.22,0-.23-.17-.34-.46-.34-.4,0-1.25.17-1.94.17-1.65,0-3.31-.63-4.85-.63-1.14,0-2.22.34-3.53.34-.68,0-1.14-.11-1.88-.11s-1.14.11-1.82.11c-1.2.11-2.34-.57-3.53-.57-.97,0-2.79-.17-2.79.57,0,.11.06.29.23.46.46.46,1.14,1.2,1.65,1.54,1.43,1.25,4.33,2.22,4.33,4.28,0,.46-.11,1.48-.17,2.11,0,1.14.34,2.22.34,3.53,0,.57-.23,2.28-.23,2.96,0,1.94.63,3.19.63,4.67,0,1.08-.4,2.57-.4,3.71s.4,2.68.4,3.7c0,1.08-.29,1.88-.29,2.96,0,.91.17,2.45.17,3.08,0,2.56-.91,3.08-1.71,5.13-.68,1.65-2.62,2.96-2.62,3.93,0,.8,1.54.63,2.51.74,1.77,0,3.42-.51,5.13-.51.34,0,.74.06,1.03.06,1.31,0,2.45-.28,3.76-.28,1.48,0,2.96.28,4.45.28.86,0,2.74.23,2.74-.57,0-.68-1.31-1.65-2.11-2.11ZM74.9,5.87c1.08-1.2,5.7-3.08,5.7-3.99,0-.17-.23-.28-.57-.34-.57-.06-1.54-.11-2.11-.11h-.34c-2.05,0-3.82-.63-5.99-.63-.11,0-.17-.06-.28-.06-1.03-.11-1.99-.17-2.91-.17-.63,0-1.03.11-1.6.11-1.2,0-1.82-.29-2.96-.29-.68,0-1.14.11-1.82.11-.97,0-2.28-.51-3.42-.51-.23,0-.4.06-.4.17,0,.4,2.85,2.96,3.42,3.65,1.25,1.6,3.53,2.45,3.53,4.9,0,1.71.57,3.53.57,5.59v.46c0,1.31.23,2.74.23,4.05,0,1.48-.34,3.02-.34,4.56,0,1.31.57,2.34.57,3.48,0,.86.17,2.51-.51,2.51-1.42,0-3.31-2.96-4.1-3.59l-.23-.17c-1.03-.74-2.17-1.6-2.79-2.74-.74-1.25-2.11-1.82-2.79-3.08-1.88-2.51-3.99-3.7-7.01-7.75-1.25-1.65-2.91-2.96-4.16-4.67-1.03-1.88-5.7-7.07-5.81-7.07-.51,0-1.25,1.48-1.99,1.94-1.14.74-2.05,1.65-3.31,2.45-1.65,1.03-2.68,2.62-4.62,4.05-1.25.68-1.71,2.17-2.91,2.85-.68.4-1.71,1.25-1.71,1.65,0,.11.11.23.23.23,1.25,0,3.36-.63,4.62-.63s2.51.63,2.51,1.88c0,1.37-.57,2.74-.57,4.05,0,.91.29,2.11.29,2.79,0,1.2-.34,2.22-.46,3.31,0,1.31.29,2.74.46,3.99,0,1.25-.46,2.22-.46,3.59,0,.51.17,1.25.17,2,0,.51-.06.8-.06,1.31,0,.68.11,1.2.11,1.71,0,1.2-.28,1.88-.28,3.02,0,.28.06.46.06.68,0,1.65-2.39,3.93-3.36,4.45-1.03.57-2.68,2.05-2.68,2.96,0,.34.23.51.63.51,2.34,0,5.41-.63,8.21-.63,1.37,0,2.79.17,4.16.17,1.2-.11,4.79-.17,4.79-.68s-2.85-2.39-3.42-2.91c-1.54-1.48-2.11-2.39-2.17-6.21,0-.8.23-1.2.23-1.99,0-1.6-.46-3.19-.46-4.96,0-.51,0-1.43-.06-1.94,0-1.25.4-2.34.4-3.65,0-1.48-.51-3.76-.51-5.42,0-.57.06-1.2.4-1.2.51,0,1.99,2.45,3.25,3.13,1.31.74,1.65,2.22,2.91,2.91,2.22,1.65,2.96,3.42,5.59,6.04.8,1.08,2.28,1.54,3.14,2.68,1.25,1.71,2.85,2.85,4.16,4.45.85,1.08,2.17,1.71,2.96,2.85.85,1.2,1.48,2.39,2.57,3.19,1.14.85,1.99,1.82,3.36,2.11.86.23,2.11.68,2.62.63,2.05,0,5.36-4.16,5.64-4.67.86-1.25,2.11-1.82,3.02-2.85.57-.63,1.71-1.54,1.71-1.94,0-.97-3.31-1.71-4.16-2.51-.97-.8-2.39-1.54-2.57-1.65h.34s-.4-2.05-.4-3.36c0-1.2.4-2.05.4-3.36,0-.29-.06-.51-.06-.8,0-1.2.34-1.88.34-3.08,0-.51-.11-1.77-.17-2.51,0-1.37.51-2.57.51-4.05,0-.85-.34-2.05-.28-2.68,0-1.2.4-2.17.4-3.36-.06-.29-.06-.63-.06-1.03,0-2.22,1.25-2.34,2.68-3.93Z"/>
+      </svg>
+    </div>
+    <div id="landing-bullion-wrap">
+      <svg id="landing-bullion-svg" viewBox="0 0 848.2 147.07" xmlns="http://www.w3.org/2000/svg">
+        <path d="M838.95,115.22c-13.35,22.76-40.05,25.65-56.61,6.63-18.52-13.22-33.77-28.46-50.66-42.67-17.56-19.04-10.55.95-14.45,13.43-2.05,32.98-5.64,25.46,17.68,47.94-4.25,3.28-20.45.65-26.01,0-7.95,1.69-17.07,2.56-24.48-.34,3.14-6.77,13.59-11.74,13.6-19.72.94-15.52,5.47-22.99,4.08-36.04-.69-11.9,9.33-25.67-4.08-32.3-4.49-7.45-16.36-11.52-19.89-18.19,6.3-7.9,18.39-11.51,27.54-18.19,2.89-2.21,10.54-9.86,17.51-9.86,7.84,3.2,17.36,22,23.97,29.24,4.93,8.5,11.39,12.58,16.49,17.51,11.29,10.99,20.49,26.68,33.66,35.19,4.13-15.04,5.14-40.5,7.31-57.46-.87-8.4-16.13-12.63-19.21-20.57,2.43-2.92,9.47.08,13.6-.51,9.68.76,19.8,1.21,29.24.68,3.89.27,8.34,1.18,12.41,1.02-9.37,10.07-25.14,21.55-23.8,34.17,1.48,9.38-2.36,17.85-2.55,27.03-.26,15.73-9.68,34.29,15.3,33.15,8.16,0,11.9-6.97,15.13-6.97,9.49,2.65-3.23,12.13-5.78,16.83ZM680,68.3c2.74,105.9-151.35,104.56-143.14-1.19,2.08-40.96,45.57-70.4,84.83-66.81,26.61,7.49,42.28,11.02,54.23,43.69-.23,5.66,3.35,20.18,4.08,24.31ZM646.34,62.69c0-7.82-4.59-14.11-6.12-21.76-2.72-12.75-8.16-13.77-14.28-17.68-15.15-12.32-36.13-4.05-44.88,11.56-14.14,23.3-12.26,89.92,25.5,95.88,34.24.05,37.3-41.83,39.78-68ZM530.4,129.5c21.55,13.58-22.39,5.59-29.41,7.82-42.25,5.53-11.06-4.91-9.86-27.71-1.11-18.17,1.3-35.6-1.53-54.06,1.45-8.63-.91-17.51.17-25.67,0-6.12-8.67-9.01-12.92-12.75-14.87-11.39,5.96-6.98,13.26-5.95,14.09-.55,30.33-1.09,43.18,1.36-3.03,7.37-14.49,15.95-13.77,25.67,1.7,9-.22,16.64,2.04,25.67-2.31,13.25.41,25.57,1.36,39.1-.61,9.21-1.2,20.9,7.48,26.52ZM432.82,140.72c-45.38-4.44-92.43-.69-137.7-4.25-8.86,1.14,19.48-17.51,17.85-24.14-1.87-25.74-.38-51-3.23-76.67,2.01-7.42-1.74-11.3-7.14-16.15-3.06-4.42-13.6-7.99-13.6-10.03.44-1.17.27-2.08,2.21-1.7,8.5,1.15,17.78.98,26.35.85,20.92-2.59,40.16.88,64.09-.51-5.64,3.86-14.71,7.79-21.25,11.05-21.62,3.44-10.78,22.05-15.3,36.89,1.65,8.6.36,19.14-1.36,27.37.03,10.2.9,19.51.68,29.58,3.77,7.55,23.94,3.75,30.43,5.61,8.05-1.36,17.3,1.21,25.5,1.36,11.71-2.79,26.82-2.29,37.91-5.27,6.29-3.4,15.81-3.74,24.82-12.75,3.57,0,6.46,1.36,6.46,2.55,0,3.74-14.11,17.51-18.53,27.54-3.57,7.99-7.99,8.67-18.19,8.67ZM463.76,77.99c-.85,3.06-7.99,23.46-9.69,23.46-2.04,0-6.46-5.27-11.05-5.27-19.15-.61-40.77.68-59.67-1.02-6.13-3.09,15.6-12.29,14.28-19.21-2.29-19.16,1.75-45.86-2.55-63.24-25.42-18.92,11.41-8.91,23.29-12.41,3.73.79,10.52-.54,13.43,1.7,0,0-5.27,2.21-6.29,5.1-10.89,9.19-5.51,13.24-4.93,25.5-.82,11.65-1.76,21.79.17,32.98.03,3.88-3.28,14.84,2.21,13.43,8.09-2.46,17.67.88,25.33-2.38,12.52-10.63,23.53-30.12,15.47,1.36ZM265.54,31.07c.56,17.92,4.84,35.9,2.38,53.55.75,13.29,6.82,28.64-2.21,41.14-17.15,21.23-95.46,14.05-101.66-13.43,5.45-20.92-1.12-44.16.85-65.11,1.02-24.01-6.23-19.96-16.66-36.38,10.65-4.76,25.23,1.49,37.06-1.19,6.75,2.78,34.32-4.24,15.81,6.97-18.62,7.58-13.23,29.66-14.79,45.73,2.87,16.7,3.31,33.56,15.64,45.39,25.26,20.54,46.31-11.46,41.65-36.55,2.55-11.79-3.97-23.06-4.08-35.02,1.17-9.08-20.79-27.91-2.72-28.05,14.44,1.59,29.23-.4,43.69.17,4.96.02-2.9,4.46-3.91,7.48-3.06,6.12-11.05,7.31-11.05,15.3ZM123.76,73.4c26.8,12.1,12.98,52.65-5.78,59.67-20.77,10.04-43.35,10.35-65.28,9.01-18.08,2.97-35.36,1.06-52.53.85,3.39-4.72,17.38-8.49,18.36-17-1.13-8.2,1.1-16.14,1.36-24.65-.98-12.18-3.43-26.61-1.19-38.08-.68-11.87-1.65-24.11-1.7-35.87-.31-7.12-13.73-13.68-17-17.51,16.72-4,39.53-3.35,56.27-5.95,33.19,1.34,104.78,9.51,70.55,60.7-2.67,3.56-9.26,6.08-3.06,8.84ZM102.17,38.89c-2.04-4.76-10.88-17.51-24.48-17.51-11.05.98-32.76-8.99-34.68,4.76,1.01,8.15.94,15.85,2.04,23.8-2.25,8.47,2.35,13.31,12.07,12.75,16.76-.98,52.61-1.74,45.05-23.8ZM105.57,98.56c-5.18-20.42-39.22-18.65-56.61-18.36-10.74-3.18-5.22,30.95-6.63,37.23,8.66,27.91,73.81,8.54,63.24-18.87Z"/>
+      </svg>
+    </div>
+    <p id="landing-subtitle">A Dungeons, Dragons &amp; Digital Skills Showcase</p>
+  </div>
+  <div id="landing-fade-cover"></div>
+</div>
+
+
+<div id="zone-name"></div>
+<div id="map"></div>
+
+<!-- ─── INFO PANEL ────────────────────────────────── -->
+<div id="info-panel">
+  <div id="panel-inner">
+    <div id="panel-header">
+      <div id="panel-title-row">
+        <div id="panel-name"></div>
+        <div id="panel-icons"></div>
+      </div>
+      <div id="panel-logline"></div>
+    </div>
+    <div id="panel-body">
+      <div id="panel-description"></div>
+    </div>
+    <div id="panel-portraits-wrap">
+      <div id="portrait-track-wrap">
+        <div id="portrait-track"></div>
+      </div>
+      <button class="portrait-nav" id="portrait-next" aria-label="Next portraits">
+        <svg width="7" height="11" viewBox="0 0 7 11" fill="none">
+          <polyline points="1.5,1 6,5.5 1.5,10" stroke="#c8972a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <!-- Fold tab embedded flush on right edge of panel -->
+    <button id="panel-fold" aria-label="Close panel">
+      <svg class="tab-arrow" width="7" height="11" viewBox="0 0 7 11" fill="none">
+        <polyline points="5.5,1 1,5.5 5.5,10" stroke="#c8972a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- Open tab — visible when panel is closed -->
+<div id="panel-open-tab" role="button" aria-label="Open info panel" tabindex="0">
+  <svg class="tab-arrow" width="7" height="11" viewBox="0 0 7 11" fill="none">
+    <polyline points="1.5,1 6,5.5 1.5,10" stroke="#c8972a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</div>
+
+<!-- ─── CREDITS ───────────────────────────────────── -->
+<div id="credits-panel">
+  <div id="credits-inner">
+    <button id="credits-close" aria-label="Close">×</button>
+    <div id="credits-headline">One map<br>Many programs</div>
+    <div id="credits-section-label">It takes a village...to make a village!</div>
+    <div class="credits-item"><span class="role">Writing & Content</span><a href="https://obsidian.md/" target="_blank" rel="noopener">Obsidian</a></div>
+    <div class="credits-item"><span class="role">Map Art</span><a href="https://store.steampowered.com/app/2498570/Canvas_of_Kings/" target="_blank" rel="noopener">Canvas of Kings</a></div>
+    <div class="credits-item"><span class="role">Image Work</span><span>Adobe Photoshop</span></div>
+    <div class="credits-item"><span class="role">SVG Zone Paths</span><span>Adobe Illustrator</span></div>
+    <div class="credits-item"><span class="role">Map Engine</span><a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet.js</a></div>
+    <div class="credits-item"><span class="role">Asset Hosting</span><a href="https://www.cloudflare.com/developer-platform/r2/" target="_blank" rel="noopener">Cloudflare R2</a></div>
+    <div class="credits-item"><span class="role">Development</span><a href="https://claude.ai" target="_blank" rel="noopener">Claude</a> (Anthropic)</div>
+  </div>
+</div>
+
+<!-- Shared portrait name tooltip — fixed position, escapes all overflow contexts -->
+<div id="portrait-tooltip"></div>
+
+<script>
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+const R2_BASE  = 'https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev';
+const TILE_URL = `${R2_BASE}/tiles/{z}/{x}/{y}.jpg`;
+const INT_URL  = (id) => `${R2_BASE}/interiors/${id}.webp`;
+const CHAR_URL = (name) => `${R2_BASE}/characters/${encodeURIComponent(name)}.webp`;
+
+const SVG_SIZE     = 11500;
+const MAP_SIZE     = 256;
+const SVG_Y_OFFSET = 73.26;
+
+function px(x, y) {
+  return L.latLng(-(y / SVG_SIZE) * MAP_SIZE, (x / SVG_SIZE) * MAP_SIZE);
+}
+
+const GRID_SPACING_SVG = 58;
+const GRID_COLOR       = 'rgba(200,151,42,0.38)';
+const GRID_WIDTH_SVG   = 8;
+
+const BOUNDS = L.latLngBounds(L.latLng(0,0), L.latLng(-256,256));
+
+const ICONS = {
+  exterior: `<svg width="17" height="17" viewBox="0 0 14 14" fill="none">
+    <path d="M7 1.5L1.5 6v6.5h4V9.5h3v3h4V6L7 1.5Z" stroke="#c8972a" stroke-width="1.1" stroke-linejoin="round"/>
+  </svg>`,
+  interior: `<svg width="15" height="18" viewBox="0 0 13 15" fill="none">
+    <rect x="0.5" y="0.5" width="12" height="14" rx="0.5" stroke="#c8972a" stroke-width="1.1"/>
+    <polygon points="3,1 11,2.5 11,12.5 3,14" stroke="#c8972a" stroke-width="1" fill="rgba(200,151,42,0.08)"/>
+    <circle cx="9" cy="8" r="0.65" fill="#c8972a"/>
+  </svg>`,
+  upstairs: `<svg width="17" height="17" viewBox="0 0 14 14" fill="none">
+    <polyline points="1.5,13.5 1.5,10.5 5,10.5 5,7.5 8.5,7.5 8.5,4.5 12,4.5 12,1.5 13.5,1.5 13.5,13.5 1.5,13.5"
+      stroke="#c8972a" stroke-width="1.2" stroke-linecap="square" stroke-linejoin="miter"/>
+  </svg>`
+};
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let LOCATIONS = [], locationMap = {};
+let activeId = null, activeInterior = null, interiorLayer = null;
+let gridLayer = null, gridVisible = false, svgEl = null;
+let portraitPage = 0;
+const PORTRAITS_PER_PAGE = 4;
+let portraitData = [];
+
+// ─── MAP INIT ────────────────────────────────────────────────────────────────
+const map = L.map('map', {
+  crs: L.CRS.Simple, minZoom: 2, maxZoom: 5,
+  zoomControl: false, attributionControl: true,
+  maxBounds: BOUNDS.pad(0.1), maxBoundsViscosity: 0.85
+});
+
+// Default entry: px(6200, 7000), zoom 3 — retained for intro stitching
+map.setView(px(6200, 7000), 3);
+L.tileLayer(TILE_URL, {
+  tileSize: 256, minZoom: 2, maxZoom: 5,
+  noWrap: true, bounds: BOUNDS, attribution: 'Bullion District'
+}).addTo(map);
+
+// Custom pane for zone SVG overlay — sits above imageOverlay (overlayPane z=400)
+map.createPane('zonesPane');
+map.getPane('zonesPane').style.zIndex = 450;
+map.getPane('zonesPane').style.pointerEvents = 'none'; // pane itself non-blocking; SVG handles events
+
+// ─── CONTROLS ─────────────────────────────────────────────────────────────────
+function makeCtrl(html, title, onClick) {
+  return L.Control.extend({
+    options: { position: 'topright' },
+    onAdd() {
+      const btn = L.DomUtil.create('button', 'map-ctrl-btn');
+      btn.title = title; btn.innerHTML = html;
+      L.DomEvent.on(btn, 'click', L.DomEvent.stopPropagation);
+      L.DomEvent.on(btn, 'click', () => onClick(btn));
+      return btn;
+    }
+  });
+}
+
+new (makeCtrl(
+  `<svg width="17" height="17" viewBox="0 0 13 13" fill="none">
+    <circle cx="6.5" cy="6.5" r="5.5" stroke="#c8972a" stroke-width="1.1"/>
+    <line x1="6.5" y1="5.5" x2="6.5" y2="9.5" stroke="#c8972a" stroke-width="1.3" stroke-linecap="round"/>
+    <circle cx="6.5" cy="3.8" r="0.7" fill="#c8972a"/>
+  </svg>`,
+  'About this project',
+  () => toggleCredits()
+))().addTo(map);
+
+L.control.zoom({ position: 'topright' }).addTo(map);
+
+new (makeCtrl(
+  `<svg width="17" height="17" viewBox="0 0 13 13" fill="none">
+    <line x1="4.3" y1="0" x2="4.3" y2="13" stroke="#c8972a" stroke-width="1"/>
+    <line x1="8.7" y1="0" x2="8.7" y2="13" stroke="#c8972a" stroke-width="1"/>
+    <line x1="0" y1="4.3" x2="13" y2="4.3" stroke="#c8972a" stroke-width="1"/>
+    <line x1="0" y1="8.7" x2="13" y2="8.7" stroke="#c8972a" stroke-width="1"/>
+  </svg>`,
+  'Toggle grid',
+  (btn) => toggleGrid(btn)
+))().addTo(map);
+
+setTimeout(() => {
+  const rightContainer = document.querySelector('.leaflet-top.leaflet-right');
+  const zoomControl    = rightContainer && rightContainer.querySelector('.leaflet-control-zoom');
+  if (zoomControl) {
+    const badge = document.createElement('div');
+    badge.className = 'zoom-badge';
+    const update = () => { badge.textContent = `${map.getZoom()-1}/4`; };
+    update();
+    map.on('zoomend', update);
+    zoomControl.insertAdjacentElement('afterend', badge);
+  }
+}, 200);
+
+// ─── SVG OVERLAY ──────────────────────────────────────────────────────────────
+function buildZoneOverlay(locations) {
+  const ns = 'http://www.w3.org/2000/svg';
+  svgEl = document.createElementNS(ns, 'svg');
+  svgEl.setAttribute('xmlns', ns);
+  svgEl.setAttribute('viewBox', `0 ${SVG_Y_OFFSET} ${SVG_SIZE} ${SVG_SIZE}`);
+
+  const regions = locations.filter(l => l.layer==='region');
+  const singles = locations.filter(l => l.layer==='zone' && !l.extraShapes);
+  const multis  = locations.filter(l => l.layer==='zone' &&  l.extraShapes);
+  const extras  = locations.filter(l => l.layer==='extra');
+
+  [...regions, ...singles, ...multis, ...extras].forEach(loc => {
+    if (!loc.shape) return;
+    const cls = `zone-polygon layer-${loc.layer}${loc.showAtAllZooms ? ' always-visible' : ''}`;
+    addShapeEl(svgEl, loc.shape, loc.id, cls);
+    (loc.extraShapes || []).forEach(s => addShapeEl(svgEl, s, loc.id, cls));
+  });
+
+  // Use custom zonesPane (z=450) so zone strokes always render above interior image overlays (overlayPane z=400)
+  // pane pointer-events are 'none' but the SVG element itself is interactive
+  const svgOverlayLayer = L.svgOverlay(svgEl, [px(0,0), px(SVG_SIZE,SVG_SIZE)], { interactive: true, pane: 'zonesPane' }).addTo(map);
+  // Re-enable pointer events on the SVG element directly (pane is none, SVG overrides)
+  svgEl.style.pointerEvents = 'auto';
+  svgEl.addEventListener('mouseover', onZoneMouseover);
+  svgEl.addEventListener('mouseout',  onZoneMouseout);
+  svgEl.addEventListener('click',     onZoneClick);
+  updateZoomClasses();
+}
+
+function addShapeEl(svg, shape, id, cls) {
+  const ns = 'http://www.w3.org/2000/svg';
+  let el;
+  if      (shape.type==='polygon') { el = document.createElementNS(ns,'polygon'); el.setAttribute('points', shape.data); }
+  else if (shape.type==='path')    { el = document.createElementNS(ns,'path');    el.setAttribute('d', shape.data); }
+  else if (shape.type==='circle')  { el = document.createElementNS(ns,'circle');  el.setAttribute('cx', shape.cx); el.setAttribute('cy', shape.cy); el.setAttribute('r', shape.r); }
+  if (el) { el.setAttribute('class', cls); el.dataset.id = id; svg.appendChild(el); }
+}
+
+function updateZoomClasses() {
+  if (!svgEl) return;
+  svgEl.classList.toggle('zoom-far', map.getZoom() <= 2);
+}
+map.on('zoomend', updateZoomClasses);
+
+// ─── ZONE INTERACTIONS ────────────────────────────────────────────────────────
+const zoneNameEl = document.getElementById('zone-name');
+const MAP_BOUNDS_VALID = { min: 50, max: 11450 };
+
+function cleanName(loc) { return (loc.name || loc.id).replace(/^[—\-\s]+|[—\-\s]+$/g, ''); }
+function allShapes(id)   { return svgEl ? svgEl.querySelectorAll(`[data-id="${id}"]`) : []; }
+
+function safeCenter(loc) {
+  if (!loc.center) return null;
+  const [cx, cy] = loc.center;
+  return (cx > MAP_BOUNDS_VALID.min && cx < MAP_BOUNDS_VALID.max &&
+          cy > MAP_BOUNDS_VALID.min && cy < MAP_BOUNDS_VALID.max)
+    ? [cx, cy] : null;
+}
+
+function onZoneMouseover(e) {
+  const el = e.target.closest('[data-id]'); if (!el) return;
+  const loc = locationMap[el.dataset.id]; if (!loc) return;
+  allShapes(el.dataset.id).forEach(s => s.classList.add('hover'));
+  zoneNameEl.textContent = cleanName(loc);
+  zoneNameEl.classList.add('visible');
+}
+function onZoneMouseout(e) {
+  const el = e.target.closest('[data-id]'); if (!el) return;
+  allShapes(el.dataset.id).forEach(s => s.classList.remove('hover'));
+  zoneNameEl.classList.remove('visible');
+}
+function onZoneClick(e) {
+  const el = e.target.closest('[data-id]'); if (!el) return;
+  const id = el.dataset.id, loc = locationMap[id]; if (!loc) return;
+  if (activeId && activeId !== id) deactivateZone(activeId);
+  activeId = id;
+  allShapes(id).forEach(s => s.classList.add('active'));
+  zoneNameEl.classList.remove('visible');
+  openPanel(loc);
+}
+function deactivateZone(id) {
+  allShapes(id).forEach(s => { s.classList.remove('active'); s.classList.remove('hover'); });
+  clearInterior();
+}
+
+// ─── PANEL ────────────────────────────────────────────────────────────────────
+const panel     = document.getElementById('info-panel');
+const panelName = document.getElementById('panel-name');
+const panelLog  = document.getElementById('panel-logline');
+const panelDesc = document.getElementById('panel-description');
+
+function openPanel(loc) {
+  const populate = () => {
+    panelName.textContent = cleanName(loc);
+    panelLog.textContent  = loc.logLine || '';
+    panelDesc.innerHTML   = loc.description || '';
+    document.getElementById('panel-body').scrollTop = 0;
+
+    const iconsEl = document.getElementById('panel-icons');
+    iconsEl.innerHTML = '';
+    if (loc.interiors && loc.interiors.length > 0) {
+      const eBtn = makeViewBtn('exterior', 'Exterior', ICONS.exterior);
+      eBtn.classList.add('active');
+      eBtn.addEventListener('click', () => showExterior(eBtn));
+      iconsEl.appendChild(eBtn);
+      const iBtn = makeViewBtn('interior', 'Interior', ICONS.interior);
+      iBtn.addEventListener('click', () => swapInterior(loc.interiors[0], iBtn, loc));
+      iconsEl.appendChild(iBtn);
+      if (loc.interiors.length >= 2) {
+        const uBtn = makeViewBtn('upstairs', 'Upper Floor', ICONS.upstairs);
+        uBtn.addEventListener('click', () => swapInterior(loc.interiors[1], uBtn, loc));
+        iconsEl.appendChild(uBtn);
+      }
+    }
+    buildPortraitCarousel(loc.characters || []);
+  };
+
+  // Always: disable transitions, fade out, reset off-screen, populate, then slide in.
+  // Doing this the same way every time avoids inconsistent browser batching.
+  panel.style.transition = 'none';
+  panel.style.opacity    = '0';
+  panel.classList.remove('open');
+
+  // Let the browser commit the invisible off-screen state, then slide in with content
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      populate();
+      panel.style.transition = '';   // restore CSS transition
+      panel.style.opacity    = '1';
+      panel.classList.add('open');
+    });
+  });
+}
+
+function makeViewBtn(key, tip, icon) {
+  const btn = document.createElement('button');
+  btn.className = 'view-btn'; btn.dataset.view = key;
+  btn.innerHTML = `${icon}<span class="btn-tip">${tip}</span>`;
+  return btn;
+}
+
+function showExterior(btn) {
+  clearInterior();
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+function clearInterior() {
+  if (!interiorLayer) return;
+  const dying = interiorLayer; interiorLayer = null; activeInterior = null;
+  dying.setOpacity(0);
+  setTimeout(() => { try { map.removeLayer(dying); } catch(e) {} }, 400);
+}
+
+function closePanel() {
+  panel.style.transition = '';
+  panel.style.opacity    = '1';
+  panel.classList.remove('open');
+  if (activeId) { deactivateZone(activeId); activeId = null; }
+}
+
+document.getElementById('panel-fold').addEventListener('click', closePanel);
+
+document.getElementById('panel-open-tab').addEventListener('click', () => {
+  if (activeId) {
+    panel.classList.add('open');
+  } else {
+    panelName.textContent = 'Explore the Map';
+    panelLog.textContent = '';
+    panelDesc.innerHTML = 'Click on buildings and landmarks as you pan around to learn more about them, reveal their NPC cast, and toggle their interiors.';
+    document.getElementById('panel-icons').innerHTML = '';
+    buildPortraitCarousel([]);
+    panel.classList.add('open');
+    setTimeout(() => panel.classList.remove('open'), 6000);
+  }
+});
+document.getElementById('panel-open-tab').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); document.getElementById('panel-open-tab').click(); }
+});
+
+// ─── PORTRAIT CAROUSEL ────────────────────────────────────────────────────────
+// portraitPage = index of the first visible portrait (wraps with modulo)
+function buildPortraitCarousel(characters) {
+  portraitData = characters;
+  portraitPage = 0;
+  const wrap = document.getElementById('panel-portraits-wrap');
+
+  if (!characters || characters.length === 0) {
+    wrap.classList.remove('has-portraits');
+    return;
+  }
+  wrap.classList.add('has-portraits');
+  renderPortraits();
+}
+
+function renderPortraits() {
+  const track   = document.getElementById('portrait-track');
+  const nextBtn = document.getElementById('portrait-next');
+  const total   = portraitData.length;
+  const tooltip = document.getElementById('portrait-tooltip');
+
+  const count = Math.min(total, PORTRAITS_PER_PAGE);
+  track.innerHTML = '';
+
+  for (let i = 0; i < count; i++) {
+    const name = portraitData[(portraitPage + i) % total];
+    const div  = document.createElement('div'); div.className = 'portrait-wrap';
+    const img  = document.createElement('img'); img.src = CHAR_URL(name); img.alt = name; img.loading = 'lazy';
+    div.appendChild(img);
+
+    // Shared fixed tooltip — position above the portrait on hover
+    div.addEventListener('mouseenter', () => {
+      const r = div.getBoundingClientRect();
+      tooltip.textContent = name;
+      // Position above portrait, centered
+      tooltip.style.left = (r.left + r.width / 2) + 'px';
+      tooltip.style.top  = (r.top - 8) + 'px';
+      tooltip.style.transform = 'translateX(-50%) translateY(-100%)';
+      tooltip.classList.add('visible');
+    });
+    div.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+
+    track.appendChild(div);
+  }
+
+  nextBtn.classList.toggle('hidden', total <= PORTRAITS_PER_PAGE);
+  track.style.transform = 'translateX(0)';
+}
+
+document.getElementById('portrait-next').addEventListener('click', () => {
+  const total = portraitData.length;
+  if (total <= PORTRAITS_PER_PAGE) return;
+  // Advance one portrait at a time, wrap
+  portraitPage = (portraitPage + 1) % total;
+  renderPortraits();
+});
+
+// ─── INTERIOR SWAP ────────────────────────────────────────────────────────────
+function swapInterior(intId, btn, loc) {
+  if (activeInterior === intId) {
+    showExterior(document.querySelector('.view-btn[data-view="exterior"]'));
+    return;
+  }
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const bmap = loc.interiorBoundsMap || {};
+  const bb   = bmap[intId];
+
+  const overlayBounds = bb
+    ? [px(bb[0][0], bb[0][1]), px(bb[1][0], bb[1][1])]
+    : (() => { const [[mx,my],[Mx,My]] = loc.bounds; return [px(mx,my), px(Mx,My)]; })();
+
+  const [icx, icy] = bb
+    ? [(bb[0][0]+bb[1][0])/2, (bb[0][1]+bb[1][1])/2]
+    : (safeCenter(loc) || loc.center || [6200, 7000]);
+
+  const newLayer = L.imageOverlay(INT_URL(intId), overlayBounds, { opacity: 0, zIndex: 300 }).addTo(map);
+  const doSwap = () => {
+    setTimeout(() => { if (newLayer) newLayer.setOpacity(1); }, 20);
+    if (interiorLayer) {
+      const old = interiorLayer;
+      setTimeout(() => { try { old.setOpacity(0); } catch(e) {} }, 20);
+      setTimeout(() => { try { map.removeLayer(old); } catch(e) {} }, 420);
+    }
+    interiorLayer = newLayer;
+    activeInterior = intId;
+  };
+  const img = new Image();
+  img.onload = doSwap;
+  img.onerror = () => {
+    console.warn(`Interior image not found on R2: ${INT_URL(intId)}`);
+    try { map.removeLayer(newLayer); } catch(e) {}
+    // Restore exterior button state
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    const eBtn = document.querySelector('.view-btn[data-view="exterior"]');
+    if (eBtn) eBtn.classList.add('active');
+  };
+  img.src = INT_URL(intId);
+
+  // Shift the map center LEFT so the zone appears in the center of the visible area
+  // (the right 70% of screen, with panel occupying left 30%).
+  //
+  // In CRS.Simple: map.project pixel space == CSS pixels (1:1 at any zoom).
+  // zone_screen_x = viewport/2 - shift  (positive shift moves zone left)
+  // We want zone_screen_x = panel + (viewport - panel)/2  (center of visible area)
+  // So: shift = viewport/2 - (panel + (viewport-panel)/2) = -panelCss/2  (negative)
+  // Using pt.add([-shiftCss, 0]) achieves this.
+  const targetZoom    = 5;
+  const naturalLatLng = px(icx, icy);
+  const panelCss      = Math.min(window.innerWidth * 0.30, 500);
+  const shiftCss      = panelCss / 2;
+
+  const pt           = map.project(naturalLatLng, targetZoom);
+  const offsetLatLng = map.unproject(pt.add([-shiftCss, 0]), targetZoom);
+
+  map.flyTo(offsetLatLng, targetZoom, { animate: true, duration: 0.9 });
+}
+
+// ─── GRID ─────────────────────────────────────────────────────────────────────
+function toggleGrid(btn) {
+  gridVisible = !gridVisible; btn.classList.toggle('active', gridVisible);
+  if (gridVisible) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const gs = document.createElementNS(ns, 'svg');
+    gs.setAttribute('viewBox', `0 ${SVG_Y_OFFSET} ${SVG_SIZE} ${SVG_SIZE}`);
+    const defs = document.createElementNS(ns, 'defs');
+    const pat  = document.createElementNS(ns, 'pattern');
+    pat.setAttribute('id','gp'); pat.setAttribute('width', GRID_SPACING_SVG); pat.setAttribute('height', GRID_SPACING_SVG);
+    pat.setAttribute('patternUnits','userSpaceOnUse');
+    const gp = document.createElementNS(ns,'path');
+    gp.setAttribute('d', `M ${GRID_SPACING_SVG} 0 L 0 0 0 ${GRID_SPACING_SVG}`);
+    gp.setAttribute('fill','none'); gp.setAttribute('stroke', GRID_COLOR); gp.setAttribute('stroke-width', GRID_WIDTH_SVG);
+    pat.appendChild(gp); defs.appendChild(pat); gs.appendChild(defs);
+    const rect = document.createElementNS(ns,'rect');
+    rect.setAttribute('x', 0); rect.setAttribute('y', SVG_Y_OFFSET);
+    rect.setAttribute('width', SVG_SIZE); rect.setAttribute('height', SVG_SIZE);
+    rect.setAttribute('fill','url(#gp)'); gs.appendChild(rect);
+    gridLayer = L.svgOverlay(gs, [px(0,0), px(SVG_SIZE,SVG_SIZE)], { interactive: false, pane: 'zonesPane', zIndex: 460 }).addTo(map);
+  } else {
+    if (gridLayer) { map.removeLayer(gridLayer); gridLayer = null; }
+  }
+}
+
+// ─── CREDITS ──────────────────────────────────────────────────────────────────
+const creditsPanel = document.getElementById('credits-panel');
+function toggleCredits() { creditsPanel.classList.toggle('open'); }
+document.getElementById('credits-close').addEventListener('click', () => creditsPanel.classList.remove('open'));
+creditsPanel.addEventListener('click', e => { if (e.target === creditsPanel) creditsPanel.classList.remove('open'); });
+
+// ─── KEYBOARD ─────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closePanel(); creditsPanel.classList.remove('open'); }
+});
+
+// ─── RADIAL REVEAL — retained for intro integration ───────────────────────────
+// Called by intro file once its animation completes.
+// revealOrigin: { x: 0–100 (% of viewport), y: 0–100 }
+function radialReveal(revealOrigin, onComplete) {
+  const cpx = revealOrigin ? revealOrigin.x.toFixed(1) : '50.0';
+  const cpy = revealOrigin ? revealOrigin.y.toFixed(1) : '50.0';
+  function easeInOut(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2; }
+  const dur = 2800, t0 = performance.now();
+  function animReveal(now) {
+    const t = Math.min((now - t0) / dur, 1);
+    const r = easeInOut(t) * 200;
+    const mask = `radial-gradient(circle at ${cpx}% ${cpy}%, transparent ${Math.max(0,r-2)}%, rgba(0,0,0,1) ${r}%)`;
+    document.body.style.webkitMaskImage = mask;
+    document.body.style.maskImage = mask;
+    if (t < 1) { requestAnimationFrame(animReveal); }
+    else {
+      document.body.style.webkitMaskImage = '';
+      document.body.style.maskImage = '';
+      if (onComplete) onComplete();
+    }
+  }
+  requestAnimationFrame(animReveal);
+}
+
+// ─── INTRO ────────────────────────────────────────────────────────────────────
+(function initIntro() {
+  const landing = document.getElementById('landing');
+  if (!landing) return;
+
+  const R2_ANIMATED = 'https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated';
+  const scene    = document.getElementById('landing-scene');
+  const viewport = document.getElementById('landing-viewport');
+
+  // ── Sprite sizing ──────────────────────────────────────────────────────────
+  const sprites = [
+    { id: 'upperImg',      src: 'person.webp',    scale: 0.8 },
+    { id: 'keepImg',       src: 'person.webp',    scale: 0.8 },
+    { id: 'gateImg',       src: 'person.webp',    scale: 0.8 },
+    { id: 'harborImg',     src: 'person.webp',    scale: 0.8 },
+    { id: 'watchImg',      src: 'person.webp',    scale: 0.8 },
+    { id: 'skirtsImg1',    src: 'person.webp',    scale: 0.8 },
+    { id: 'skirtsImg2',    src: 'person.webp',    scale: 0.8 },
+    { id: 'apothecaryImg', src: 'person.webp',    scale: 0.8 },
+    { id: 'plateauImg',    src: 'person.webp',    scale: 0.8 },
+    { id: 'orchardImg',    src: 'person.webp',    scale: 0.8 },
+    { id: 'treeImg',       src: 'person.webp',    scale: 0.8 },
+    { id: 'graveImg',      src: 'person.webp',    scale: 0.8 },
+    { id: 'fishImg',       src: 'person.webp',    scale: 0.8 },
+    { id: 'boatImg',       src: 'boat.webp',      scale: 1.0 },
+    { id: 'mineImg',       src: 'handCart.webp',  scale: 1.0 },
+    { id: 'deliveryImg',   src: 'handCart.webp',  scale: 1.0 },
+    { id: 'woodsImg',      src: 'handCart.webp',  scale: 1.0 },
+    { id: 'basilicaImg',   src: 'horseCart.webp', scale: 1.0 },
+    { id: 'dairyImg',      src: 'oxCart.webp',    scale: 1.0 },
+  ];
+  const sizeCache = {};
+  sprites.forEach(({ id, src, scale }) => {
+    const el = document.getElementById(id); if (!el) return;
+    const apply = (nw, nh) => {
+      const w = nw * scale, h = nh * scale;
+      el.setAttribute('width', w); el.setAttribute('height', h);
+      el.setAttribute('x', -w / 2); el.setAttribute('y', -h / 2);
+    };
+    const fullSrc = `${R2_ANIMATED}/${src}`;
+    if (sizeCache[src]) { apply(...sizeCache[src]); return; }
+    const img = new Image(); img.src = fullSrc;
+    img.onload = () => { sizeCache[src] = [img.naturalWidth, img.naturalHeight]; apply(img.naturalWidth, img.naturalHeight); };
+  });
+
+  // ── Pan loop ───────────────────────────────────────────────────────────────
+  const CYCLE_DURATION = 260;
+  let panTravel = 0, panStartTime = null, panRafId = null;
+
+  function setupPan() {
+    if (!landing.parentNode) return;
+    panTravel = scene.getBoundingClientRect().height - viewport.getBoundingClientRect().height;
+    if (panTravel <= 0) { panRafId = requestAnimationFrame(setupPan); return; }
+    if (!panStartTime) panRafId = requestAnimationFrame(panLoop);
+  }
+  const fadeEl = document.getElementById('landing-fade-cover');
+  let fadedIn = false;
+  function panLoop(ts) {
+    if (!landing.parentNode) return;
+    if (!panStartTime) panStartTime = ts;
+    const elapsed = (ts - panStartTime) / 1000 + 20;
+    const t = (elapsed % CYCLE_DURATION) / CYCLE_DURATION;
+    const offset = (1 - Math.cos(2 * Math.PI * t)) / 2;
+    scene.style.transform = `translateY(${-panTravel * (1 - offset)}px)`;
+    if (!fadedIn && fadeEl) {
+      fadedIn = true;
+      // Scene is now positioned — trigger the fade on the next paint
+      requestAnimationFrame(() => {
+        fadeEl.style.opacity = '0';
+        fadeEl.addEventListener('transitionend', () => { fadeEl.style.pointerEvents = 'none'; }, { once: true });
+      });
+    }
+    panRafId = requestAnimationFrame(panLoop);
+  }
+  setTimeout(setupPan, 200);
+  window.addEventListener('resize', setupPan);
+
+  // ── Entry ──────────────────────────────────────────────────────────────────
+  let entered = false;
+
+  function enterMap(originX, originY) {
+    if (entered) return;
+    entered = true;
+
+    // Cancel pan loop and resize listener
+    if (panRafId) cancelAnimationFrame(panRafId);
+    window.removeEventListener('resize', setupPan);
+
+    // Make sure map is at default start position
+    map.setView(px(6200, 7000), 3, { animate: false });
+
+    // Radial reveal: wipe the landing div specifically, not body
+    const cpx = originX.toFixed(1), cpy = originY.toFixed(1);
+    function easeInOut(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2; }
+    const dur = 2800, t0 = performance.now();
+    function animReveal(now) {
+      const t = Math.min((now - t0) / dur, 1);
+      const r = easeInOut(t) * 200;
+      const mask = `radial-gradient(circle at ${cpx}% ${cpy}%, transparent ${Math.max(0,r-2)}%, rgba(0,0,0,1) ${r}%)`;
+      landing.style.webkitMaskImage = mask;
+      landing.style.maskImage = mask;
+      if (t < 1) { requestAnimationFrame(animReveal); }
+      else {
+        landing.remove(); // fully removed — all intro computation stops
+        // Show the hint panel 1s after entering, auto-hide after 6s
+        setTimeout(() => {
+          if (activeId) return; // skip if user already clicked a zone
+          panelName.textContent = 'Explore the Map';
+          panelLog.textContent  = '';
+          panelDesc.innerHTML   = 'Click on buildings and landmarks as you pan around to learn more about them, see their NPC cast, and toggle their interiors.';
+          document.getElementById('panel-icons').innerHTML = '';
+          buildPortraitCarousel([]);
+          panel.style.transition = '';
+          panel.style.opacity    = '1';
+          panel.classList.add('open');
+          setTimeout(() => {
+            if (!activeId) closePanel();
+          }, 6000);
+        }, 1000);
+      }
+    }
+    requestAnimationFrame(animReveal);
+  }
+
+  // Click anywhere on landing
+  landing.addEventListener('click', e => {
+    const x = (e.clientX / window.innerWidth  * 100);
+    const y = (e.clientY / window.innerHeight * 100);
+    enterMap(x, y);
+  });
+
+  // Keyboard: Enter or Space
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && !entered) {
+      e.preventDefault();
+      enterMap(50, 50); // radial from screen center
+    }
+  });
+})();
+
+// ─── LOAD DATA ────────────────────────────────────────────────────────────────
+fetch('locations.json')
+  .then(r => r.json())
+  .then(data => {
+    LOCATIONS   = data;
+    locationMap = Object.fromEntries(data.map(l => [l.id, l]));
+    buildZoneOverlay(LOCATIONS);
+  })
+  .catch(err => console.warn('locations.json not loaded (needs local server):', err));
+</script>
+</body>
+</html>
