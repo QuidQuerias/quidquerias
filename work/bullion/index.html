@@ -277,10 +277,12 @@
     }
     #panel-body::-webkit-scrollbar { width: 4px; }
     #panel-body::-webkit-scrollbar-thumb { background: var(--rust); border-radius: 2px; }
-    #panel-description {
+    #panel-description { 
       font-family: 'Crimson Pro', serif; font-weight: 300;
       font-size: clamp(14px, 1.35vw, 17px); line-height: 1.72; color: var(--aged);
     }
+    #panel-description p { margin: 0 0 1em 0; }
+    #panel-description p:last-child { margin-bottom: 0; }
     #panel-description a { color: var(--gold-light); }
     #panel-description .zone-link { color: var(--gold-light); cursor: pointer; text-decoration: underline; }
 
