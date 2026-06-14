@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Crimson+Text:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -265,18 +266,38 @@
       letter-spacing: 0.04em; opacity: 0.85;
     }
 
+    /* "Back" button — appears above the title once wikilink/zone navigation
+       has built up history, lets the user retrace their steps. */
+    #panel-back-btn {
+      display: none;
+      align-items: center; gap: 6px;
+      background: none; border: 1px solid rgba(200,151,42,0.3);
+      border-radius: 2px; cursor: pointer;
+      color: var(--gold-light); font-family: 'Cinzel', serif;
+      font-size: 11px; letter-spacing: 0.06em; line-height: 1;
+      padding: 4px 10px; margin-bottom: 10px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    #panel-back-btn.visible { display: flex; }
+    #panel-back-btn:hover { border-color: var(--gold); background: rgba(200,151,42,0.08); }
+    #panel-back-btn svg { flex-shrink: 0; opacity: 0.8; }
+
     /* ─── PANEL BODY (scrollable) ──────────────────────── */
     #panel-body {
       flex: 1;
       min-height: 80px;
       max-height: calc(var(--panel-h) - 180px); /* cap so portraits/header always fit */
-      padding: 14px 28px 12px 20px;
+      /* Shrink the scrollable box by the width of #panel-fold so its
+         scrollbar sits clear of the close strip — otherwise dragging the
+         scrollbar is intercepted as a close-panel click. */
+      width: calc(100% - 18px); /* matches #panel-fold's width */
+      padding: 14px 10px 12px 20px;
       overflow-y: auto;
       scrollbar-width: thin;
-      scrollbar-color: var(--rust) transparent;
+      scrollbar-color: var(--gold) transparent;
     }
     #panel-body::-webkit-scrollbar { width: 4px; }
-    #panel-body::-webkit-scrollbar-thumb { background: var(--rust); border-radius: 2px; }
+    #panel-body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
     #panel-description { 
       font-family: 'Crimson Pro', serif; font-weight: 300;
       font-size: clamp(14px, 1.35vw, 17px); line-height: 1.72; color: var(--aged);
@@ -285,6 +306,39 @@
     #panel-description p:last-child { margin-bottom: 0; }
     #panel-description a { color: var(--gold-light); }
     #panel-description .zone-link { color: var(--gold-light); cursor: pointer; text-decoration: underline; }
+    #panel-description .zone-ref {
+      /* Recognized place name (a Region, or this same zone) — not a navigation
+         target, so styled to read as "known" without inviting a click. */
+      color: var(--gold-light); cursor: default;
+    }
+    #panel-description .char-link {
+      color: var(--gold-light); cursor: default;
+      text-decoration: underline dotted; text-decoration-color: rgba(200,151,42,0.5);
+      text-underline-offset: 2px;
+    }
+    #panel-description .wiki-plain {
+      text-decoration: underline dotted; text-decoration-color: rgba(212,196,160,0.35);
+      text-underline-offset: 2px;
+    }
+
+    /* Inline wikilink portrait popup — fixed, escapes overflow like #portrait-tooltip */
+    #wiki-portrait-popup {
+      position: fixed;
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      background: rgba(14,9,3,0.92); border: 1px solid rgba(200,151,42,0.4);
+      padding: 8px; pointer-events: none; z-index: 100;
+      opacity: 0; transition: opacity 0.15s;
+    }
+    #wiki-portrait-popup.visible { opacity: 1; }
+    #wiki-portrait-popup img {
+      width: 240px; height: 240px; object-fit: cover;
+      border: 1px solid rgba(200,151,42,0.3);
+      filter: sepia(0.15) contrast(1.05);
+    }
+    #wiki-portrait-popup .wiki-portrait-name {
+      font-family: 'Crimson Pro', serif; font-style: italic;
+      font-size: 12px; color: var(--parchment); white-space: nowrap;
+    }
 
     /* ─── PORTRAITS ────────────────────────────────────── */
     #panel-portraits-wrap {
@@ -341,6 +395,17 @@
     #portrait-tooltip.visible { opacity: 1; }
 
     .leaflet-image-layer { transition: opacity 0.35s ease; }
+
+    /* ─── DEBUG: COORDINATE READOUT ────────────────────── */
+    /* Temporary dev aid for finding `center` values — see initDebugCoords(). */
+    #debug-coords {
+      position: fixed; z-index: 9999; pointer-events: none;
+      background: rgba(14,9,3,0.92); border: 1px solid var(--gold);
+      color: var(--gold-light); font-family: 'Crimson Pro', serif; font-size: 12px;
+      padding: 4px 10px; white-space: nowrap;
+      opacity: 0; transition: opacity 0.1s;
+    }
+    #debug-coords.visible { opacity: 1; }
 
     /* ─── CREDITS ──────────────────────────────────────── */
     #credits-panel {
@@ -869,6 +934,12 @@
 <div id="info-panel">
   <div id="panel-inner">
     <div id="panel-header">
+      <button id="panel-back-btn" aria-label="Back to previous location">
+        <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+          <path d="M9 2L3 7l6 5" stroke="#c8972a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Back</span>
+      </button>
       <div id="panel-title-row">
         <div id="panel-name"></div>
         <div id="panel-icons"></div>
@@ -923,6 +994,12 @@
 <!-- Shared portrait name tooltip — fixed position, escapes all overflow contexts -->
 <div id="portrait-tooltip"></div>
 
+<!-- Inline wikilink character-hover portrait popup -->
+<div id="wiki-portrait-popup"></div>
+
+<!-- DEBUG: live coordinate readout — see initDebugCoords() -->
+<div id="debug-coords"></div>
+
 <script>
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const R2_BASE  = 'https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev';
@@ -936,6 +1013,16 @@ const SVG_Y_OFFSET = 73.26;
 
 function px(x, y) {
   return L.latLng(-(y / SVG_SIZE) * MAP_SIZE, (x / SVG_SIZE) * MAP_SIZE);
+}
+
+// Inverse of px(): given a Leaflet latLng (e.g. from a mouse event), recover
+// the [x, y] coordinates in the same space as locations.json's `center` /
+// `bounds` / shape data. Used by the debug coordinate readout below.
+function unpx(latlng) {
+  return [
+    (latlng.lng / MAP_SIZE) * SVG_SIZE,
+    -(latlng.lat / MAP_SIZE) * SVG_SIZE
+  ];
 }
 
 const GRID_SPACING_SVG = 58;
@@ -962,10 +1049,121 @@ const ICONS = {
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let LOCATIONS = [], locationMap = {};
 let activeId = null, activeInterior = null, interiorLayer = null;
+let panelHistory = []; // stack of previously-active location ids, for the "back" button
 let gridLayer = null, gridVisible = false, svgEl = null;
 let portraitPage = 0;
 const PORTRAITS_PER_PAGE = 4;
 let portraitData = [];
+
+// ─── WIKILINK RESOLUTION ────────────────────────────────────────────────────────
+// locationNameMap is built once from LOCATIONS at load (zone names are global
+// and stable). currentZoneId / currentCharacterMap are set fresh by openPanel()
+// each time a panel is populated, since character-portrait hovers should only
+// resolve against the CURRENT location's cast — a character mentioned in a
+// description isn't necessarily in that location's `characters` array.
+let locationNameMap   = {}; // lower(name) -> location id
+let currentZoneId     = null;
+let currentCharacterMap = {}; // lower(name) -> canonical character name, scoped to open panel
+
+function buildWikiLookups(locations) {
+  locationNameMap = {};
+  locations.forEach(loc => {
+    if (loc.name) locationNameMap[loc.name.toLowerCase()] = loc.id;
+  });
+}
+
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+// Resolves the raw contents of a [[...]] wikilink (already split on the
+// optional leading "[[" / trailing "]]") into the HTML it should render as.
+function resolveWikilink(raw) {
+  const pipeIdx = raw.indexOf('|');
+  const target  = (pipeIdx === -1 ? raw : raw.slice(0, pipeIdx)).trim();
+  const alias   = pipeIdx === -1 ? null : raw.slice(pipeIdx + 1).trim();
+  const display = escapeHtml(alias || target);
+  const key     = target.toLowerCase();
+
+  const zoneId = locationNameMap[key];
+  if (zoneId) {
+    const zoneLoc   = locationMap[zoneId];
+    const isRegion  = zoneLoc && zoneLoc.type === 'Region';
+    const isSelf    = zoneId === currentZoneId;
+    if (!isRegion && !isSelf) {
+      return `<a class="zone-link" data-zone-id="${escapeHtml(zoneId)}">${display}</a>`;
+    }
+    // Known place, but not a sensible navigation target from here
+    // (a broad Region with no real "jump to" point, or this same zone).
+    return `<span class="zone-ref">${display}</span>`;
+  }
+
+  const charName = currentCharacterMap[key];
+  if (charName) {
+    return `<span class="char-link" data-char-name="${escapeHtml(charName)}">${display}</span>`;
+  }
+
+  // Neither a known zone nor a character in THIS location's cast — render the
+  // alias/title as plain (visually distinguished, non-interactive) text.
+  return `<span class="wiki-plain">${display}</span>`;
+}
+
+
+// Custom inline-level marked extension for Obsidian-style [[Target]] / [[Target|Alias]] links.
+marked.use({
+  extensions: [{
+    name: 'wikilink',
+    level: 'inline',
+    start(src) { const i = src.indexOf('[['); return i < 0 ? undefined : i; },
+    tokenizer(src) {
+      const match = /^\[\[([^\]]+)\]\]/.exec(src);
+      if (match) return { type: 'wikilink', raw: match[0], text: match[1] };
+    },
+    renderer(token) { return resolveWikilink(token.text); }
+  }]
+});
+
+// Obsidian's reading view treats single newlines within a paragraph as line
+// breaks (useful for dialogue formatting). marked's global `breaks: true`
+// option does this too, but applies it uniformly via its block-level lexer in
+// a way that interacts unpredictably with custom inline extensions like the
+// one above — producing inconsistent spacing in spots. Instead, do the
+// equivalent transform ourselves before handing text to marked: append the
+// standard Markdown hard-break ("two trailing spaces") to any line that's
+// immediately followed by another non-blank line. Lines already followed by
+// a blank line (real paragraph breaks) are left untouched, and marked's
+// default (non-"breaks") inline parsing handles the rest consistently.
+function prepareMarkdown(text) {
+  const lines = (text || '').split('\n');
+  return lines.map((line, i) => {
+    const isLastLine  = i === lines.length - 1;
+    const nextIsBlank = isLastLine || lines[i + 1].trim() === '';
+    const thisIsBlank = line.trim() === '';
+    return (thisIsBlank || nextIsBlank) ? line : line + '  ';
+  }).join('\n');
+}
+
+// Earlier descriptions were converted from Markdown to HTML during import
+// (one or more "<p>...</p>" blocks). marked treats a block starting with "<p>"
+// as raw HTML and does NOT run inline parsing — including our [[wikilink]]
+// extension and Markdown emphasis/etc — on its contents. Rather than requiring
+// every existing entry to be rewritten before it can use wikilinks/Markdown,
+// unwrap that legacy shape back into plain paragraph-separated text here, so
+// both old and newly-authored descriptions go through the same pipeline below.
+// Anything NOT starting with "<p>" (i.e. already-Markdown text, including text
+// that happens to start with a [[wikilink]] or other inline HTML) is passed
+// through untouched.
+function normalizeDescription(text) {
+  text = (text || '').trim();
+  if (/^<p>/i.test(text)) {
+    text = text
+      .replace(/^<p>/i, '')
+      .replace(/<\/p>\s*$/i, '')
+      .replace(/<\/p>\s*<p>/gi, '\n\n');
+  }
+  return text;
+}
 
 // ─── MAP INIT ────────────────────────────────────────────────────────────────
 const map = L.map('map', {
@@ -1111,7 +1309,7 @@ function onZoneMouseout(e) {
 function onZoneClick(e) {
   const el = e.target.closest('[data-id]'); if (!el) return;
   const id = el.dataset.id, loc = locationMap[id]; if (!loc) return;
-  if (activeId && activeId !== id) deactivateZone(activeId);
+  if (activeId && activeId !== id) { pushPanelHistory(activeId); deactivateZone(activeId); }
   activeId = id;
   allShapes(id).forEach(s => s.classList.add('active'));
   zoneNameEl.classList.remove('visible');
@@ -1121,6 +1319,56 @@ function deactivateZone(id) {
   allShapes(id).forEach(s => { s.classList.remove('active'); s.classList.remove('hover'); });
   clearInterior();
 }
+
+// ─── PANEL HISTORY (back button) ───────────────────────────────────────────────
+const panelBackBtn = document.getElementById('panel-back-btn');
+
+function pushPanelHistory(id) {
+  panelHistory.push(id);
+  updateBackButton();
+}
+function updateBackButton() {
+  panelBackBtn.classList.toggle('visible', panelHistory.length > 0);
+}
+function navigateBack() {
+  const prevId = panelHistory.pop();
+  updateBackButton();
+  if (!prevId) return;
+  navigateToZone(prevId, /* recordHistory */ false);
+}
+panelBackBtn.addEventListener('click', navigateBack);
+
+// Activates a zone, opens its panel, and flies the map to center it — used for
+// zone-clicks AND for in-description [[wikilink]] navigation.
+function navigateToZone(id, recordHistory = true) {
+  const loc = locationMap[id];
+  if (!loc) return;
+
+  if (activeId && activeId !== id) {
+    if (recordHistory) pushPanelHistory(activeId);
+    deactivateZone(activeId);
+  }
+  activeId = id;
+  allShapes(id).forEach(s => s.classList.add('active'));
+  zoneNameEl.classList.remove('visible');
+  openPanel(loc);
+
+  const center = safeCenter(loc) || loc.center;
+  if (!center) return;
+  const [cx, cy] = center;
+
+  // Same offset/zoom math as swapInterior's flyTo, so navigating via a
+  // wikilink lands the zone in the same visible position as a normal click.
+  const targetZoom    = 5;
+  const naturalLatLng = px(cx, cy);
+  const panelCss      = Math.min(window.innerWidth * 0.30, 500);
+  const shiftCss      = panelCss / 2;
+  const pt            = map.project(naturalLatLng, targetZoom);
+  const offsetLatLng  = map.unproject(pt.add([-shiftCss, 0]), targetZoom);
+
+  map.flyTo(offsetLatLng, targetZoom, { animate: true, duration: 0.9 });
+}
+
 
 // ─── PANEL ────────────────────────────────────────────────────────────────────
 const panel     = document.getElementById('info-panel');
@@ -1132,7 +1380,16 @@ function openPanel(loc) {
   const populate = () => {
     panelName.textContent = cleanName(loc);
     panelLog.textContent  = loc.logLine || '';
-    panelDesc.innerHTML   = loc.description || '';
+
+    // Wikilink parse context, scoped to this location: zone-links won't
+    // navigate to Regions or to this same zone, and character-hover links
+    // only resolve against THIS location's cast (a name can appear in a
+    // description without that character being part of this zone's cast).
+    currentZoneId = loc.id;
+    currentCharacterMap = {};
+    (loc.characters || []).forEach(name => { currentCharacterMap[name.toLowerCase()] = name; });
+
+    panelDesc.innerHTML = marked.parse(prepareMarkdown(normalizeDescription(loc.description || '')));
     document.getElementById('panel-body').scrollTop = 0;
 
     const iconsEl = document.getElementById('panel-icons');
@@ -1178,6 +1435,51 @@ function makeViewBtn(key, tip, icon) {
   return btn;
 }
 
+// ─── IN-DESCRIPTION WIKILINKS ───────────────────────────────────────────────────
+// Delegated so it survives panelDesc.innerHTML being replaced on every openPanel().
+const wikiPortraitPopup = document.getElementById('wiki-portrait-popup');
+
+panelDesc.addEventListener('click', e => {
+  const link = e.target.closest('.zone-link');
+  if (!link) return;
+  navigateToZone(link.dataset.zoneId);
+});
+
+panelDesc.addEventListener('mouseover', e => {
+  const link = e.target.closest('.char-link');
+  if (!link) return;
+  const name = link.dataset.charName;
+  wikiPortraitPopup.innerHTML = `<img src="${CHAR_URL(name)}" alt="${escapeHtml(name)}" loading="lazy"><div class="wiki-portrait-name">${escapeHtml(name)}</div>`;
+
+  const margin = 8;
+  const r = link.getBoundingClientRect();
+  const popupRect = wikiPortraitPopup.getBoundingClientRect(); // opacity:0 but laid out, so this is accurate
+
+  // Prefer above the link; flip below if there isn't room.
+  let top = r.top - margin;
+  let translateY = '-100%';
+  if (top - popupRect.height < margin) {
+    top = r.bottom + margin;
+    translateY = '0';
+  }
+
+  // Center horizontally on the link, but clamp so the popup stays on-screen
+  // — important for links near the left edge of the (narrow) info panel.
+  const halfW = popupRect.width / 2;
+  let left = r.left + r.width / 2;
+  left = Math.min(Math.max(left, halfW + margin), window.innerWidth - halfW - margin);
+
+  wikiPortraitPopup.style.left = left + 'px';
+  wikiPortraitPopup.style.top  = top + 'px';
+  wikiPortraitPopup.style.transform = `translate(-50%, ${translateY})`;
+  wikiPortraitPopup.classList.add('visible');
+});
+panelDesc.addEventListener('mouseout', e => {
+  const link = e.target.closest('.char-link');
+  if (!link) return;
+  wikiPortraitPopup.classList.remove('visible');
+});
+
 function showExterior(btn) {
   clearInterior();
   document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
@@ -1196,6 +1498,8 @@ function closePanel() {
   panel.style.opacity    = '1';
   panel.classList.remove('open');
   if (activeId) { deactivateZone(activeId); activeId = null; }
+  panelHistory = [];
+  updateBackButton();
 }
 
 document.getElementById('panel-fold').addEventListener('click', closePanel);
@@ -1360,6 +1664,47 @@ function toggleGrid(btn) {
     if (gridLayer) { map.removeLayer(gridLayer); gridLayer = null; }
   }
 }
+
+// ─── DEBUG: COORDINATE READOUT ─────────────────────────────────────────────────
+// Temporary dev aid for finding `center` (and other) coordinates to hand-author
+// into locations.json. Press "c" to toggle a live readout of the cursor's
+// position in the SAME coordinate space as `center`/`bounds`/shape data (i.e.
+// the inverse of px()). While active, clicking the map copies "[x.x, y.y]" to
+// the clipboard, ready to paste as a `center` value.
+//
+// To remove this feature later: delete this block, the unpx() helper above,
+// the #debug-coords element, and its CSS rule.
+(function initDebugCoords() {
+  let active = false;
+  const el = document.getElementById('debug-coords');
+
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'c' && e.key !== 'C') return;
+    // Don't hijack typing if focus is ever in a text field.
+    if (/INPUT|TEXTAREA/.test(document.activeElement?.tagName)) return;
+    active = !active;
+    el.classList.toggle('visible', active);
+    map.getContainer().style.cursor = active ? 'cell' : '';
+  });
+
+  map.on('mousemove', e => {
+    if (!active) return;
+    const [x, y] = unpx(e.latlng);
+    el.textContent = `x: ${x.toFixed(1)}, y: ${y.toFixed(1)}  (click to copy)`;
+    el.style.left = (e.originalEvent.clientX + 16) + 'px';
+    el.style.top  = (e.originalEvent.clientY + 16) + 'px';
+  });
+
+  map.on('click', e => {
+    if (!active) return;
+    const [x, y] = unpx(e.latlng);
+    // Formatted to paste directly inside a `"center": [ ... ]` array in
+    // locations.json — drop it right after the opening bracket.
+    const text = `${x.toFixed(1)},\n      ${y.toFixed(1)}`;
+    navigator.clipboard?.writeText(text).catch(() => {});
+    el.textContent = `copied: [${x.toFixed(1)}, ${y.toFixed(1)}]`;
+  });
+})();
 
 // ─── CREDITS ──────────────────────────────────────────────────────────────────
 const creditsPanel = document.getElementById('credits-panel');
@@ -1542,6 +1887,7 @@ fetch('locations.json')
   .then(data => {
     LOCATIONS   = data;
     locationMap = Object.fromEntries(data.map(l => [l.id, l]));
+    buildWikiLookups(LOCATIONS);
     buildZoneOverlay(LOCATIONS);
   })
   .catch(err => console.warn('locations.json not loaded (needs local server):', err));
