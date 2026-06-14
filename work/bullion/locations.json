@@ -398,7 +398,7 @@
       "Ingmar Ironclad",
       "Silas Splintwright",
       "Spurra Splintwright",
-      "Leda Aedi",
+      "Laeda Edi",
       "Ida Barrelsworth"
     ]
   },
@@ -1865,7 +1865,6 @@
     "characters": [
       "Zak Grist",
       "Gerald Grist",
-      "Aleister Hermann",
       "Unda Grangate"
     ]
   },
@@ -3541,15 +3540,14 @@
     },
     "characters": [
       "Zak Grist",
-      "Gerald Grist",
-      "Aleister Hermann"
+      "Gerald Grist"
     ]
   },
   {
     "id": "birds",
     "name": "birds",
-    "type": "",
-    "logLine": "",
+    "type": "POI",
+    "logLine": "Bird's the word!",
     "description": "",
     "layer": "extra",
     "region": "plateau",

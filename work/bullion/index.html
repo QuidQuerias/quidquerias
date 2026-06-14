@@ -924,6 +924,46 @@
     <p id="landing-subtitle">A Dungeons, Dragons &amp; Digital Skills Showcase</p>
   </div>
   <div id="landing-fade-cover"></div>
+
+  <!--
+    Bird world — isolated SVG at z-index 125, above title overlay.
+    No filters/effects from the scene stack touch it.
+    viewBox 0 0 100 100 lets JS express all coords as percentages,
+    which stays correct on any viewport size without resize math.
+    rotate="auto" on animateMotion handles orientation natively.
+    Inner <g transform="rotate(90)"> corrects the north-facing default
+    to east-facing, so rotate="auto" can then steer it correctly.
+  -->
+  <svg id="landing-bird-world"
+       xmlns="http://www.w3.org/2000/svg"
+       xmlns:xlink="http://www.w3.org/1999/xlink"
+       viewBox="0 0 177.78 100"
+       style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:125;overflow:visible;">
+    <defs>
+      <!-- Drop shadow matching the main world's spriteShadow filter -->
+      <filter id="birdShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0.7" dy="0.7" stdDeviation="0.6"
+                      flood-color="black" flood-opacity="0.5"/>
+      </filter>
+      <!-- Flight path — rewritten by JS before each flight -->
+      <path id="birdPath" d="M0,0 L100,100"/>
+    </defs>
+
+    <!-- Bird sprite — rotate(90) corrects north-facing asset to east-facing baseline -->
+    <g id="birdSprite" filter="url(#birdShadow)" opacity="0">
+      <animateMotion id="birdMotion"
+        dur="1s" begin="indefinite" fill="freeze"
+        rotate="auto" calcMode="linear">
+        <mpath href="#birdPath"/>
+      </animateMotion>
+      <g transform="rotate(90)">
+        <image id="birdImg"
+          href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/bird_animated.webp"
+          x="-3" y="-3" width="6" height="6"
+          preserveAspectRatio="xMidYMid meet"/>
+      </g>
+    </g>
+  </svg>
 </div>
 
 
@@ -1817,6 +1857,118 @@ function radialReveal(revealOrigin, onComplete) {
   }
   setTimeout(setupPan, 200);
   window.addEventListener('resize', setupPan);
+
+  // ── Intro bird ─────────────────────────────────────────────────────────────
+  // Uses its own SVG world (#landing-bird-world) at z-index 125, above the
+  // title overlay. animateMotion rotate="auto" handles orientation natively.
+  // viewBox is 0 0 100 100 so all coords are percentages — resize-proof.
+  // Inner rotate(90) corrects the north-facing asset to east-facing baseline.
+  (function initBird() {
+    const birdPath    = document.getElementById('birdPath');
+    const birdMotion  = document.getElementById('birdMotion');
+    const birdSprite  = document.getElementById('birdSprite');
+    const birdSvg     = document.getElementById('landing-bird-world');
+    if (!birdPath || !birdMotion || !birdSprite || !birdSvg) return;
+
+    // Keep viewBox in sync with the actual viewport aspect ratio
+    function syncViewBox() {
+      const vw = (window.innerWidth / window.innerHeight) * 100;
+      birdSvg.setAttribute('viewBox', `0 0 ${vw.toFixed(2)} 100`);
+    }
+    syncViewBox();
+    window.addEventListener('resize', syncViewBox);
+
+    let birdTimer = null;
+
+    // Pick a random point on one of the 4 edges (in viewBox space).
+    // VW/VH are computed from the actual viewport ratio so edges map
+    // to real screen edges regardless of aspect ratio.
+    function randomEdgePoint(excludeEdge) {
+      const VW = (window.innerWidth / window.innerHeight) * 100;
+      const VH = 100;
+      const t = Math.random();
+      let edge;
+      do { edge = Math.floor(Math.random() * 4); } while (edge === excludeEdge);
+      switch (edge) {
+        case 0: return { x: t * VW,  y: -5,       edge }; // top
+        case 1: return { x: VW + 5,  y: t * VH,   edge }; // right
+        case 2: return { x: t * VW,  y: VH + 5,   edge }; // bottom
+        case 3: return { x: -5,      y: t * VH,   edge }; // left
+      }
+    }
+
+    // Require at least 60% of the true viewport diagonal for a real crossing,
+    // and reject paths within 3° of perfectly horizontal or vertical.
+    function pickPath() {
+      const VW  = (window.innerWidth / window.innerHeight) * 100;
+      const VH  = 100;
+      const MIN = Math.sqrt(VW * VW + VH * VH) * 0.60;
+      const ANGLE_MARGIN = 3; // degrees — min deviation from 0°/90°/180°/270°
+      let from, to, dx, dy, dist, tooFlat;
+      do {
+        from     = randomEdgePoint(-1);
+        to       = randomEdgePoint(from.edge);
+        dx       = to.x - from.x;
+        dy       = to.y - from.y;
+        dist     = Math.sqrt(dx * dx + dy * dy);
+        const angleDeg = Math.abs(Math.atan2(dy, dx) * (180 / Math.PI));
+        const quadrant = angleDeg % 90;
+        tooFlat  = quadrant < ANGLE_MARGIN || quadrant > (90 - ANGLE_MARGIN);
+      } while (dist < MIN || tooFlat);
+      return { from, to, dist };
+    }
+
+    function flyBird() {
+      if (!landing.parentNode) return;
+
+      const { from, to, dist } = pickPath();
+
+      // Update the <path> the animateMotion follows
+      birdPath.setAttribute('d', `M${from.x},${from.y} L${to.x},${to.y}`);
+
+      // 10 units/s in 0–100 viewBox space; full diagonal (~140 units) ≈ 14s
+      const durSec = dist / 10;
+      birdMotion.setAttribute('dur', `${durSec.toFixed(2)}s`);
+
+      const FADE = 0.6; // seconds for fade in/out
+      const startT = performance.now();
+
+      birdSprite.setAttribute('opacity', '0');
+
+      // Stop any previous motion then restart cleanly on the updated path/dur
+      birdMotion.endElement();
+      birdMotion.beginElement();
+
+      function tick(now) {
+        if (!landing.parentNode) return;
+        const elapsed  = (now - startT) / 1000;
+        const progress = elapsed / durSec;
+
+        let opacity;
+        if (elapsed < FADE)                opacity = elapsed / FADE;
+        else if (elapsed > durSec - FADE)  opacity = Math.max(0, (durSec - elapsed) / FADE);
+        else                               opacity = 1;
+        birdSprite.setAttribute('opacity', opacity);
+
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          birdSprite.setAttribute('opacity', '0');
+          scheduleNextBird();
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+
+    function scheduleNextBird() {
+      if (!landing.parentNode) return;
+      const delay = (15 + Math.random() * 30) * 1000;
+      birdTimer = setTimeout(flyBird, delay);
+    }
+
+    // First flight: 12s after load so title has faded in
+    birdTimer = setTimeout(flyBird, 12000);
+  })();
 
   // ── Entry ──────────────────────────────────────────────────────────────────
   let entered = false;
