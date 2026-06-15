@@ -29,6 +29,30 @@
       --panel-h:    82vh;
       --panel-min:  200px;
       --ctrl-w:     36px;
+
+      /* ── Type accent palette ───────────────────────────── */
+      /* region overlays */
+      --type-theSkirts:  #60E3E8;
+      --type-keep:       #e8c060;   /* same as --gold-light */
+      --type-village:    #A6E860;
+      --type-market:     #60E8AF;
+      --type-theNeck:    #EB8F44;
+
+      /* zone stroke groups */
+      --accent-gold:      #e8c060;  /* POI, landmark, church */
+      --accent-lime:      #7ae847;  /* farm, forest, cave, mountain */
+      --accent-orange:    #EB8F44;  /* home, camp */
+      --accent-teal:      #5cebc5;  /* shop, candle */
+      --accent-cyan:      #74ecf0;  /* mechanism, bird, medical, mine, stable */
+      --accent-sky:       #73d1f4;  /* ship, fish, alcohol */
+      --accent-periwinkle:#6f8aff;  /* lodging, office, school */
+      --accent-purple:    #b46dff;  /* graveyard, unknown */
+      --accent-magenta:   #e65aff;  /* apothecary, gem, crystalBall, runes */
+      --accent-pink:      #E860BB;  /* food, bread, meat */
+      --accent-red:       #ff5a5a;  /* military, smith */
+
+      /* active accent — set per-panel via JS */
+      --accent: var(--accent-gold);
     }
 
     html, body {
@@ -94,17 +118,85 @@
     .map-ctrl-btn.active { background: rgba(200,151,42,0.18); border-color: var(--gold); }
 
     /* ─── HOVER ZONE NAME ──────────────────────────────── */
+    /*
+     * ─── ZONE NAME OVERLAY ─────────────────────────────────────────────────────
+     * Fixed-geometry approach: --pill-h and --circle-r are measured ONCE on load
+     * and never change. All children are position:absolute so vertical layout is
+     * purely driven by CSS constants — no JS paddingTop, no timers, no reflows.
+     * Only #zone-name's WIDTH is set per-hover (text varies), which is safe
+     * because width changes don't cascade to any child's vertical position.
+     */
     #zone-name {
-      position: fixed; top: 18px; left: 50%; transform: translateX(-50%);
-      z-index: 10; pointer-events: none;
-      font-family: 'Cinzel', serif; font-weight: 600;
-      font-size: clamp(14px, 1.8vw, 22px);
-      color: var(--gold); letter-spacing: 0.08em;
-      white-space: nowrap; opacity: 0; transition: opacity 0.2s;
-      background: rgba(14,9,3,0.82); border: 1px solid rgba(200,151,42,0.35);
-      padding: 8px 24px 7px;
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      /* Total height = circle space above pill + pill itself */
+      height: calc(var(--circle-r, 40px) + var(--pill-h, 46px));
+      /* Width set per-hover by JS; min keeps it from collapsing before first set */
+      min-width: 120px;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+    /* When there's no icon, collapse the circle space so the pill sits at top:16px */
+    #zone-name.no-icon {
+      height: var(--pill-h, 46px);
     }
     #zone-name.visible { opacity: 1; }
+
+    /* Frame SVG fills the entire container; draws at known coords */
+    #zone-name-frame {
+      position: absolute;
+      inset: 0;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /*
+     * Icon: 100×100 canvas, bottom-center anchored at the circle center.
+     * Container height = --circle-r (the top half of the circle).
+     * The SVG scales to fill; its bottom-center aligns with the pill top edge.
+     */
+    #zone-name-icon {
+      display: none; /* switched to flex by JS after icon loads */
+      position: absolute;
+      width: var(--circle-r, 40px);
+      height: var(--circle-r, 40px);
+      left: 50%;
+      bottom: calc(var(--pill-h, 46px) - 3px); /* 5px below circle center for visual balance */
+      /* transform set entirely by JS: translateX(-50%) scale(iconScale)
+         transform-origin: bottom center — keeps anchor stable at any scale */
+      pointer-events: none;
+      overflow: visible;
+      z-index: 2;
+    }
+    #zone-name-icon svg {
+      width: 100%; height: 100%; display: block;
+      overflow: visible;
+    }
+
+    /* Text row: anchored to bottom of container, stretches full width */
+    #zone-name-text-row {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      font-family: 'Cinzel', serif; font-weight: 600;
+      font-size: clamp(16px, 2vw, 26px);
+      color: var(--zone-accent, var(--gold-light));
+      letter-spacing: 0.08em;
+      padding: 10px 32px;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+    /* Zone-name accent is set inline via --zone-accent by JS */
+    /* (type icon lives only in the zone-name overlay, not in the panel) */
 
     /* ─── ZONE POLYGONS ────────────────────────────────── */
     .zone-polygon {
@@ -112,8 +204,8 @@
       stroke-opacity: 0; fill-opacity: 0; cursor: pointer;
       transition: stroke-opacity 0.25s, fill-opacity 0.25s;
     }
-    .zone-polygon.hover  { stroke-opacity: 0.55; fill-opacity: 0.10; fill: var(--gold); }
-    .zone-polygon.active { stroke-opacity: 0.72; fill-opacity: 0.14; fill: var(--gold); }
+    .zone-polygon.hover  { stroke-opacity: 0.55; fill-opacity: 0.10; }
+    .zone-polygon.active { stroke-opacity: 0.72; fill-opacity: 0.14; }
     .zone-polygon.layer-region {
       stroke-width: 0; fill: var(--gold-light); fill-opacity: 0;
       visibility: hidden; pointer-events: none;
@@ -125,6 +217,32 @@
     .zoom-far .zone-polygon.layer-zone { pointer-events: none; }
     .zoom-far .zone-polygon.layer-zone.always-visible { pointer-events: auto !important; }
     .zoom-far .zone-polygon.layer-extra { pointer-events: none; }
+
+    /* ── Type-colored zone strokes (non-region zones) ──── */
+    /* Each group overrides the default --gold stroke via a CSS custom property
+       injected on the SVG element by JS; the actual stroke color is set inline. */
+
+    /* ── Panel accent — cascades from --accent set by JS ─ */
+    #panel-inner {
+      border-left-color: var(--accent, var(--gold)) !important;
+    }
+    /* Accent top bar replaces the flat gold gradient */
+    #panel-inner::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent, var(--gold-light)) 0%, transparent 100%);
+      opacity: 0.55;
+      z-index: 1;
+      pointer-events: none;
+    }
+    #panel-header {
+      border-bottom-color: rgba(200,151,42,0.2) !important;
+    }
+    #panel-logline {
+      color: var(--accent, var(--gold-light)) !important;
+    }
+    /* (type icon lives only in the zone-name overlay, not in the panel) */
+    /* Zone-name accent is set inline via --zone-accent by JS (onZoneMouseover) */
 
     /* ─── INFO PANEL ───────────────────────────────────── */
     #info-panel {
@@ -244,12 +362,13 @@
       display: flex; align-items: center; justify-content: center;
       background: none; border: 1px solid rgba(200,151,42,0.3);
       cursor: pointer; border-radius: 2px;
+      color: var(--accent, var(--gold));
       transition: border-color 0.2s, background 0.2s;
     }
     .view-btn svg { flex-shrink: 0; opacity: 0.7; transition: opacity 0.2s; }
-    .view-btn:hover { border-color: var(--gold); background: rgba(200,151,42,0.08); }
+    .view-btn:hover { border-color: var(--accent, var(--gold)); background: rgba(200,151,42,0.08); }
     .view-btn:hover svg { opacity: 1; }
-    .view-btn.active { border-color: var(--gold); background: rgba(200,151,42,0.12); }
+    .view-btn.active { border-color: var(--accent, var(--gold)); background: rgba(200,151,42,0.12); }
     .view-btn.active svg { opacity: 1; }
     .view-btn .btn-tip {
       position: absolute; top: calc(100% + 6px); right: 0;
@@ -273,13 +392,13 @@
       align-items: center; gap: 6px;
       background: none; border: 1px solid rgba(200,151,42,0.3);
       border-radius: 2px; cursor: pointer;
-      color: var(--gold-light); font-family: 'Cinzel', serif;
+      color: var(--accent, var(--gold-light)); font-family: 'Cinzel', serif;
       font-size: 11px; letter-spacing: 0.06em; line-height: 1;
       padding: 4px 10px; margin-bottom: 10px;
-      transition: border-color 0.2s, background 0.2s;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
     }
     #panel-back-btn.visible { display: flex; }
-    #panel-back-btn:hover { border-color: var(--gold); background: rgba(200,151,42,0.08); }
+    #panel-back-btn:hover { border-color: var(--accent, var(--gold)); background: rgba(200,151,42,0.08); }
     #panel-back-btn svg { flex-shrink: 0; opacity: 0.8; }
 
     /* ─── PANEL BODY (scrollable) ──────────────────────── */
@@ -294,26 +413,24 @@
       padding: 14px 10px 12px 20px;
       overflow-y: auto;
       scrollbar-width: thin;
-      scrollbar-color: var(--gold) transparent;
+      scrollbar-color: var(--accent, var(--gold)) transparent;
     }
     #panel-body::-webkit-scrollbar { width: 4px; }
-    #panel-body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+    #panel-body::-webkit-scrollbar-thumb { background: var(--accent, var(--gold)); border-radius: 2px; }
     #panel-description { 
       font-family: 'Crimson Pro', serif; font-weight: 300;
       font-size: clamp(14px, 1.35vw, 17px); line-height: 1.72; color: var(--aged);
     }
     #panel-description p { margin: 0 0 1em 0; }
     #panel-description p:last-child { margin-bottom: 0; }
-    #panel-description a { color: var(--gold-light); }
-    #panel-description .zone-link { color: var(--gold-light); cursor: pointer; text-decoration: underline; }
+    #panel-description a { color: var(--accent, var(--gold-light)); }
+    #panel-description .zone-link { color: var(--accent, var(--gold-light)); cursor: pointer; text-decoration: underline; }
     #panel-description .zone-ref {
-      /* Recognized place name (a Region, or this same zone) — not a navigation
-         target, so styled to read as "known" without inviting a click. */
-      color: var(--gold-light); cursor: default;
+      color: var(--accent, var(--gold-light)); cursor: default;
     }
     #panel-description .char-link {
-      color: var(--gold-light); cursor: default;
-      text-decoration: underline dotted; text-decoration-color: rgba(200,151,42,0.5);
+      color: var(--accent, var(--gold-light)); cursor: default;
+      text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, var(--accent, var(--gold-light)) 50%, transparent);
       text-underline-offset: 2px;
     }
     #panel-description .wiki-plain {
@@ -361,7 +478,7 @@
       transition: border-color 0.2s, background 0.2s;
       opacity: 0.65;
     }
-    .portrait-nav:hover { border-color: var(--gold); background: rgba(200,151,42,0.08); opacity: 1; }
+    .portrait-nav:hover { border-color: var(--accent, var(--gold)); background: rgba(200,151,42,0.08); opacity: 1; }
     .portrait-nav.hidden { visibility: hidden; pointer-events: none; }
 
     #portrait-track-wrap {
@@ -381,7 +498,7 @@
       border: 1px solid rgba(200,151,42,0.3); display: block;
       filter: sepia(0.15) contrast(1.05); transition: border-color 0.2s, filter 0.2s;
     }
-    .portrait-wrap:hover img { border-color: var(--gold); filter: sepia(0) contrast(1.1); }
+    .portrait-wrap:hover img { border-color: var(--accent, var(--gold)); filter: sepia(0) contrast(1.1); }
 
     /* Single shared portrait tooltip — fixed so it escapes all overflow contexts */
     #portrait-tooltip {
@@ -924,50 +1041,14 @@
     <p id="landing-subtitle">A Dungeons, Dragons &amp; Digital Skills Showcase</p>
   </div>
   <div id="landing-fade-cover"></div>
-
-  <!--
-    Bird world — isolated SVG at z-index 125, above title overlay.
-    No filters/effects from the scene stack touch it.
-    viewBox 0 0 100 100 lets JS express all coords as percentages,
-    which stays correct on any viewport size without resize math.
-    rotate="auto" on animateMotion handles orientation natively.
-    Inner <g transform="rotate(90)"> corrects the north-facing default
-    to east-facing, so rotate="auto" can then steer it correctly.
-  -->
-  <svg id="landing-bird-world"
-       xmlns="http://www.w3.org/2000/svg"
-       xmlns:xlink="http://www.w3.org/1999/xlink"
-       viewBox="0 0 177.78 100"
-       style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:125;overflow:visible;">
-    <defs>
-      <!-- Drop shadow matching the main world's spriteShadow filter -->
-      <filter id="birdShadow" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0.7" dy="0.7" stdDeviation="0.6"
-                      flood-color="black" flood-opacity="0.5"/>
-      </filter>
-      <!-- Flight path — rewritten by JS before each flight -->
-      <path id="birdPath" d="M0,0 L100,100"/>
-    </defs>
-
-    <!-- Bird sprite — rotate(90) corrects north-facing asset to east-facing baseline -->
-    <g id="birdSprite" filter="url(#birdShadow)" opacity="0">
-      <animateMotion id="birdMotion"
-        dur="1s" begin="indefinite" fill="freeze"
-        rotate="auto" calcMode="linear">
-        <mpath href="#birdPath"/>
-      </animateMotion>
-      <g transform="rotate(90)">
-        <image id="birdImg"
-          href="https://pub-c58d34cf00c64454a7a4841d1570b1c0.r2.dev/animated/bird_animated.webp"
-          x="-3" y="-3" width="6" height="6"
-          preserveAspectRatio="xMidYMid meet"/>
-      </g>
-    </g>
-  </svg>
 </div>
 
 
-<div id="zone-name"></div>
+<div id="zone-name">
+  <svg id="zone-name-frame" aria-hidden="true"></svg>
+  <div id="zone-name-icon" aria-hidden="true"></div>
+  <div id="zone-name-text-row"><span id="zone-name-text"></span></div>
+</div>
 <div id="map"></div>
 
 <!-- ─── INFO PANEL ────────────────────────────────── -->
@@ -1073,16 +1154,16 @@ const BOUNDS = L.latLngBounds(L.latLng(0,0), L.latLng(-256,256));
 
 const ICONS = {
   exterior: `<svg width="17" height="17" viewBox="0 0 14 14" fill="none">
-    <path d="M7 1.5L1.5 6v6.5h4V9.5h3v3h4V6L7 1.5Z" stroke="#c8972a" stroke-width="1.1" stroke-linejoin="round"/>
+    <path d="M7 1.5L1.5 6v6.5h4V9.5h3v3h4V6L7 1.5Z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
   </svg>`,
   interior: `<svg width="15" height="18" viewBox="0 0 13 15" fill="none">
-    <rect x="0.5" y="0.5" width="12" height="14" rx="0.5" stroke="#c8972a" stroke-width="1.1"/>
-    <polygon points="3,1 11,2.5 11,12.5 3,14" stroke="#c8972a" stroke-width="1" fill="rgba(200,151,42,0.08)"/>
-    <circle cx="9" cy="8" r="0.65" fill="#c8972a"/>
+    <rect x="0.5" y="0.5" width="12" height="14" rx="0.5" stroke="currentColor" stroke-width="1.1"/>
+    <polygon points="3,1 11,2.5 11,12.5 3,14" stroke="currentColor" stroke-width="1" fill="rgba(0,0,0,0.08)"/>
+    <circle cx="9" cy="8" r="0.65" fill="currentColor"/>
   </svg>`,
   upstairs: `<svg width="17" height="17" viewBox="0 0 14 14" fill="none">
     <polyline points="1.5,13.5 1.5,10.5 5,10.5 5,7.5 8.5,7.5 8.5,4.5 12,4.5 12,1.5 13.5,1.5 13.5,13.5 1.5,13.5"
-      stroke="#c8972a" stroke-width="1.2" stroke-linecap="square" stroke-linejoin="miter"/>
+      stroke="currentColor" stroke-width="1.2" stroke-linecap="square" stroke-linejoin="miter"/>
   </svg>`
 };
 
@@ -1094,6 +1175,113 @@ let gridLayer = null, gridVisible = false, svgEl = null;
 let portraitPage = 0;
 const PORTRAITS_PER_PAGE = 4;
 let portraitData = [];
+
+// ─── TYPE ACCENT COLORS ───────────────────────────────────────────────────────
+// Maps lowercase type -> CSS variable name (declared in :root).
+// Regions also get fill colors; non-region zones get stroke colors.
+const TYPE_ACCENT = {
+  // gold (default / POI / landmark / church)
+  poi:         '--accent-gold',
+  landmark:    '--accent-gold',
+  church:      '--accent-gold',
+  // lime
+  farm:        '--accent-lime',
+  forest:      '--accent-lime',
+  cave:        '--accent-lime',
+  mountain:    '--accent-lime',
+  // orange
+  home:        '--accent-orange',
+  camp:        '--accent-orange',
+  // teal
+  shop:        '--accent-teal',
+  candle:      '--accent-teal',
+  // cyan
+  mechanism:   '--accent-cyan',
+  bird:        '--accent-cyan',
+  medical:     '--accent-cyan',
+  mine:        '--accent-cyan',
+  stable:      '--accent-cyan',
+  shoe:      '--accent-cyan',
+  sewing:      '--accent-cyan',
+  // sky
+  ship:        '--accent-sky',
+  fish:        '--accent-sky',
+  alcohol:     '--accent-sky',
+  fountain:     '--accent-sky',
+  // periwinkle
+  lodging:     '--accent-periwinkle',
+  office:      '--accent-periwinkle',
+  school:      '--accent-periwinkle',
+  // purple
+  graveyard:   '--accent-purple',
+  unknown:     '--accent-purple',
+  coffin:     '--accent-purple',
+  // magenta
+  apothecary:  '--accent-magenta',
+  dice:  '--accent-magenta',
+  gem:         '--accent-magenta',
+  crystalball: '--accent-magenta',
+  runes:       '--accent-magenta',
+  // pink
+  food:        '--accent-pink',
+  bread:       '--accent-pink',
+  meat:        '--accent-pink',
+  // red
+  military:    '--accent-red',
+  tower:       '--accent-red',
+  smith:       '--accent-red',
+};
+
+// Region fill colors (by location id for the special regions, or by type otherwise)
+const REGION_FILL = {
+  theSkirts:     '#60E3E8',
+  keep:          '#e8c060',
+  hickoryVillage:'#A6E860', // village
+  market:        '#60E8AF',
+  theNeck:       '#EB8F44',
+};
+
+// Resolved hex values for each CSS var (for inline SVG use where CSS vars don't apply)
+const ACCENT_HEX = {
+  '--accent-gold':       '#e8c060',
+  '--accent-lime':       '#A6E860',
+  '--accent-orange':     '#EB8F44',
+  '--accent-teal':       '#60E8AF',
+  '--accent-cyan':       '#60E3E8',
+  '--accent-sky':        '#60C4E8',
+  '--accent-periwinkle': '#6079E8',
+  '--accent-purple':     '#A260E8',
+  '--accent-magenta':    '#D460E8',
+  '--accent-pink':       '#E860BB',
+  '--accent-red':        '#E34D4D',
+};
+
+const R2_ICONS = `icons`;
+
+/** Returns the hex accent color for a given location's icon type */
+function accentForLoc(loc) {
+  // Regions use their fill color as their accent (keyed by id, not icon type)
+  if (loc.layer === 'region') return REGION_FILL[loc.id] || '#e8c060';
+  const t = iconInfo(loc).name;
+  const cssVar = TYPE_ACCENT[t] || '--accent-gold';
+  return ACCENT_HEX[cssVar] || '#e8c060';
+}
+
+/**
+ * Normalise loc.icon into { name, scale }.
+ * Accepts both the legacy string form ("fish") and the new object form
+ * ({ name: "fish", scale: 0.8 }). Scale defaults to 1.0 if omitted.
+ */
+function iconInfo(loc) {
+  const raw = loc.icon;
+  if (!raw)                      return { name: '',     scale: 1.0 };
+  if (typeof raw === 'string')   return { name: raw.toLowerCase().replace(/\s+/g, ''), scale: 1.0 };
+  const name  = (raw.name  || '').toLowerCase().replace(/\s+/g, '');
+  const scale = (typeof raw.scale === 'number') ? raw.scale : 1.0;
+  return { name, scale };
+}
+
+
 
 // ─── WIKILINK RESOLUTION ────────────────────────────────────────────────────────
 // locationNameMap is built once from LOCATIONS at load (zone names are global
@@ -1289,8 +1477,17 @@ function buildZoneOverlay(locations) {
   [...regions, ...singles, ...multis, ...extras].forEach(loc => {
     if (!loc.shape) return;
     const cls = `zone-polygon layer-${loc.layer}${loc.showAtAllZooms ? ' always-visible' : ''}`;
-    addShapeEl(svgEl, loc.shape, loc.id, cls);
-    (loc.extraShapes || []).forEach(s => addShapeEl(svgEl, s, loc.id, cls));
+
+    // Determine accent color for this location
+    const accent = accentForLoc(loc);
+
+    // Region fill color (overrides default gold-light fill)
+    const regionFill = loc.layer === 'region'
+      ? (REGION_FILL[loc.id] || '#e8c060')
+      : null;
+
+    addShapeEl(svgEl, loc.shape, loc.id, cls, accent, regionFill);
+    (loc.extraShapes || []).forEach(s => addShapeEl(svgEl, s, loc.id, cls, accent, regionFill));
   });
 
   // Use custom zonesPane (z=450) so zone strokes always render above interior image overlays (overlayPane z=400)
@@ -1304,13 +1501,27 @@ function buildZoneOverlay(locations) {
   updateZoomClasses();
 }
 
-function addShapeEl(svg, shape, id, cls) {
+function addShapeEl(svg, shape, id, cls, accentColor, regionFill) {
   const ns = 'http://www.w3.org/2000/svg';
   let el;
   if      (shape.type==='polygon') { el = document.createElementNS(ns,'polygon'); el.setAttribute('points', shape.data); }
   else if (shape.type==='path')    { el = document.createElementNS(ns,'path');    el.setAttribute('d', shape.data); }
   else if (shape.type==='circle')  { el = document.createElementNS(ns,'circle');  el.setAttribute('cx', shape.cx); el.setAttribute('cy', shape.cy); el.setAttribute('r', shape.r); }
-  if (el) { el.setAttribute('class', cls); el.dataset.id = id; svg.appendChild(el); }
+  if (el) {
+    el.setAttribute('class', cls);
+    el.dataset.id = id;
+    // Apply type-based color: regions get fill, zones get stroke
+    if (regionFill) {
+      // Region: colored fill (opacity controlled by CSS hover/active classes)
+      el.style.setProperty('fill', regionFill);
+      el.dataset.accent = regionFill; // for zone-name label
+    } else if (accentColor) {
+      // Zone: colored stroke + matching fill on hover/active
+      el.style.setProperty('stroke', accentColor);
+      el.dataset.accent = accentColor; // stored for hover fill override
+    }
+    svg.appendChild(el);
+  }
 }
 
 function updateZoomClasses() {
@@ -1320,11 +1531,216 @@ function updateZoomClasses() {
 map.on('zoomend', updateZoomClasses);
 
 // ─── ZONE INTERACTIONS ────────────────────────────────────────────────────────
-const zoneNameEl = document.getElementById('zone-name');
+const zoneNameEl      = document.getElementById('zone-name');
+const zoneNameTextEl  = document.getElementById('zone-name-text');
+const zoneNameTextRow = document.getElementById('zone-name-text-row');
+const zoneNameIconEl  = document.getElementById('zone-name-icon');
+const zoneNameFrameEl = document.getElementById('zone-name-frame');
 const MAP_BOUNDS_VALID = { min: 50, max: 11450 };
 
 function cleanName(loc) { return (loc.name || loc.id).replace(/^[—\-\s]+|[—\-\s]+$/g, ''); }
 function allShapes(id)   { return svgEl ? svgEl.querySelectorAll(`[data-id="${id}"]`) : []; }
+
+// ─── ONE-TIME GEOMETRY MEASUREMENT ───────────────────────────────────────────
+// Measure pill height once after fonts load, then set --pill-h and --circle-r
+// as CSS variables on :root. These constants drive all overlay layout and are
+// never touched again — no per-hover measurement, no dynamic paddingTop.
+let PILL_H   = 46;  // fallback px values used immediately
+let CIRCLE_R = 40;
+
+function measureAndSetOverlayConstants() {
+  // Temporarily populate with a tall character and make visible-but-transparent
+  // so the browser lays it out with the real font metrics.
+  zoneNameTextEl.textContent = 'M';
+  zoneNameEl.style.visibility = 'hidden';
+  zoneNameEl.style.opacity    = '1';
+
+  // Read pill height — the text-row is position:absolute so its height is
+  // purely its own content (font size + padding), unaffected by the wrapper.
+  const h = zoneNameTextRow.getBoundingClientRect().height;
+  if (h > 0) {
+    PILL_H   = Math.round(h);
+    CIRCLE_R = Math.round(h * 0.9);
+  }
+
+  // Write to CSS so the stylesheet can use them
+  document.documentElement.style.setProperty('--pill-h',   `${PILL_H}px`);
+  document.documentElement.style.setProperty('--circle-r', `${CIRCLE_R}px`);
+
+  // Restore
+  zoneNameTextEl.textContent = '';
+  zoneNameEl.style.visibility = '';
+  zoneNameEl.style.opacity    = '';
+}
+
+// Run after fonts are likely loaded; fallback to DOMContentLoaded timing.
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(measureAndSetOverlayConstants);
+} else {
+  measureAndSetOverlayConstants();
+}
+
+// SVG fetch cache so each icon is only fetched once per session
+const _svgCache = {};
+
+/**
+ * Fetch an SVG file, rewrite all fill/stroke color values to currentColor,
+ * and return the sanitised SVG string. Results are cached by URL.
+ */
+async function fetchSvgAsCurrentColor(url) {
+  if (_svgCache[url] !== undefined) return _svgCache[url];
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) { _svgCache[url] = null; return null; }
+    let text = await resp.text();
+
+    // ── Strip Illustrator cruft ─────────────────────────────────────────
+    // XML declaration
+    text = text.replace(/<\?xml[^>]*\?>/gi, '');
+    // Full DOCTYPE including internal entity subset [...]
+    text = text.replace(/<!DOCTYPE[\s\S]*?(?:\[[\s\S]*?\])?\s*>/gi, '');
+    // XMP / Adobe metadata blocks
+    text = text.replace(/<metadata[\s\S]*?<\/metadata>/gi, '');
+    // foreignObject blocks (Illustrator edit data) — but NOT the parent <switch>
+    // since the actual path data lives in <switch><g i:extraneous="self">
+    text = text.replace(/<foreignObject[\s\S]*?<\/foreignObject>/gi, '');
+    // Adobe PGF binary data block
+    text = text.replace(/<i:aipgf[\s\S]*?<\/i:aipgf>/gi, '');
+    // CDATA sections and any stray ]]> / ]> remnants
+    text = text.replace(/<!\[CDATA\[[\s\S]*?\]\]>/gi, '');
+    text = text.replace(/\]\]>/g, '');
+    text = text.replace(/\]>/g, '');
+    // Entity references like &ns_ai; &ns_extend; in <svg> tag attrs — remove the attr
+    text = text.replace(/\s+xmlns:[a-z]+="&[^"]+;"/g, '');
+    text = text.replace(/&ns_[a-z_]+;/g, '');
+
+    // ── Rewrite fill/stroke to currentColor ────────────────────────────
+    text = text.replace(/\bfill="(?!none\b)([^"]*)"/gi,   'fill="currentColor"');
+    text = text.replace(/\bstroke="(?!none\b)([^"]*)"/gi, 'stroke="currentColor"');
+    text = text.replace(/(?<![a-z-])fill\s*:\s*(?!none\b|transparent\b)([^;}"]+)/gi,
+                        'fill:currentColor');
+    text = text.replace(/(?<![a-z-])stroke\s*:\s*(?!none\b|transparent\b)([^;}"]+)/gi,
+                        'stroke:currentColor');
+
+    // ── Ensure root <svg> has fill="currentColor" as a baseline ────────
+    // Clean icons (no explicit fill attrs on paths) inherit from the root.
+    // This handles both old-style (explicit colors rewritten above) and
+    // new-style (no fill attrs at all) icons in one place.
+    text = text.replace(/(<svg\b[^>]*?)(\s*\/?>)/, (_, open, close) => {
+      // Only add if not already present (the regex above may have set it)
+      if (/\bfill\s*=/.test(open)) return open + close;
+      return open + ' fill="currentColor"' + close;
+    });
+
+    _svgCache[url] = text;
+    return text;
+  } catch {
+    _svgCache[url] = null;
+    return null;
+  }
+}
+
+/**
+ * Draw the composite pill+circle SVG frame into #zone-name-frame.
+ * Geometry is fully determined by PILL_H / CIRCLE_R constants (set once on
+ * load) plus the current overlay width — no live DOM measurement needed.
+ *
+ * Shape: rectangle (pill) with a circle protruding from the top-center.
+ * The compound path is one filled+stroked shape — no layering artifacts.
+ *
+ * Coordinate origin: top-left of #zone-name.
+ * Circle center sits at y = CIRCLE_R (the boundary between circle space and pill).
+ * Pill occupies y = CIRCLE_R … CIRCLE_R + PILL_H.
+ */
+function drawZoneNameFrame(overlayW, accent, hasIcon) {
+  const sw      = 1.5;
+  const pad     = sw / 2;
+  const bgFill  = 'rgba(14,9,3,0.92)';
+  const pillW   = overlayW;
+  const pillH   = PILL_H;
+  const circleR = hasIcon ? CIRCLE_R : 0;
+
+  const svgW = pillW + sw;
+  const svgH = pillH + circleR + sw;
+
+  // Pill bounds (inset by half stroke width)
+  const px1 = pad;
+  const py1 = circleR + pad;   // top of pill
+  const px2 = pillW + pad;
+  const py2 = py1 + pillH;
+
+  zoneNameFrameEl.setAttribute('width',   svgW);
+  zoneNameFrameEl.setAttribute('height',  svgH);
+  zoneNameFrameEl.setAttribute('viewBox', `0 0 ${svgW} ${svgH}`);
+  zoneNameFrameEl.innerHTML = '';
+
+  let pathD;
+  if (!hasIcon) {
+    pathD = `M${px1},${py1} H${px2} V${py2} H${px1} Z`;
+  } else {
+    const cx  = svgW / 2;
+    const cy  = py1;              // circle center = pill top edge
+    const r   = circleR - pad;
+    const tx1 = cx - r;
+    const tx2 = cx + r;
+    pathD = [
+      `M ${tx2},${py1}`,
+      `H ${px2}`,
+      `V ${py2}`,
+      `H ${px1}`,
+      `V ${py1}`,
+      `H ${tx1}`,
+      `A ${r} ${r} 0 1 1 ${tx2} ${py1}`,
+      `Z`
+    ].join(' ');
+  }
+
+  const ns   = 'http://www.w3.org/2000/svg';
+  const path = document.createElementNS(ns, 'path');
+  path.setAttribute('d', pathD);
+  path.setAttribute('fill', bgFill);
+  path.setAttribute('stroke', accent);
+  path.setAttribute('stroke-width', sw);
+  path.setAttribute('stroke-linejoin', 'round');
+  zoneNameFrameEl.appendChild(path);
+}
+
+// Generation counter — incremented on every new hover; async completions
+// check against it and discard if superseded.
+let _iconGeneration = 0;
+
+/** Inject icon SVG for the current hover. Called once per mouseover.
+ *  The frame is already drawn synchronously in onZoneMouseover; this only
+ *  handles the async icon fetch and reveals the icon div when ready. */
+async function setZoneNameIcon(loc, accent) {
+  const gen = ++_iconGeneration;
+
+  // Clear any previous icon immediately
+  zoneNameIconEl.style.display = 'none';
+  zoneNameIconEl.innerHTML     = '';
+  zoneNameIconEl.style.color   = accent;
+
+  const { name: iconName, scale: iconScale } = iconInfo(loc);
+  if (!iconName) return;
+
+  const svgText = await fetchSvgAsCurrentColor(`${R2_ICONS}/${iconName}.svg`);
+  if (gen !== _iconGeneration) return; // superseded by a newer hover
+
+  if (svgText) {
+    zoneNameIconEl.innerHTML = svgText;
+    const inj = zoneNameIconEl.querySelector('svg');
+    if (inj) {
+      inj.style.cssText = 'width:100%;height:100%;display:block;';
+      inj.removeAttribute('width');
+      inj.removeAttribute('height');
+    }
+    // Apply per-icon scale, anchored at bottom-center to keep the
+    // alignment with the circle center stable regardless of scale value.
+    zoneNameIconEl.style.transformOrigin = 'bottom center';
+    zoneNameIconEl.style.transform = `translateX(-50%) scale(${iconScale})`;
+    zoneNameIconEl.style.display = 'flex';
+  }
+}
 
 function safeCenter(loc) {
   if (!loc.center) return null;
@@ -1337,13 +1753,52 @@ function safeCenter(loc) {
 function onZoneMouseover(e) {
   const el = e.target.closest('[data-id]'); if (!el) return;
   const loc = locationMap[el.dataset.id]; if (!loc) return;
-  allShapes(el.dataset.id).forEach(s => s.classList.add('hover'));
-  zoneNameEl.textContent = cleanName(loc);
+  const accent = el.dataset.accent || accentForLoc(loc);
+
+  allShapes(el.dataset.id).forEach(s => {
+    s.classList.add('hover');
+    if (s.dataset.accent) s.style.setProperty('fill', s.dataset.accent);
+  });
+
+  // Set text content and accent
+  zoneNameTextEl.textContent = cleanName(loc);
+  zoneNameEl.style.setProperty('--zone-accent', accent);
+
+  // Determine whether this location has an icon
+  const { name: iconName } = iconInfo(loc);
+  const hasIcon = !!iconName;
+
+  // Height: full (circle + pill) when icon present, pill-only when not
+  zoneNameEl.classList.toggle('no-icon', !hasIcon);
+
+  // Measure the text's natural content width via the inner inline span —
+  // it's unconstrained by any positioning rules so it returns true content width.
+  // Add 64px for the 32px horizontal padding on each side.
+  const TEXT_PAD = 64; // 32px left + 32px right, matches #zone-name-text-row padding
+  const textW = zoneNameTextEl.getBoundingClientRect().width + TEXT_PAD;
+
+  // Size the overlay to fit the text (height is fixed by CSS constants)
+  zoneNameEl.style.width = `${textW}px`;
+
+  // Draw the frame synchronously — geometry is fully known from constants
+  drawZoneNameFrame(textW, accent, hasIcon);
+
+  // Show overlay
   zoneNameEl.classList.add('visible');
+
+  // Kick off async icon fetch (will reveal icon div when ready)
+  setZoneNameIcon(loc, accent);
 }
+
 function onZoneMouseout(e) {
   const el = e.target.closest('[data-id]'); if (!el) return;
-  allShapes(el.dataset.id).forEach(s => s.classList.remove('hover'));
+  allShapes(el.dataset.id).forEach(s => {
+    s.classList.remove('hover');
+    // Only remove the accent fill if the zone isn't still active —
+    // click sets fill too, and mouseout fires right after click.
+    if (s.dataset.accent && !s.classList.contains('active')) s.style.removeProperty('fill');
+  });
+  ++_iconGeneration; // cancel any in-flight icon fetch
   zoneNameEl.classList.remove('visible');
 }
 function onZoneClick(e) {
@@ -1351,12 +1806,18 @@ function onZoneClick(e) {
   const id = el.dataset.id, loc = locationMap[id]; if (!loc) return;
   if (activeId && activeId !== id) { pushPanelHistory(activeId); deactivateZone(activeId); }
   activeId = id;
-  allShapes(id).forEach(s => s.classList.add('active'));
+  allShapes(id).forEach(s => {
+    s.classList.add('active');
+    if (s.dataset.accent) s.style.setProperty('fill', s.dataset.accent);
+  });
   zoneNameEl.classList.remove('visible');
   openPanel(loc);
 }
 function deactivateZone(id) {
-  allShapes(id).forEach(s => { s.classList.remove('active'); s.classList.remove('hover'); });
+  allShapes(id).forEach(s => {
+    s.classList.remove('active'); s.classList.remove('hover');
+    if (s.dataset.accent) s.style.removeProperty('fill');
+  });
   clearInterior();
 }
 
@@ -1421,6 +1882,11 @@ function openPanel(loc) {
     panelName.textContent = cleanName(loc);
     panelLog.textContent  = loc.logLine || '';
 
+    // ── Type accent color ──────────────────────────────
+    const accent = accentForLoc(loc);
+    const panelInner = document.getElementById('panel-inner');
+    panelInner.style.setProperty('--accent', accent);
+
     // Wikilink parse context, scoped to this location: zone-links won't
     // navigate to Regions or to this same zone, and character-hover links
     // only resolve against THIS location's cast (a name can appear in a
@@ -1434,6 +1900,7 @@ function openPanel(loc) {
 
     const iconsEl = document.getElementById('panel-icons');
     iconsEl.innerHTML = '';
+
     if (loc.interiors && loc.interiors.length > 0) {
       const eBtn = makeViewBtn('exterior', 'Exterior', ICONS.exterior);
       eBtn.classList.add('active');
@@ -1858,118 +2325,6 @@ function radialReveal(revealOrigin, onComplete) {
   setTimeout(setupPan, 200);
   window.addEventListener('resize', setupPan);
 
-  // ── Intro bird ─────────────────────────────────────────────────────────────
-  // Uses its own SVG world (#landing-bird-world) at z-index 125, above the
-  // title overlay. animateMotion rotate="auto" handles orientation natively.
-  // viewBox is 0 0 100 100 so all coords are percentages — resize-proof.
-  // Inner rotate(90) corrects the north-facing asset to east-facing baseline.
-  (function initBird() {
-    const birdPath    = document.getElementById('birdPath');
-    const birdMotion  = document.getElementById('birdMotion');
-    const birdSprite  = document.getElementById('birdSprite');
-    const birdSvg     = document.getElementById('landing-bird-world');
-    if (!birdPath || !birdMotion || !birdSprite || !birdSvg) return;
-
-    // Keep viewBox in sync with the actual viewport aspect ratio
-    function syncViewBox() {
-      const vw = (window.innerWidth / window.innerHeight) * 100;
-      birdSvg.setAttribute('viewBox', `0 0 ${vw.toFixed(2)} 100`);
-    }
-    syncViewBox();
-    window.addEventListener('resize', syncViewBox);
-
-    let birdTimer = null;
-
-    // Pick a random point on one of the 4 edges (in viewBox space).
-    // VW/VH are computed from the actual viewport ratio so edges map
-    // to real screen edges regardless of aspect ratio.
-    function randomEdgePoint(excludeEdge) {
-      const VW = (window.innerWidth / window.innerHeight) * 100;
-      const VH = 100;
-      const t = Math.random();
-      let edge;
-      do { edge = Math.floor(Math.random() * 4); } while (edge === excludeEdge);
-      switch (edge) {
-        case 0: return { x: t * VW,  y: -5,       edge }; // top
-        case 1: return { x: VW + 5,  y: t * VH,   edge }; // right
-        case 2: return { x: t * VW,  y: VH + 5,   edge }; // bottom
-        case 3: return { x: -5,      y: t * VH,   edge }; // left
-      }
-    }
-
-    // Require at least 60% of the true viewport diagonal for a real crossing,
-    // and reject paths within 3° of perfectly horizontal or vertical.
-    function pickPath() {
-      const VW  = (window.innerWidth / window.innerHeight) * 100;
-      const VH  = 100;
-      const MIN = Math.sqrt(VW * VW + VH * VH) * 0.60;
-      const ANGLE_MARGIN = 3; // degrees — min deviation from 0°/90°/180°/270°
-      let from, to, dx, dy, dist, tooFlat;
-      do {
-        from     = randomEdgePoint(-1);
-        to       = randomEdgePoint(from.edge);
-        dx       = to.x - from.x;
-        dy       = to.y - from.y;
-        dist     = Math.sqrt(dx * dx + dy * dy);
-        const angleDeg = Math.abs(Math.atan2(dy, dx) * (180 / Math.PI));
-        const quadrant = angleDeg % 90;
-        tooFlat  = quadrant < ANGLE_MARGIN || quadrant > (90 - ANGLE_MARGIN);
-      } while (dist < MIN || tooFlat);
-      return { from, to, dist };
-    }
-
-    function flyBird() {
-      if (!landing.parentNode) return;
-
-      const { from, to, dist } = pickPath();
-
-      // Update the <path> the animateMotion follows
-      birdPath.setAttribute('d', `M${from.x},${from.y} L${to.x},${to.y}`);
-
-      // 10 units/s in 0–100 viewBox space; full diagonal (~140 units) ≈ 14s
-      const durSec = dist / 10;
-      birdMotion.setAttribute('dur', `${durSec.toFixed(2)}s`);
-
-      const FADE = 0.6; // seconds for fade in/out
-      const startT = performance.now();
-
-      birdSprite.setAttribute('opacity', '0');
-
-      // Stop any previous motion then restart cleanly on the updated path/dur
-      birdMotion.endElement();
-      birdMotion.beginElement();
-
-      function tick(now) {
-        if (!landing.parentNode) return;
-        const elapsed  = (now - startT) / 1000;
-        const progress = elapsed / durSec;
-
-        let opacity;
-        if (elapsed < FADE)                opacity = elapsed / FADE;
-        else if (elapsed > durSec - FADE)  opacity = Math.max(0, (durSec - elapsed) / FADE);
-        else                               opacity = 1;
-        birdSprite.setAttribute('opacity', opacity);
-
-        if (progress < 1) {
-          requestAnimationFrame(tick);
-        } else {
-          birdSprite.setAttribute('opacity', '0');
-          scheduleNextBird();
-        }
-      }
-      requestAnimationFrame(tick);
-    }
-
-    function scheduleNextBird() {
-      if (!landing.parentNode) return;
-      const delay = (15 + Math.random() * 30) * 1000;
-      birdTimer = setTimeout(flyBird, delay);
-    }
-
-    // First flight: 12s after load so title has faded in
-    birdTimer = setTimeout(flyBird, 12000);
-  })();
-
   // ── Entry ──────────────────────────────────────────────────────────────────
   let entered = false;
 
@@ -2004,6 +2359,8 @@ function radialReveal(revealOrigin, onComplete) {
           panelLog.textContent  = '';
           panelDesc.innerHTML   = 'Click on buildings and landmarks as you pan around to learn more about them, see their NPC cast, and toggle their interiors.';
           document.getElementById('panel-icons').innerHTML = '';
+          // Reset accent to default gold
+          document.getElementById('panel-inner').style.setProperty('--accent', 'var(--gold-light)');
           buildPortraitCarousel([]);
           panel.style.transition = '';
           panel.style.opacity    = '1';

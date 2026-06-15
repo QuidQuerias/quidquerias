@@ -2,7 +2,6 @@
   {
     "id": "hickoryVillage",
     "name": "Hickory Village",
-    "type": "Region",
     "logLine": "They sure do love that tree!",
     "description": "[[Bullion]] can't fit everything. As the city grew in the years following the [[Broth Boom]], it expanded northward into [[The Neck]] and eventually spilled northward into [[Hickory Woods]] at the base of [[Mt Chimney]]. \n\nThe villagers-to-be saw the urban explosion happening in their wake and rallied around the old [[Hax Residence|forester outpost]]. They chose a single tree and built a settlement around it. The promise to stay true to their roots lives on today with that same tree at the center of [[Hickory Circle]].",
     "layer": "region",
@@ -44,12 +43,15 @@
       "Grace Newton",
       "Florence Newton",
       "Kit Mournside"
-    ]
+    ],
+    "icon": {
+      "name": "region",
+      "scale": 0.70
+    }
   },
   {
     "id": "keep",
     "name": "Bullion Keep",
-    "type": "Military",
     "logLine": "Yes, those ballistae are pointed right at you.",
     "description": "The larger religious-military industrial complex at the foot of [[Mt Mandible]], distinct from the surrounding town of [[Bullion]]. It's the home of [[Longshadow Harbor]], [[Jawbreaker Mine]], the [[Bullion Guard]], and of course the [[Bullion Basilica]] which hosts the highest ranking members of the [[Court of Alms]]. \n\nAn abundance of guard towers, security checkpoints and rampart patrols track who and what comes in and goes out. If everything's locked up so tight, however, why is the [[Bullion Guard]] still struggling to find the culprit behind the recent disappearances of [[Stonemarrow]] ore?",
     "layer": "region",
@@ -70,19 +72,22 @@
     ],
     "shape": {
       "type": "path",
-      "data": "M4197.96,7532.74c1.01-9.11-90,49.3-93.13,39.13-8.98-29.17-83.55-74.35-91.57-74.35-14.09,0,68.87-198.78,74.35-288.78,32.56-200.02-167.72-405.05-375.51-403.03-385.73-52.97-884.46,245.17-1170.91,457.87-204.15,136.88-124.1,453.42-76.98,655.78-1.78,30.19,106.44,118.43,99.81,140.56,2.73,275.78-121.82,311.3-356.92,463.28-255.75,71.63-364.28,446.26-410.08,682.47-30.42,1020.84,606.21,617.19,1133.28,960.99,89.76,143.34,60.16,234.2-93.97,269.26-46.93,15.66-150.24,75.14-150.24,75.14l3.13,444.52c514.92-47.46,707.94,249.84,635.25-379.85.03-.03,103.14-11.84,103.14-11.84l14.09,49.3,103.3-15.26c-22.23-124.52-5.93-110.23-126.79-93.91,0,0,4.7,26.99,4.7,26.99l-99.99-20.91-10.75-446.7,144,234.78,100.17-68.87-147.13-228.52,457.04-291.13,341.22,438.26,72-43.83-341.22-441.39,228.52-131.48,435.13,550.96,84.52-50.09-438.26-538.43c28.22-23.72,110.98-82.62,149.85-81.12.69,45.28,1.59,103.04,1.59,103.04l-29.35-8.22c-19.96,100.03-22.9,84.15,71.62,111.52,0,0,26.99-83.34,26.99-83.34l-45.78-15.26v-113.56c70.91-37.23,194.49,1.05,263.35,24.35,171.76-17.81,262.91-33.66,378.77-178.48.02.03-71.98-322.41-71.98-322.41-26.64,20.04.67-1535.4-7.19-1535.56l-506.59.35-281.48,137.79Z"
+      "data": "M4197.96,7532.74c1.01-9.11-90,49.3-93.13,39.13-8.98-29.17-83.55-74.35-91.57-74.35-14.09,0,68.87-198.78,74.35-288.78,32.56-200.02-193.57-352.41-207.52-360.02-4.3-2.35-5.75-29.19-40.3-76.96-79.83-110.35-81.39-320.48-89.22-480.13-7.55-153.96-46.96-554.09-265.3-761.48-165.1-156.81-517.7-257.87-881.61-221.48-249.34,24.93-540,178.43-693.78,355.7-111.9,128.98-246.52,295.83-264.13,535.3-7.4,100.68-99.98,446.3,60.65,746.61,37.84,70.74,126.46,264.6,294.26,338.09,167.8,73.49,414.78,26.61,441.39,59.48s-38.28,195.61-40.7,322.43,56.17,224.35,62.86,253.07c-1.78,30.19,106.44,118.43,99.81,140.56,2.73,275.78-121.82,311.3-356.92,463.28-255.75,71.63-364.28,446.26-410.08,682.47-30.42,1020.84,606.21,617.19,1133.28,960.99,89.76,143.34,60.16,234.2-93.97,269.26-46.93,15.66-150.24,75.14-150.24,75.14l3.13,444.52c514.92-47.46,707.94,249.84,635.25-379.85.03-.03,103.14-11.84,103.14-11.84l14.09,49.3,103.3-15.26c-22.23-124.52-5.93-110.23-126.79-93.91,0,0,4.7,26.99,4.7,26.99l-99.99-20.91-10.75-446.7,144,234.78,100.17-68.87-147.13-228.52,457.04-291.13,341.22,438.26,72-43.83-341.22-441.39,228.52-131.48,435.13,550.96,84.52-50.09-438.26-538.43c28.22-23.72,110.98-82.62,149.85-81.12.69,45.28,1.59,103.04,1.59,103.04l-29.35-8.22c-19.96,100.03-22.9,84.15,71.62,111.52,0,0,26.99-83.34,26.99-83.34l-45.78-15.26v-113.56c70.91-37.23,194.49,1.05,263.35,24.35,171.76-17.81,262.91-33.66,378.77-178.48.02.03-71.98-322.41-71.98-322.41-26.64,20.04.67-1535.4-7.19-1535.56l-506.59.35-281.48,137.79Z"
     },
     "interiors": [],
     "interiorBoundsMap": {},
     "characters": [
       "August Wardwell",
       "Heinrich Hardpan"
-    ]
+    ],
+    "icon": {
+      "name": "region",
+      "scale": 0.70
+    }
   },
   {
     "id": "market",
     "name": "Stoq Market",
-    "type": "Region",
     "logLine": "Bullion's bustling marketplace.",
     "description": "Before there was ever a market, the plaza outside the bridge to [[Bullion Basilica]] used to be a place where refugees, aspirants, and worshippers of all kinds would come to receive the miraculous [[Stonemarrow]] healing. Services sprang up around them to meet their needs: lodging, food, supplies for the journey home. \n\nThough the [[Bullion Mercantile Guild|Mercantile Guild]] puts on a good show of keeping things tidy and organized, the district is beginning to show signs of its age. How much longer will the commercial enterprises of [[Bullion]] resign themselves to playing second fiddle to the religious interests of the [[Bullion Basilica|Basilica]] and [[Court of Alms]]?",
     "layer": "region",
@@ -107,12 +112,15 @@
     },
     "interiors": [],
     "interiorBoundsMap": {},
-    "characters": []
+    "characters": [],
+    "icon": {
+      "name": "region",
+      "scale": 0.70
+    }
   },
   {
     "id": "theNeck",
     "name": "The Neck",
-    "type": "Region",
     "logLine": "The way city living should be.",
     "description": "Just beyond the din and bustle of [[Stoq Market]] lies the quaint neighborhood of The Neck. It's been the backdrop to the origin stories of [[Bullion]]'s first families. Generational names like the Twainrocks, Barrelsworths, and Olemarrows have all flowed through this humble, rocky point. The neighborhood's due to churn out another hero or two any day now. Perhaps it already has.",
     "layer": "region",
@@ -137,12 +145,15 @@
     },
     "interiors": [],
     "interiorBoundsMap": {},
-    "characters": []
+    "characters": [],
+    "icon": {
+      "name": "region",
+      "scale": 0.70
+    }
   },
   {
     "id": "theSkirts",
     "name": "The Skirts",
-    "type": "Region",
     "logLine": "The only help we can expect is from one another.",
     "description": "[[Unda Grangate]] saw untapped potential whenever she would gaze out at the marshland across from her home at [[Chaffcrop Farm]]. After years of study and experimentation, the humble farmer transformed herself into an upstart artificer to take that vision into her own hands. She undertook the construction of [[Old Loch]] and diverted much of [[Craw Creek]] into irrigation, leaving the marshes to slowly drain away and become a new frontier in the city's own back yard.\n\nAfter the [[Broth Boom]] brought flocks of petitioners to [[Bullion]] to be cured by the holy [[Stonemarrow]] broth, the city's population ballooned. A housing crisis erupted. Spurned by the [[Court of Alms]] and harried by the [[Bullion Guard]], refugees banded together to support one another in the face of neglect. In time, they turned the low-lying land south of the [[Stoq Market]] into a long-term community.",
     "layer": "region",
@@ -163,7 +174,7 @@
     ],
     "shape": {
       "type": "path",
-      "data": "M11559.7,6984.22c-14.09,0-779.48-9.39-873.39-37.57s-183.13-79.83-305.22-56.35-187.83,79.83-197.22,183.13c-9.39,103.3,23.48,267.65,28.17,333.39,4.7,65.74-84.52,272.35-89.22,333.39-4.7,61.04-117.39,558.78-164.35,558.78s-370.96-51.65-488.35,32.87c-117.39,84.52-399.13,281.74-497.74,417.91-98.61,136.17-126.78,347.48-187.83,394.43-61.04,46.96-291.13,126.78-319.3,145.57-28.17,18.78-112.7,281.74-112.7,281.74,0,0-464.87,145.57-540,154.96-75.13,9.39-713.74,9.39-859.3,37.57-145.57,28.17-253.57,61.04-352.17,75.13-98.61,14.09-253.57,37.57-253.57,37.57,0,0-37.57,154.96-56.35,173.74-18.78,18.78-131.48,75.13-150.26,93.91-18.78,18.78-89.22,173.74-89.22,173.74l-230.09,112.7s-103.3,248.87-103.3,286.43,93.91,258.26,98.61,272.35,272.35,154.96,272.35,154.96h300.52l108-117.39,464.87,211.3,1469.74-103.3s9.39,93.91,131.48,93.91,272.35-18.78,324-51.65c51.65-32.87,183.13-103.3,197.22-169.04,14.09-65.74,9.39-112.7,32.87-131.48s225.39-84.52,225.39-84.52l469.57,70.43s-51.65,117.39-42.26,145.57c9.39,28.17,18.78,108,89.22,93.91,70.43-14.09,225.39-65.74,262.96-46.96,37.57,18.78,216,164.35,248.87,173.74,32.87,9.39,126.78,42.26,267.65,42.26s309.91-98.61,324-187.83c14.09-89.22,164.35-75.13,216-65.74,51.65,9.39,98.61,9.39,112.7-32.87s-14.09-234.78-42.26-262.96c-28.17-28.17-150.26-42.26-183.13-42.26s-131.48-4.7-136.17-51.65c-4.7-46.96-23.48-98.61,28.17-126.78,51.65-28.17,159.65-32.87,169.04-84.52,9.39-51.65-37.57-211.3-37.57-211.3,0,0-9.39-79.83-154.96-84.52-145.57-4.7-89.22,0-84.52-18.78,4.7-18.78,150.26-558.78,150.26-558.78l540-366.26,18.78-2192.87Z"
+      "data": "M9951.96,8255.59c-46.96,0-334.77-12.52-468,43.83-52.56,22.23-119.37,41.1-205.04,111.13-115.52,94.42-227.06,157.15-281.74,245.74-40.4,65.45-83.73,144.94-115.83,236.35-38.07,108.41-63.66,226.11-96.78,251.59-61.04,46.96-322.7,136.59-350.87,155.37-9.39,6.26-65.74,261.39-65.74,261.39,0,0-480.26,156.11-555.39,165.5-35.31,4.41-195.07,19.73-369.65,23.89-196.84,4.7-412.51-1.26-489.65,13.67-145.57,28.17-253.57,61.04-352.17,75.13-98.61,14.09-233.48,33.28-233.48,33.28,0,0-65.74,154.96-84.52,173.74-18.78,18.78-123.39,79.41-142.17,98.2-18.78,18.78-100.43,177.28-100.43,177.28l-200.35,108s-95.48,247.3-95.48,284.87,70.43,244.17,75.13,258.26,273.91,159.65,273.91,159.65l298.96-15.65,82.96-117.39,535.3,219.13,1413.39-104.87s72,117.39,194.09,117.39,133.04-7.83,184.7-40.7c51.65-32.87,267.91-116.24,282-181.98,14.09-65.74-20.61-104.46,2.87-123.24s226.96-97.04,226.96-97.04l461.74,84.52s-18.78,89.22-9.39,117.39c9.39,28.17,7.58,69.48,75.13,93.91,73.57,26.61,219.13-42.26,256.7-23.48,37.57,18.78,203.48,90.78,236.35,100.17,32.87,9.39,163.04,110.72,303.91,110.72s252.14-81.61,295.57-160.8c26.61-48.52,45.39-142.43,45.39-142.43,57.71-13.89,171.17,44.61,199.04,49.67,51.65,9.39,73.3-16.8,87.39-59.07s-9.39-231.65-37.57-259.83c-28.17-28.17-64.17-28.17-97.04-28.17s-139.3-4.7-144-51.65c-4.7-46.96-18.78-87.65,32.87-115.83,51.65-28.17,101.74-56.35,111.13-108,9.39-51.65-18.78-114.26-18.78-114.26,0,0-32.61-155.37-178.17-160.07-145.57-4.7-89.22,0-84.52-18.78,4.7-18.78,150.26-558.78,150.26-558.78l540-366.26s18.84-412.38-311.74-607.67c-434.87-256.9-1250.54-313.83-1277.22-313.83Z"
     },
     "interiors": [],
     "interiorBoundsMap": {},
@@ -190,12 +201,15 @@
       "Willy Wanders",
       "Soris",
       "Zak Grist"
-    ]
+    ],
+    "icon": {
+      "name": "region",
+      "scale": 0.70
+    }
   },
   {
     "id": "apothecary",
     "name": "Bitterbite Apothecary",
-    "type": "Shop",
     "logLine": "Those looks of disgust mean it's working!",
     "description": "Bundles of drying herbs enchant the shop with a comforting spiced perfume. A wave of relief washes over you--and an unexplainable craving for the tea sold here. What convenience! While you wait for the kettle the warm up, why not browse some of the other potions?\n\nThese Dwarves swear by their [[Stonemarrow]], but salves and tinctures work on [[Stonemarrow|Marrowminers]] as well as anyone, and a poultice here is a pot of [[Stoq]] saved there. Quality potions require quality supplies, however, and the shopkeeper, [[Brewthanne Sievestrain|Brewthanne]] is always looking for intrepid foragers to source unconventional ingredients that can't be found close to home. [[Bettina Disdress|Belinda]] and [[Bettina Disdress]] have stepped into the procurement role and only just barely made it back in one piece after their latest misadventure.",
     "layer": "zone",
@@ -237,12 +251,15 @@
       "Brewthanne Sievestrain",
       "Bettina Disdress",
       "Belinda Disdress"
-    ]
+    ],
+    "icon": {
+      "name": "apothecary",
+      "scale": 0.75
+    }
   },
   {
     "id": "aviary",
     "name": "Olivine Aviary",
-    "type": "Shop",
     "logLine": "Please refrain from shooting the messenger. They have other deliveries to make.",
     "description": "Any town starts needing a communications hub once it reaches a certain critical mass. Although [[Bullion]] might be more accessible than some [[Marrowminer]] enclaves, traditional ground shipping across [[Kettlecrater Road]] and beyond just isn't feasible. Enter: the earthy and enterprising [[Aventa Olivine]]. \n\nThis Circle of the Land [[Druid]] married famed [[The Old War|Old War]] veteran [[Ulric Olivine]] and the two opened up a city staple not long after. Does this make her privy to some of the more sensitive communique making its way across the city? Perhaps. But she's given no one a reason to suspect she's anything other than a consummate professional. Besides, anyone truly paranoid probably has their own private channels.\n\nFlashes of green light and feathers can be seen rushing in and out of their converted guard tower at all hours of the day and night, ferrying messages to and fro. And since you were wondering, magical messenger birds don't poop nearly as much as the real deal. They do still poop, however. Make no mistake.",
     "layer": "zone",
@@ -294,12 +311,15 @@
     "characters": [
       "Aventa Olivine",
       "Ulric Olivine"
-    ]
+    ],
+    "icon": {
+      "name": "bird",
+      "scale": 0.85
+    }
   },
   {
     "id": "bakery",
     "name": "Leavenloaf Bakery",
-    "type": "Food",
     "logLine": "Quality where you yeast expect it",
     "description": "[[Bullion]] rises to the delicious smell of [[Crumbulina Leavenloaf]]'s freshly baked bread each morning. It seems like she and her apprentice (and ward), [[Adirah Amular]] manage to do the work of a baker's dozen staff each day just between the two of them. \n\nHard work and skill go a long way, certainly, but *that's a lot of bread*. Suffice it to say, the birds at [[Olivine Aviary]] aren't going hungry these days with the glut of gluten. Mostly though, everyone's relieved Crumbulina's managed to keep busy after the difficult tandem loss of her husband Ryen and their son Pita during the [[Stoq Crusades]] a few years back. You'll find her at [[Gravel Downs]] leaving fresh scones at her family's grave site every week.",
     "layer": "zone",
@@ -351,12 +371,15 @@
     "characters": [
       "Crumbulina Leavenloaf",
       "Adirah Amular"
-    ]
+    ],
+    "icon": {
+      "name": "bread",
+      "scale": 0.85
+    }
   },
   {
     "id": "basilica",
     "name": "Bullion Basilica",
-    "type": "Church",
     "logLine": "The mighty Marrowminer citadel at Mount Mandible.",
     "description": "The Basilica sits at the heart of [[Bullion Keep]], inside the husk of [[Mt Mandible]]. It's the seat of power for Bullion's [[Court of Alms]] led by [[Ingmar Ironclad]]. Beyond its imposing stone facades lie the ever-bubbling boilerworks. \n\nInside, the dutiful [[Hearthstoker|Hearthstokers]] maintain the crucibles, where the [[Stonemarrow]] ore is rendered into [[Stoq]]. Once, the Court distributed the healing broth far and wide. Now, it's become a miserly trade. Most of what's left to scrape from [[Jawbreaker Mine]] goes straight out of [[Longshadow Harbor]] to the highest bidder, one [[Bullion Cube|cube]] at a time. \n\nWho wouldn't be willing to shell out for a world-class curative? Where is the new line between [[Bullion]]'s religious and economic interests drawn--if it even still exists at all?",
     "layer": "zone",
@@ -377,7 +400,7 @@
     ],
     "shape": {
       "type": "path",
-      "data": "M2540.78,7276.48c-34.43,30.52-93.91,77.48-103.3,110.35s-37.57,234.78-28.17,277.04c9.39,42.26,38.09,223.83,54.52,268.43,16.43,44.61,107.22,144,147.13,167.48,39.91,23.48,258,147.26,258,147.26,0,0,183.13,125.61,218.35,144.39,35.22,18.78,155.48,112.96,167.22,117.65,11.74,4.7,814.57,563.57,833.35,556.52,18.78-7.04,262.28-150.43,281.74-145.57,62.61,15.65,597.13,24.26,613.57,17.22,16.43-7.04-18.78-1519.83,9.39-1524.52s-496.96,6.26-485.22-21.91c11.74-28.17-312.13,176-309.78,154.87,1.01-9.11-90,49.3-93.13,39.13-8.98-29.17-83.55-74.35-91.57-74.35-14.09,0,68.87-198.78,74.35-288.78,1.85-30.47,14.09-94.7-11.74-148.7-25.83-54-133.04-186.26-170.61-205.04-37.57-18.78-121.17-44.61-193.17-49.3-43.2-2.82-346.43,18.78-411.78,34.7-42.62,10.38-348.26,146.09-385.83,176.61-37.57,30.52-373.3,246.52-373.3,246.52Z"
+      "data": "M2064.04,7310.19c172.57,0,381.52,2.35,390.91,44.61,5.09,22.89-55.9,178.74-52.04,323.22,3.26,122.28,53.38,233.83,60.91,254.28,16.43,44.61,107.22,144,147.13,167.48,39.91,23.48,258,147.26,258,147.26,0,0,183.13,125.61,218.35,144.39,35.22,18.78,155.48,112.96,167.22,117.65,11.74,4.7,814.57,563.57,833.35,556.52,18.78-7.04,262.28-150.43,281.74-145.57,62.61,15.65,597.13,24.26,613.57,17.22,16.43-7.04-18.78-1519.83,9.39-1524.52s-496.96,6.26-485.22-21.91c11.74-28.17-312.13,176-309.78,154.87,1.01-9.11-90,49.3-93.13,39.13-8.98-29.17-83.55-74.35-91.57-74.35-14.09,0,68.87-198.78,74.35-288.78,1.85-30.47,14.09-94.7-11.74-148.7-25.83-54-133.04-186.26-170.61-205.04-11.98-5.99-155.36-223.03-149.61-435.85,2.77-102.65-14.45-657.67-244.17-873.39-288.7-271.11-647.61-271.27-864-253.57-344.35,28.17-627.26,232.83-848.35,480.13-105.12,117.58-200.92,458.31-162,861.65,33.27,344.79,273.61,663.26,427.3,663.26Z"
     },
     "interiors": [
       "basilica"
@@ -400,12 +423,14 @@
       "Spurra Splintwright",
       "Laeda Edi",
       "Ida Barrelsworth"
-    ]
+    ],
+    "icon": {
+      "name": "church"
+    }
   },
   {
     "id": "blacksmith",
     "name": "Emback Armory",
-    "type": "Shop",
     "logLine": "We will not rest until every Dwarf has a set of Splint armor.",
     "description": "The Emback name is a cornerstone of [[Bullion]]'s history. Back when [[Jawbreaker Mine]] first opened and there was nothing but the [[Bullion Keep|Keep]], the Embacks built the mining tools used to shape the area into the city it is today. They made the armor and weapons to defend it during the [[The Old War|Old War]], too. Don't you forget it. \n\nThe latest head of the Emback clan, [[Holden Emback|Holden]], fancies himself an economic linchpin and the de facto leader of the [[Bullion Mercantile Guild]] even though [[Bullga Derfat]]'s the one holding the gavel. His detractors would say that he fuels his forge with his hot air and bluster--but probably not to his face. \n\nHis wife [[Taek Emback|Taek]]'s job is just as critical as the forge itself: keeping three rambunctious boys from destroying the place before they're even old enough to work there. It's no wonder [[Taek Emback|Taek]] dreads the [[Village Schoolhouse]] being closed for the summer. Why can't they be more like their older brother, [[Walken Emback|Walken]]?!",
     "layer": "zone",
@@ -462,12 +487,15 @@
       "Forson Emback",
       "Pushaun Emback",
       "Keepun Emback"
-    ]
+    ],
+    "icon": {
+      "name": "smith",
+      "scale": 0.85
+    }
   },
   {
     "id": "boardingHouse",
     "name": "The Bombardier",
-    "type": "Lodging",
     "logLine": "Whether it's two nights or two weeks, you can call us home.",
     "description": "It's been almost a decade now since [[Braveera Bombast]] hung up her glider goggles to put down roots in [[Bullion]]. Seeing the beleaguered refugees struggle to find lodging and the way some establishments rebuffed them, she decided to take a stand. Those who couldn't afford a stay at the [[Twainrock Inn]] were relieved to see her reopen the doors of the old [[Court of Alms]] academy and charge such reasonable prices. \n\nThe rumor around market is that she swooped in with a stunning all cash offer: a gleaming sack of gold! Nobody asked her where the money came from, or they got a little extra not to. Her bid beat out local entrepreneur couple [[Micah Twainrock]] and [[Maraika Twainrock]] who'd been eying the property and has engendered a bitter rivalry ever since.",
     "layer": "zone",
@@ -523,12 +551,15 @@
       "Gustav Surfold",
       "Darlene D'Porcine",
       "Debbie D'Porcine"
-    ]
+    ],
+    "icon": {
+      "name": "lodging",
+      "scale": 0.85
+    }
   },
   {
     "id": "bowlShop",
     "name": "Coppercrock",
-    "type": "Shop",
     "logLine": "Where there's soup, there's bowls!",
     "description": "[[Copper Castform]]'s bowl and kettle shop is testament to an idea so good that even the cutthroat competitors at fellow foundry [[Emback Armory]] had to leave him out of the sabotage customary of Bullion's ongoing [[Trade Wars]]. Even if they had been antagonizing him, it's altogether likely he's too aloof to notice. \n\nCopper can often be seen running errands about town with soot smudges from his fires still on his face--none the wiser. Although he's used to working independently, word has it that he's in the market for an entrepreneurial young apprentice to help him expand his practice.",
     "layer": "zone",
@@ -580,12 +611,15 @@
     "characters": [
       "Copper Castform",
       "Raku"
-    ]
+    ],
+    "icon": {
+      "name": "smith",
+      "scale": 0.85
+    }
   },
   {
     "id": "brewery",
     "name": "Twainrock Taproom",
-    "type": "Food",
     "logLine": "Mid ale with a mythic backstory",
     "description": "[[Micah Twainrock]] loves to tell (and re-tell) the myth of his family's historic contribution to the city to his patrons over a pitcher or two of ale. For years, anyone traveling from [[The Neck]] into or through [[Stoq Market]] would have to pass around its rocky Ledge. \n\nIt's said that one of Micah's ancestors, a [[Fornax/Dungeons and Dragons/Campaigns/Trouble in Bullion/Worldbuilding/Hearthstoker|Hearthstoker]] with the [[Court of Alms]], was so fed up with years of this commute that he spent his life's work--a divine intervention from [[Stoq]]--to carve a pass through the city using a single bolt of lightning to split the rock asunder. The story draws stupefied awe from some of its listeners, but disbelief from others. The city's oldest bar flies recall less lightning and more...retired mining equipment.",
     "layer": "zone",
@@ -639,12 +673,15 @@
       "Micah Twainrock",
       "Holly Hax",
       "Wally Hax"
-    ]
+    ],
+    "icon": {
+      "name": "alcohol",
+      "scale": 0.8
+    }
   },
   {
     "id": "bridgeWatch",
     "name": "Bridgewatch",
-    "type": "Military",
     "logLine": "The serious tower. Seriously.",
     "description": "The [[Bridgewatch]] tower stands just north of the bridge to the [[Bullion Basilica]] from [[Stoq Market]]. While not as high a post within the [[Bullion Guard]] as anything inside [[Bullion Keep]] itself, it is the highest ranking watch of the city's tower posts. This is the job that decides which side of the river your career in the Guard ends on. If you can't make it here, you're destined to become the next [[Lynis Drounce]] (derogatory) shackled to [[Riverwatch]] and a bright-eyed rookie.\n\nIn the meantime, they watch for any threats coming down the [[Sluice River]] or across the mighty stone bridge. Every boat-passage gets a log entry. Every cart-crossing gets a log entry.  \"Nothing gets into or out of the Basilica without us seeing it.\"\n\n[[Letitia Titfer]]--a relatively new recruit herself--is filling in for [[Gal Glorybeard]] while she's out on a [[Deacon]] assignment with [[Felix Barrelsworth]]. She and her husband [[Guy Glorybeard|Guy]] typically man this post, but Letitia's made herself comfortable already. You can't deny that little enchanted pen gizmo she brought takes the bite out of all those logbook entries.",
     "layer": "zone",
@@ -696,12 +733,15 @@
     "characters": [
       "Guy Glorybeard",
       "Letitia Titfer"
-    ]
+    ],
+    "icon": {
+      "name": "tower",
+      "scale": 0.70
+    }
   },
   {
     "id": "brinebrat",
     "name": "Brinebrat",
-    "type": "Ship",
     "logLine": "A dusty 'Days Since Last Scurvy' sign reads '0.'",
     "description": "The well-seasoned shipping vessel of intrepid Captain [[Jamilina Saltstench]] and her crew. The group has docked at [[Longshadow Harbor]] to pick up a shipment of the famed [[Bullion Cube|Bullion Cubes]] for export. Under normal circumstances, it'd be a sensitive job for a skilled crew, but with a [[Relicanth]] lurking and smugglers about, the port's shopping schedule is frozen. \n\n[[Jamilina Saltstench|Jamilama]] has her crew under strict orders not to leave [[Bullion Keep]]. They need to be ready to go at a moment's notice once the advisories are lifted. Most of them are happy to oblige (or at least play along), but not all. Her daughter, [[Tahali Saltstench]], is beginning to consider a landlocked life with a new paramour in town. Duty calls, however, and her capable hands are needed for the voyages (and adventures) ahead. That is, unless there are others who might fill her shoes instead.",
     "layer": "zone",
@@ -732,12 +772,15 @@
       "Edgar Deckpoop",
       "Hans Sporridge",
       "Elara Deepspoon"
-    ]
+    ],
+    "icon": {
+      "name": "ship",
+      "scale": 0.8
+    }
   },
   {
     "id": "butcher",
     "name": "Butchest Meats",
-    "type": "Food",
     "logLine": "You've been to a butch-er; now try the Butch-est!",
     "description": "[[Marrowminer|Marrowminers]] love their knives, so it's no wonder one of the burgeoning town's first businesses was a butcher. Pastureland's been pushed all the way out to [[White Gold Dairy Farm]] in [[Hickory Village]] since those early days, but that hasn't stopped [[Butch Derfat|Butch]] and [[Bullga Derfat]] from running an impressive operation at the heart of [[Stoq Market]] into the modern day. \n\nThey're a beloved [[Bullion]] staple and have the market cornered on all things meaty. (If you don't count [[Sluiceside Fish Market]]--and they don't.) Everyone goes about their day a little easier, too, now that [[Tamara Titfer]]'s enchantment to soundproof the killing floor has been reupped. \n\nTheir son [[Wren Derfat|Wren]]'s squeamish about it either way. He sticks to helping the neighboring [[Tallowed Be Thy Name|Dripwicks]] turn the shop's byproducts into candle. His younger sister [[Doe Derfat|Doe]]...let's just say she doesn't have the same inhibitions.",
     "layer": "zone",
@@ -791,12 +834,15 @@
       "Bullga Derfat",
       "Doe Derfat",
       "Wren Derfat"
-    ]
+    ],
+    "icon": {
+      "name": "meat",
+      "scale": 0.85
+    }
   },
   {
     "id": "candleShop",
     "name": "Tallowed Be Thy Name",
-    "type": "Shop",
     "logLine": "We'll leave the light on for you when Darkvision doesn't cut it.",
     "description": "[[Ginger Dripwick]] and her family haven't been a [[Stoq Market]] staple for very long, but ever since they joined league with the [[Bullion Mercantile Guild]], their rise has been meteoric. Nobody in town expected much when [[Butch Derfat]] of [[Butchest Meats]] sold his old fat-rendering shed to the Dripwicks, but the smell has unequivocally improved.\n\nStill, more veteran business owners in the market find it odd that the guild would accept a newcomer versus a more established applicant. What's so special about these candles that their makers should be welcomed so readily? \n\nBy all appearances, nothing. The Dripwicks seem to live an unremarkable, wax-splattered life. Ginger and her husband [[Leo Dripwick|Leo]] are showing their children [[Jessika Dripwick|Jessika]] and [[Simon Dripwick|Simon]] the ins and outs of the tallow business. Simon's taking to it like a fish to water, but teenage Jessika has been distracted by the butcher's son, [[Wren Derfat|Wren]].",
     "layer": "zone",
@@ -850,12 +896,15 @@
       "Leo Dripwick",
       "Jessika Dripwick",
       "Wren Derfat"
-    ]
+    ],
+    "icon": {
+      "name": "candle",
+      "scale": 0.85
+    }
   },
   {
     "id": "casaAllabow",
     "name": "Allabow Residence",
-    "type": "Camp",
     "logLine": "Beyond his years but not beyond his means.",
     "description": "A tent on the side of the street is hardly the place for a child, but the way [[Reed Allabow|Reed]] sees it, he isn't one--maybe never was. He's a working citizen. He's got a job at [[The Gutentag]]. He pays taxes. He pays his rent for his tent in [[The Skirts]]. He's a miniature adult, alright. His \"landlord\" [[Soris]] keeps up the act, but puts the money towards a tab for him at [[The Trough]]. Why burst such an ambitious bubble?",
     "layer": "zone",
@@ -882,12 +931,15 @@
     "interiorBoundsMap": {},
     "characters": [
       "Reed Allabow"
-    ]
+    ],
+    "icon": {
+      "name": "camp",
+      "scale": 0.75
+    }
   },
   {
     "id": "casaBarrelsworth",
     "name": "Casa Barrelsworth",
-    "type": "Home",
     "logLine": "There's no place like home--unless the bathroom to people ratio is off.",
     "description": "Home sweet home for player character [[Lil Bertha]] and her large family, the Barrelsworths. Her parents are both ranking members in the [[Court of Alms]], and her siblings aren't far behind in joining the bureaucracy. \n\nHer father [[Felix Barrelsworth|Felix]] is a [[Deacon]], and her mother [[Zelda Barrelsworth|Zelda]] is a fearsome [[Inquisitor]] tasked with rooting out heresy (casual). [[Ida Barrelsworth|Ida]], the eldest daughter is following her mother's footsteps and just became a [[Hearthstoker]] at the [[Bullion Basilica|Basilica]]. [[Albert Barrelsworth|Albert]] is a rising star at the [[Bullion Guard]] and just moved into [[Riverwatch]] full time. [[Helga Barrelsworth|Helga]]'s door stays sealed with [[Arcane Lock]] whenever she can muster it. If [[Greta Barrelsworth|Aunt Greta]] isn't fussing over [[Ludwig Barrelsworth|Grampa]], she's fussing over her conjured cats.\n\nWith so many siblings and busy parents, Lil B used to slip away to her [[Hideout]] without being missed. Now, however, her latest misadventures have landed her in over her head. What can she tell her family about what happened on the road back to the city?",
     "layer": "zone",
@@ -944,12 +996,15 @@
       "Helga Barrelsworth",
       "Lil Bertha",
       "Piotr Barrelsworth"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaBerries",
     "name": "Berries Residence",
-    "type": "Home",
     "logLine": "From ashes we rise",
     "description": "[[Barry Berries]] trudges across towards his threshold, leaving sooty footprints and flecks of coal in his wake. Another hard day at the forge. [[Holden Emback|Holden]] runs [[Emback Armory]] like a military platoon. When he says the furnaces need fuel, there's no time to balk or squabble; you pick up the shovel. Better manual labor than some of the *other* work he's assigned.\n\nThe smell of [[Ivy Berries|Ivy]]'s cooking snaps him back to the doorway. She's singing to herself over the din of searing meat and wild veggie chopping. Barry smiles and tries to pat the grime off. He'd do it all again in a heartbeat for moments like these. *Ex Ustulata Crescit.*\n\nClean as he'll get, he reaches for the handle. The singing stops. \"I think we both know you're not done patting.\"",
     "layer": "zone",
@@ -990,12 +1045,15 @@
     "characters": [
       "Barry Berries",
       "Ivy Berries"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaDrounce",
     "name": "Drounce Residence",
-    "type": "Home",
     "logLine": "Til death do they part.",
     "description": "Like two ships passing in the night, [[Lynis Drounce]] and his wife [[Willow Drounce|Willow]] feel more like roommates than newlyweds. He's burning the midnight oil at [[Riverwatch]] and she starts the day early doing the wash the [[Twainrock Inn]]. Marriage hasn't been anything like what they thought it'd be.\n\nIs there still a chance for them to reconnect, or are they simply drifting apart? Willow's sisters [[Holly Hax|Holly]] and [[Ivy Berries|Ivy]] can't seem to relate in their own marriages, but do seem strangely invested in making sure things pan out with Lynis, no matter how big a dud he may be.",
     "layer": "zone",
@@ -1036,12 +1094,15 @@
     "characters": [
       "Lynis Drounce",
       "Willow Drounce"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaGilly",
     "name": "Gilly Residence",
-    "type": "Home",
     "logLine": "It ain't much, but it's mine.",
     "description": "Gilly was never \"enough.\" Not devout enough to serve the [[Court of Alms]]. Not strong enough to enlist with the [[Bullion Guard]]. People were sure to tell him he was neither charming enough to be a merchant nor brave enough to be a sailor. Nobody would take him on as an apprentice. \n\nRebuff after rebuff, rejection after rejection, he'd return to his quaint shack in [[Hickory Village]] and try again. It wasn't until [[Kit Mournside]] gave him the \"Graveguard\" title at [[Gravel Downs]] that he could go home, look around, and say \"this is plenty.\"",
     "layer": "zone",
@@ -1081,12 +1142,15 @@
     },
     "characters": [
       "Graveguard Gilly"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaGlorybeard",
     "name": "Glorybeard Residence",
-    "type": "Home",
     "logLine": "The faint scent of pomade hangs in the air",
     "description": "What's in a name? Everything, according to [[Gal Glorybeard]]. Whether it was true destiny or a self-fulfilling prophecy, Gal's majestic facial hair speaks for itself. While it's neither uncommon nor unfashionable for Dwarven women to sport beards, Gal's in a league of her own. Empirically.\n\nIt's actually how she met her husband, [[Guy Glorybeard|Guy]]. The pair both worked different patrols for the [[Bullion Guard]] but rarely crossed paths. That fateful day while he judged the [[Summertide Revelers|Summertide]] festival's \"Beardst in Show\" competition...she took his breath away. It wasn't long afterwards that he took her name and the two were wed. She has him on a strict beard care regimen to reach his fullest potential. A storybook love for the ages.",
     "layer": "zone",
@@ -1127,12 +1191,15 @@
     "characters": [
       "Gal Glorybeard",
       "Guy Glorybeard"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaGlower",
     "name": "Glower Residence",
-    "type": "Home",
     "logLine": "It's actually pronounced 'Glower.'",
     "description": "[[Timothy Glower|Timothy]] and [[Hillary Glower]] were two dwarves without much room in their home, but a palace waiting in their hearts. It's that spirit of warm, generous hospitality that drew them to their adoptive daughter, [[Beata Glower|Beata]]. Overjoyed for their neighbors, members of [[Hickory Village]] welcomed her with open arms. Shortly thereafter, many took a polite step back.\n\nIt's not that she's *rude*. She's perfectly sweet and courteous. It's not that she's *shy*. She'll talk the ears off anyone foolish enough to listen once the topic has turned to horses. The village's tolerance for weirdness is pretty high already--her adoptive mother milks cows that eat rocks at [[White Gold Dairy Farm]], after all--but [[Beata Glower|Beata]] confounds them all. She's just...*unique*.\n\nCursed? Blessed? It's hard to say, but good or bad, she gets her way.",
     "layer": "zone",
@@ -1174,12 +1241,15 @@
       "Timothy Glower",
       "Hillary Glower",
       "Beata Glower"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaGuardsson",
     "name": "Guardsson Residence",
-    "type": "Home",
     "logLine": "The Other Bridgewatch",
     "description": "So many members of the [[Bullion Guard]] have come from this home that there's a running joke it's one of the city watchtowers. When does \"the family business\" become a \"dynasty?\" [[Gunther Guardsson]], like his parents before him, and his grandparents--and *their* parents--is a guard. Maybe not the heroic kind sung of in rowdy tavern songs. Maybe not the dutiful kind eager to meet their death against an obviously impossible foe just to make a show of resistance. But he's a damn good one all the same.\n\nThe Guardssons make it out. They survive. Middle-ranking guards with *pedigree* who *stay unpromoted*? Unheard of. Unicorns--which is to say rare, but real. These days, though, even the tiny home feels hollow and lonely. A creeping dread has started to taint Gunther's pride in his legacy: if the Guardssons are a dynasty--will he be the last?",
     "layer": "zone",
@@ -1219,12 +1289,15 @@
     },
     "characters": [
       "Gunther Guardsson"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaGuile",
     "name": "Guile Residence",
-    "type": "Home",
     "logLine": "Clever is as clever does.",
     "description": "The Guiles stand out in [[Bullion]]. As the only half-orcs in town, that's a given. [[Giles Guile|Giles]] just wants a safe place for his family and to make sure he and his sons [[Myles Guile|Myles]] and [[Pip Guile|Pip]] aren't drawing attention for the wrong reasons. Even in a place like [[The Skirts]], which skews a few degrees below average in reverence for the old [[Marrowminer]] traditions, the concept of a healer--or, what did he call it? A \"dock-tour?\"--without being part of the [[Court of Alms]] is treated with scrutiny.\n\nGiles separates his work-life at [[The Salve]] from his home-life and his kids just in case he becomes embroiled in scandal. They're safer at arm's length. [[Myles Guile|Myles]] is picking up the distillation trade from [[Papa Stillwell]], and [[Pip Guile|Pip]] sweeps up at [[The Bombardier]].",
     "layer": "zone",
@@ -1266,12 +1339,15 @@
       "Giles Guile",
       "Myles Guile",
       "Pip Guile"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaHax",
     "name": "Hax Residence",
-    "type": "Home",
     "logLine": "Wits sharp. Axe sharper.",
     "description": "There's something thoroughly \"seasoned\" about this place. \"Sturdy\" doesn't do it justice. It's not merely the craftsmanship of its build. The cladding itself appears to have fused into a monolithic wood structure with time. The other buildings around [[Hickory Circle]] aren't nearly as distinguished. It sits neither atop the earth nor sinks into it. It's simply part of the landscape, much like its ancestral residents, the Hax Family.\n\n[[Baxter Hax]]'s forebears were among the frontier woodsman who first settled the area in [[Bullion]]'s early days when [[Hickory Woods]] stretched all the way to the [[Sluice River]]. Battling back the forest has been the generational duty for the Hax family, and it's honed their forestry prowess into the stuff of legend.",
     "layer": "zone",
@@ -1324,12 +1400,15 @@
       "Baxter Hax",
       "Nini Hax",
       "Wally Hax"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaHirehand",
     "name": "Hirehand Residence",
-    "type": "Home",
     "logLine": "You'll know home when you've found it.",
     "description": "The crisis of refugee displacement and lack of lodging is reaching new speaks across [[Bullion]]. [[Beau Hirehand|Beau]] and his daughter [[Lola Hirehand|Lola]] are grateful to have already found niches to fill in [[Hickory Village]]. [[Beau Hirehand|Beau]] was absolutely smitten with curiosity for the strange and wondrous [[Stonecud Cow|Stonecud Cows]] of [[White Gold Dairy Farm]]. They took a shine to the [[Ranger]], too, and [[Lois Skim]] couldn't help but notice his rapport. She offered him and [[Lola Hirehand|Lola]] an old outbuilding by the river to rent and restore in exchange for working with the cattle at the ranch.\n\nWhile [[Beau Hirehand|Beau]] heeded the call of the pastures, [[Lola Hirehand|Lola]] was drawn to the rustling siren call of [[Hickory Woods]]. She introduced herself as the \"Junior Forester\" to everyone she met and quickly became [[Wally Hax]]'s shadow. Now she's learning the ins and outs of the village and its difficult relationship with the forest.",
     "layer": "zone",
@@ -1370,12 +1449,15 @@
     "characters": [
       "Beau Hirehand",
       "Lola Hirehand"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaNanana",
     "name": "Nanana Residence",
-    "type": "Home",
     "logLine": "Why spiral when you can roll?",
     "description": "At first glance, the house by [[Grangate Rotary]] might not seem so different from the buildings in [[The Skirts]] beyond. And yet, upon closer inspection, one can see the wide-set threshold, the low doorknob, and tire tracks wearing small grooves into the dirt paths outside. Many would say the house of [[Ahnna Nanana]] is...bespoke. She simply calls it \"accessible.\" \n\nWhen Ahnna's former shipmates learned that [[Stonemarrow]] could not heal an injury which left her paralyzed, they abandoned her and her sister [[Alahna Nanana|Alahna]] at [[Longshadow Harbor]]. Unbroken in spirit, Ahnna did more than survive. \n\nShe became a self-taught entrepreneur who traded bootstraps for a pair of wheels. She took the Nanana name from urchin to entrepreneur and launched an up-and-coming artificer academy out in [[The Skirts]]--the [[Roundabout Wheelworks]]. Some people are calling her [[Bullion]]'s next [[Unda Grangate]]. \n\nAhnna's influence is beginning to rival that of [[Stern Residence|Mama Stern]], who's got a very different vision for the neighborhood. Whose path to prosperity will finally relieve the group of its second-class status?",
     "layer": "zone",
@@ -1416,12 +1498,15 @@
     "characters": [
       "Ahnna Nanana",
       "Alahna Nanana"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaNewton",
     "name": "Newton Residence",
-    "type": "Home",
     "logLine": "Art Deco and Art Nouveau living together in harmony.",
     "description": "It still needs a little sprucing up. You can see some of what passed for \"taste\" in the remnants of decor from the human family that lived here prior. Signing over the operations of [[Stonefruit Orchard]] to this power couple was in everyone's best interest, but the house's most of all.\n\nSorry, [[Victor Peachpit|Victor]] and [[Venus Peachpit]]--your business decisions are sound, but your sense of style is not. Nevertheless, [[Grace Newton|Grace]] and [[Florence Newton]] have done their darndest to turn the farmhouse (and the orchard at large) into reflections of themselves: hard-working and elegant. What else would you expect from of a marriage between a dwarf and elf?",
     "layer": "zone",
@@ -1473,12 +1558,15 @@
     "characters": [
       "Grace Newton",
       "Florence Newton"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaRos",
     "name": "Ros Residence",
-    "type": "Camp",
     "logLine": "Hope you like incense.",
     "description": "Tucked into the footing of [[Old Loch]] at the beginning of [[The Skirts]] is the home of the mysterious proprietors of the [[Glimpse of Fate]] sooth-saying stalls in [[Stoq Market]]. Catch them early if you need their help--[[Ulla Ros|Ulla]], [[Flavia Ros|Flavia]], and [[Krystal Ros|Krystal]] return to their quarters before [[Curfew]], and they only bring their work home for friends. \n\nWhat looks like little more than an old camping tent is bigger inside than you might think. Still, can it really fit all three sisters? Or is there even more than meets the eye?",
     "layer": "zone",
@@ -1520,12 +1608,15 @@
       "Ulla Ros",
       "Flavia Ros",
       "Krystal Ros"
-    ]
+    ],
+    "icon": {
+      "name": "camp",
+      "scale": 0.75
+    }
   },
   {
     "id": "casaSievestrain",
     "name": "Sievestrain Residence",
-    "type": "Home",
     "logLine": "Up here, I'm off-duty.",
     "description": "Perched above her [[Bitterbite Apothecary|shop]] in the market below, [[Brewthanne Sievestrain]]'s cottage on the plateau is \"cozy\"--to borrow a realty term. The small space has been made all the \"cozier\" by the arrival (and extended stay) of a long-time friend and colleague, [[Maybelle Disdress]]. She's been brought in on serious business.\n\nA few weeks ago, Brewthanne's sister [[Friedren Sievestrain|Friedren]] went on a mission to [[Gristlevale]] to procure rare potion ingredients and never returned. At first, Brewthanne thought she might just be off exploring, but she's starting to fear the worst. Now she's calling in a favor.\n\nMaybelle's got the apothecary to thank for the survival of her twin daughters [[Belinda Disdress|Bettina]] and [[Bettina Disdress|Belinda]] who were afflicted with a necrotic infection. They've since grown into a pair of formidable [[Piglin]] wizards rivaling their mother. They're staying at [[The Bombardier]] boarding house since the cottage is already packed to the gills, but they've proven themselves invaluable supply scavengers for the shop. \n\nBy day, the group keeps up the business and appearances. By night--they track down leads wherever they can.",
     "layer": "zone",
@@ -1566,12 +1657,15 @@
     "characters": [
       "Brewthanne Sievestrain",
       "Maybelle Disdress"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaSkim",
     "name": "Skim Residence",
-    "type": "Home",
     "logLine": "Humility always floats to the top",
     "description": "You'd think that the abode of [[Bullion]]'s undisputed dairy king and queen would splurge on indoor plumbing considering all that cheese. You'd be wrong. A humble lifestyle begets a humble home. [[Humbolt Skim|Humbolt]] and [[Lois Skim]] don't concern themselves with all the bluster and savvy of market politics. They tend their herd of [[Stonecud Cow|Quarry Cattle]], make their goods, and send one cart down to [[Fullbelly Grocers]] each morning.\n\nThey've managed to master the ever-elusive work-life balance, but don't expect them to do the same with their diet. Their son, [[Cheddar Skim|Charles \"Cheddar\" Skim]], has left the nest to pursue a career with the [[Bullion Guard]] rather than take up the mantle of the family business. He's only down at [[Riverwatch]], but it feels like a world away. They wait with bated breath for their daughter [[Brie Skim|Briana]] to make her own choice--with the fate of the farm in the balance.",
     "layer": "zone",
@@ -1625,12 +1719,15 @@
       "Lois Skim",
       "Brie Skim",
       "Cheddar Skim"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaSoris",
     "name": "Soris Residence",
-    "type": "Camp",
     "logLine": "Since the Crusades, his fiddle does the talking",
     "description": "If you've ever heard a fiddle tune spill out of [[Stillwell's Liquor & Cleaning Supply]] instead of a fight, you've heard [[Soris]] in his element. Nobody's keen on fighting while he's on stage. Spirits or no, he puts on a show. But unlike other Bards, you'll never hear him cracking wise or laying on the charm. \n\nHe's mute, or at least he's given everyone a reason to think so. It's a miracle what [[Stonemarrow]] can fix, and a mystery what it can't. [[Papa Stillwell|Papa]]'s offered him a place to stay more than once, but according to his notepad of messages, he likes his peace and quiet. Plus, someone's got to make sure his camp-mate [[Reed Allabow]] stays out of trouble.",
     "layer": "zone",
@@ -1657,12 +1754,15 @@
     "interiorBoundsMap": {},
     "characters": [
       "Soris"
-    ]
+    ],
+    "icon": {
+      "name": "camp",
+      "scale": 0.75
+    }
   },
   {
     "id": "casaStern",
     "name": "Stern Residence",
-    "type": "Home",
     "logLine": "If you're good to Mama, Mama's good to you.",
     "description": "[[Mama Stern]]'s earned both her names. She's seen the whole arc of [[The Skirts]] from swampland to cityscape--and all the nastiness in between. That's the gift and the burden of the Elvish lifespan and indeed leadership itself. In her experience, the only through-line across the years of change has been the enrichment of the rest of the city at the expense of [[The Skirts]].\n\nCould revolution be brewing at the Stern Residence? All this organized crime is starting to look...militaristic. [[Erik Ables]] and [[Julio Chiste]] are her two wards and lieutenants--her eyes and her ears respectively. It might not have *started* as a spy network, but if it quacks like a syndicate...",
     "layer": "zone",
@@ -1715,12 +1815,15 @@
       "Mama Stern",
       "Julio Chiste",
       "Erik Ables"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaStitch",
     "name": "Stitch Residence",
-    "type": "Home",
     "logLine": "Gee what's that smell? And why is it so familiar?",
     "description": "Sound is muffled and dampened inside this small shack. It feels more like a funky cocoon with all the bolts of bold, exotic and stylish fabrics. The pungent smell of [[Bluemoss]] has colonized every fiber. This is the home of a tastemaker and master seamstress.\n\n[[Salia Stitch|Salia]] came to [[Bullion]] years ago to in search of a cure for a hereditary eye disease. She only found treatment. Still, she'd have lost her vision in her twenties had she not settled in [[The Skirts]]. She's stayed able to appreciate her own winsome looks and winning wardrobe into her 70s. Although her sight's been fading for years, things have begun to deteriorate faster than she expected. With the [[Stonemarrow]] broth gone private and earnings from [[Ninth Life Boutique]] modest at best, she's had to space out her doses. She's making a new outfit every day until things go dark.",
     "layer": "zone",
@@ -1760,12 +1863,15 @@
     },
     "characters": [
       "Salia Stitch"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "casaTitfer",
     "name": "Titfer Residence",
-    "type": "Home",
     "logLine": "Ambition never sleeps.",
     "description": "Is this a house or a lodge? It *used* to be a house, at least when the [[Fullbelly Grocers|Fullbellies]] lived there. Now, it's hard to say. The [[Titfer Traders|Titfer Family]] aesthetic has seeped into the walls--serious, polite, *agreeable.* Newcomers to a neighborhood as small as [[The Neck]] are bound to make a splash, but the Titfers cut straight to making waves.\n\nOutsiders rarely cause ripples and make it out unscathed, but [[Faustus Titfer|Faustus]] and [[Tamara Titfer|Tamara]] knew just which boats to rock. They've been instrumental in getting [[Bullion]] to shake off its isolationism and embrace commerce with their work at [[Titfer Traders]]. Long after the doors close there, however, the orange glow of the hearth burns bright deep into the night...as though business hasn't quite concluded.",
     "layer": "zone",
@@ -1819,12 +1925,15 @@
       "Tamara Titfer",
       "Letitia Titfer",
       "Todd Titfer"
-    ]
+    ],
+    "icon": {
+      "name": "home",
+      "scale": 0.78
+    }
   },
   {
     "id": "chaffcropFarm",
     "name": "Chaffcrop Farm",
-    "type": "Farm",
     "logLine": "HAS it seen better days? Genuinely unclear.",
     "description": "\"Think of the investment!\" [[Gerald Grist|Gerald]] told his partner [[Zak Grist|Zak]] one night as the pair shared a bottle of wine with a salary for a price tag. \"Think of the cute pictures we could take!\" It wasn't before long that the ink was dry on the paperwork to purchase the old [[Chaffcrop Farm]] and fields which had fallen into disrepair in the years since--well, the realtor never did say! \n\nIf it'd take a hard-working crew of a dozen or more to get this mess in working order, it'd take a miracle for 2 silver-spooners. Just because you're willing doesn't make you able. The place seems to be fighting them. If it's not one thing, it's another, and they're always looking for a hand getting a handle on farm life.",
     "layer": "zone",
@@ -1866,12 +1975,15 @@
       "Zak Grist",
       "Gerald Grist",
       "Unda Grangate"
-    ]
+    ],
+    "icon": {
+      "name": "farm",
+      "scale": 0.95
+    }
   },
   {
     "id": "cobbler",
     "name": "Shewin Cobblers",
-    "type": "Shop",
     "logLine": "Your foot fetish does not count as work experience.",
     "description": "While other Dwarves sought to bury into the hillside during [[Bullion]]'s development and the creation of [[Stoq Market]], [[Oscar Shewin]]'s great great grandfather broke the mold and staked a claim atop them all. \n\nThe antics sparked a land rush which established the Ledge as a separate level to the cityscape. The Shewin family home remains there today, overlooking the [[Stoq Market Fountain|fountain]] in the square remembering better days. Oscar's lived out his days up there peddling his services as a cobbler after being injured during  [[The Old War]].",
     "layer": "zone",
@@ -1911,12 +2023,15 @@
     },
     "characters": [
       "Oscar Shewin"
-    ]
+    ],
+    "icon": {
+      "name": "shoe",
+      "scale": 0.69
+    }
   },
   {
     "id": "dairy",
     "name": "White Gold Dairy Farm",
-    "type": "Farm",
     "logLine": "The gold isn't in just in the hills, it's in here, too. (Points to udder)",
     "description": "Pasture is at a premium, and the stony soils around [[Bullion]] aren't especially suited for grazing. Or, at least they wouldn't be for ordinary dairy livestock. The [[Stonecud Cow]] is no ordinary beast--a kind of Quarry Cattle bred for its gravel-munching diet and milk production. They can be ornery animals, but [[Humbolt Skim]] and his fellow ranch hand [[Beau Hirehand|Beau]] keep the herd in line and out of danger.",
     "layer": "zone",
@@ -1953,12 +2068,15 @@
       "Brie Skim",
       "Humbolt Skim",
       "Beau Hirehand"
-    ]
+    ],
+    "icon": {
+      "name": "farm",
+      "scale": 0.95
+    }
   },
   {
     "id": "distillery",
     "name": "Stillwell's Liquor & Cleaning Supply",
-    "type": "Food",
     "logLine": "Everything's potable; just a matter of how many times.",
     "description": "Stillwell's isn't for the faint of heart. [[Papa Stillwell]] prefers it that way, at least while his apprentice [[Myles Guile|Myles]] is off-duty. It's a notorious gathering place for ruffians, thugs, and hooligans of all kind. Part speakeasy and part industrial cleaning chemical wholesale supplier--it really just depends on how much the hooch burns that week. Some days the [[Fume Well]] is extra spicy. \n\nIt's an atmosphere so convivial it'll make your eyes sting. Its libations can send even the most hardened criminal lurching for a bucket, and many a fight (and the contents of the last tankard) have spilled out into the street. The guards at [[Harborwatch]] have the perfect view to intervene, but let the scene play out in all but the most serious confrontations. [[Soris]] the bard is no stranger to playing double duty as musical act and bouncer and is more than capable of brokering truces between rowdy tavern brawlers without uttering a word.",
     "layer": "zone",
@@ -2000,12 +2118,15 @@
       "Papa Stillwell",
       "Myles Guile",
       "Soris"
-    ]
+    ],
+    "icon": {
+      "name": "alcohol",
+      "scale": 0.8
+    }
   },
   {
     "id": "doctor",
     "name": "The Salve",
-    "type": "Camp",
     "logLine": "Many paths; one wellness",
     "description": "[[Giles Guile]] is a doctor, and there are more sick and ailing citizens than there is holy broth to patch them up. In a decaying city renowned for its panacea...traditional medicine is making a comeback out of necessity. You don't need [[Stonemarrow]] for *everything*. Sometimes a checkup will do.\n\nWhy waste the precious broth of [[Stoq]] on a cold or rash when there are perfectly good ointments for that? And surely you *want* someone out there setting broken bones or (discretely) diagnosing venereal disease? It wouldn't be a crime? Right? \n\nThe arguments seem logical enough. But in a city coming out the other side of a religious [[Stoq Crusades|Crusade]] brought on by heretical scientific pursuits...you want to cover your bases and make it really clear what you're NOT doing. The [[Court of Alms]] is keeping a watchful eye on this humble healing hut.",
     "layer": "zone",
@@ -2032,12 +2153,15 @@
     "interiorBoundsMap": {},
     "characters": [
       "Giles Guile"
-    ]
+    ],
+    "icon": {
+      "name": "medical",
+      "scale": 0.70
+    }
   },
   {
     "id": "fey4Pay",
     "name": "Fey for Pay",
-    "type": "Shop",
     "logLine": "Otherworldly services at mundane prices.",
     "description": "Not everyone's capable of performing feats of magic in a magical world. It's never easy to plant a seed, waiting months for it to open--only to watch a Druid do it instantly with a cantrip. That's why [[Rubara Denille]] sees a constant stream of clients. \n\nFrom parlor tricks to hiring out summoned fey creatures, look no further for your next magical generalist. Whether you need otherworldly aid or to thwart prying eyes, Rubara's got you covered--though the pricing has been known to give some patrons sticker shock. \"If you can't figure out how to make your money back and then some, you're not in the right place.\" \n\nDon't make it weird though. They'll know if you do.",
     "layer": "zone",
@@ -2077,12 +2201,15 @@
     },
     "characters": [
       "Rubara Denille"
-    ]
+    ],
+    "icon": {
+      "name": "runes",
+      "scale": 0.75
+    }
   },
   {
     "id": "fishMarket",
     "name": "Sluiceside Fish Market",
-    "type": "Food",
     "logLine": "The freshest catch this side of Mt. Mandible!",
     "description": "There's more out there than just beef, chicken, and pork. And yet, despite having two rivers and a seaside appointment, the [[Stonemarrow|Marrowminers]] could never be bothered to pick up a rod. [[Jimothy Flyfish]] saw an untapped market and has built up a (heart-)healthy, briny business for himself with his wife [[Solara Flyfish|Solara]] and their daughter [[Lurana Flyfish|Lurana]]. \n\nThey've hired [[Piglin]] refugee [[Denise Truffleton]] to help out at the shop, and it's not just out of generosity--her ease with water magic keeps the catch fresh-caught all day long. Jimothy's still waiting to be accepted into the illustrious [[Bullion Mercantile Guild]], and it seems he'll be waiting a while longer yet now that [[Tallowed Be Thy Name|Leo Dripwick]]'s taken the latest spot.",
     "layer": "zone",
@@ -2136,12 +2263,15 @@
       "Solara Flyfish",
       "Lurana Flyfish",
       "Denise Truffleton"
-    ]
+    ],
+    "icon": {
+      "name": "fish",
+      "scale": 0.85
+    }
   },
   {
     "id": "fortuneTeller",
     "name": "Glimpse of Fate",
-    "type": "Shop",
     "logLine": "We've been expecting you. Let's call that a half hour.",
     "description": "Is Destiny calling you? Did it leave a message? Should you call back? \nBring your questions (and your coin) to Glimpse of Fate! During their far-flung travels, [[Ulla Ros|Ulla]], [[Flavia Ros|Flavia]], and [[Krystal Ros|Krystal]] have steeped themselves in magical arts. As a crystal-gazing caravan bringing the future into focus wherever they went, they learned to read the machinations of Fate in all its myriad forms. \n\nWhether your woes are rooted in the past, present, or future, the Ros Sisters are sure to have the insights to change your luck--or at least validate that you are indeed cursed. Just make sure you ask your questions before sunset. Oh, it's nothing mystical. Blame the [[Bullion Guard]]'s latest [[Curfew]]. The trio has to pack up and race [[Ros Residence|home]] to [[The Skirts]] as soon as the sun dips behind [[Mt Mandible]] or risk getting stuck at [[The Bombardier]] for the night.",
     "layer": "zone",
@@ -2170,12 +2300,15 @@
       "Ulla Ros",
       "Flavia Ros",
       "Krystal Ros"
-    ]
+    ],
+    "icon": {
+      "name": "crystalball",
+      "scale": 0.84
+    }
   },
   {
     "id": "graveyard",
     "name": "Gravel Downs",
-    "type": "Graveyard",
     "logLine": "May steady rhythm of busy picks sing thee to thy rest.",
     "description": "[[Stonemarrow|Marrowminers]] are laid to rest in these hallowed grounds at the base of [[Mt Mandible]] north of [[Bullion]]. Since [[Stonemarrow]] is a product of fossilized bones, the Dwarves in these parts believe that their own remains would undergo the same transformation with enough time and pressure. As such, it's customary for them to cast their bones into a familial shaft-crypt, slowly compressing towards that state of holy petrifaction.\n\nPresiding over them in the meantime is the dutiful [[Graveguard Gilly]]. Though it feels like he's been there for ages, it's only been a few  One day, as he was crossing the bridge from [[The Neck]], he noticed a man he'd never seen before struggling with one of the locks on the gate to [[Gravel Downs]]. \n\nGilly sidled up to the man. \"They didn't tell you about the desk?\" \nHe jumped around with a start. \"By the...! You scared me. The...what?\" \n\"The padlocks are fake,\" Gilly explained. \"So are the chains. They're only there to catch trespassers. More of a tripwire than a lock. Been like that since I was a boy.\" Before the man could respond, Gilly continued, automatically. \"Look--\" he pointed. \"They don't even *have* hinges! Not until you hit the button under your desk.\" \n\nThe man looked puzzled. Then impressed. Then puzzled again. \"How do you know all this? They never mentioned anything about such...unique security measures.\" \"Well, right after Joli installed them, all the other kids were busy fiddling with the lock. I went to go tell him his hinges were missing.\" The man chuckled. \n\"He laughed, too\" Gilly said. \"And told me I had good eyes. I saw him press something under his desk and all the kids outside went '*Whooaaaa!*'\" Gilly suddenly remembered himself and shrank. \"You see all sorts of stuff if you're paying attention, I suppose.\" \n\n\"I suppose you you're right,\" the man said with a grin. \"I'm [[Kit Mournside]]--the new undertaker at the [[Bullion Mortuary|Mortuary]]. I could use some help getting things in order around here, and I think I know just the man for the job.\" \n\n\"Do I know them?\"",
     "layer": "zone",
@@ -2203,12 +2336,15 @@
     "characters": [
       "Graveguard Gilly",
       "Kit Mournside"
-    ]
+    ],
+    "icon": {
+      "name": "graveyard",
+      "scale": 0.88
+    }
   },
   {
     "id": "grocers",
     "name": "Fullbelly Grocers",
-    "type": "Food",
     "logLine": "Stock. That. Pantry!",
     "description": "The Peachpit family would have you think that the \"Fullbelly\" brand goes hand in hand with a hearty meal. That may well be true, but it's because they're the only option in town. \n\nOnce the owners of a modest fruit stand in [[Hickory Village]], the family has since moved from [[The Neck]] into the upstairs of their [[Stoq Market]] storefront. They turned over management of [[Stonefruit Orchard]]'s to [[Grace Newton|Grace]] and [[Florence Newton]], but their grip on produce in the city is tighter than ever. Hardly a horseradish passes through [[Bullion]] that the Peachpits don't know about--and that's no accident.",
     "layer": "zone",
@@ -2262,12 +2398,15 @@
       "Venus Peachpit",
       "Vivica Peachpit",
       "Victor Peachpit"
-    ]
+    ],
+    "icon": {
+      "name": "shop",
+      "scale": 0.69
+    }
   },
   {
     "id": "harbor",
     "name": "Longshadow Harbor",
-    "type": "Landmark",
     "logLine": "Born to be a beach, forced to be a shipping hub.",
     "description": "What [[Bullion]]'s busy port lacks in capacity it makes up for in security. The ships and the crews that dock there are tightly monitored by the [[Bullion Guard]], but everyone is subject to severe scrutiny. Suspicion isn't met with curiosity; it's met with action. \n\nAnd why wouldn't it be? After all, the harbor moves the city's most valuable export: the [[Bullion Cube]]. [[Lochland Ahoy]] runs the district's logistical arm from the [[Harbormaster's Office]]. He's none too pleased to be sharing the already cramped space  with [[Jawbreaker Mine]]'s newest branch entrance, but the [[Stonemarrow]]'s got to come from *somewhere*. \n\n[[Mt Mandible]] casts an evening shadow across the the bay. The chill turns the harbor into a basin of mist. It's hardly uncommon to see the entire [[Bullion Keep|Keep]] plunged into fog on a warm summer night.",
     "layer": "zone",
@@ -2295,12 +2434,15 @@
     "characters": [
       "Lochland Ahoy",
       "Jamilina Saltstench"
-    ]
+    ],
+    "icon": {
+      "name": "ship",
+      "scale": 0.8
+    }
   },
   {
     "id": "harborOffice",
     "name": "Harbormaster's Office",
-    "type": "Office",
     "logLine": "Frazzled is actually our optimal working state",
     "description": "This place is in downright *disorder*! Part hoarder den and part tornado aftermath, it's not like [[Lochland Ahoy]] to leave things in such disarray. He's in hysterics. [[Inquisitor]] [[Zelda Barrelsworth]] came by to question him about some documents from [[Scrawlworks]]. There are accounting records from [[Jawbreaker Mine]] which aren't adding up. [[Stonemarrow]] ore's gone missing and the investigation's thrown a wrench into his schedule. Goods are beginning to pile up. What's the hold up?",
     "layer": "zone",
@@ -2351,12 +2493,15 @@
     },
     "characters": [
       "Lochland Ahoy"
-    ]
+    ],
+    "icon": {
+      "name": "office",
+      "scale": 0.75
+    }
   },
   {
     "id": "harborWatch",
     "name": "Harborwatch",
-    "type": "Military",
     "logLine": "This is Harborwatch. We're only getting paid to watch the harbor, if you catch my drift.",
     "description": "This [[Bullion Guard]] tower looks out over [[The Skirts]] and into [[Longshadow Harbor]] from across the mouth of the [[Sluice River]]. It's patrolled by [[Willy Wanders|Willy]] and [[Billy Wanders]] who've grown a coin-shaped soft spot for the downtrodden residents. It's been a mutually beneficial relationship for everyone. While they make their nightly patrols between here and [[Seawatch]], law presides. Whatever happens before or after that is frankly none of their concern.",
     "layer": "zone",
@@ -2408,12 +2553,15 @@
     "characters": [
       "Billy Wanders",
       "Willy Wanders"
-    ]
+    ],
+    "icon": {
+      "name": "tower",
+      "scale": 0.70
+    }
   },
   {
     "id": "hickoryCircle",
     "name": "Hickory Circle",
-    "type": "Landmark",
     "logLine": "Have you ever seen such a magnificent tree in your whole life?!",
     "description": "Cross the northern [[Sluice River]] bridge. Keep going past [[Gravel Downs]] and you'll see it there from a distance at the end of the path: [[Hickory Circle]]. The pride of [[Hickory Village]] and a hidden gem of [[Bullion]], this little hamlet is tucked away at the base of [[Mt Chimney]]. \n\nCompared to the industry that's ravaged neighboring [[Mt Mandible]], this area's a pristine preserve. The tree at the circle's center is a fitting focal point for [[Bullion]]'s bucolic agricultural community. The members of [[Hickory Village]] have a ritual of greeting it like a neighbor when they pass by.",
     "layer": "zone",
@@ -2455,12 +2603,15 @@
       "Grace Newton",
       "Florence Newton",
       "Kit Mournside"
-    ]
+    ],
+    "icon": {
+      "name": "landmark",
+      "scale": 0.65
+    }
   },
   {
     "id": "hickoryWoods",
     "name": "Hickory Woods",
-    "type": "Forest",
     "logLine": "A swath of woods somewhere between wild and rural. A curious, musty odor permeates the air.",
     "description": "Stretching inland from the Western Sea, in the vale between [[Mt Chimney]] and [[Mt Mandible]] lies Hickory Woods--at once quaint and wild. Thick, woody vines rise up from the forest floor strangling the trees and weaving together the canopy to shroud the shrubbery below. The foresters of [[Hickory Village]] have kept the creeping tide of green at bay...barely. \n\nWithout their tireless efforts, who can say how long it'd be before nature reclaimed the valley? It's been the same story year after year, and the choking vines continue to spread and smother, turning the strangled trees into stilts. This season's gotten off to a bad start already. The forest is getting...feisty again. Junior forester [[Lola Hirehand]] got turned around in the twisting trails and found herself lost overnight. [[Wally Hax]]'s forestry tutelage must be paying off, however, because she was able to make it out unscathed, albeit shaken. \n\nA duo of rugged, raggedy wolves is known to prowl the forest by night. They come down from [[Mt Chimney]] at dusk, but Lola swears the real danger she faced was the vines themselves and that they had reached out to snare her. Ever since, the villagers have taken turns steering passersby away from the woods after dark while they sort out what's going on.",
     "layer": "zone",
@@ -2490,12 +2641,15 @@
       "Baxter Hax",
       "Lola Hirehand"
     ],
-    "showAtAllZooms": true
+    "showAtAllZooms": true,
+    "icon": {
+      "name": "forest",
+      "scale": 0.8
+    }
   },
   {
     "id": "inn",
     "name": "Twainrock Inn",
-    "type": "Lodging",
     "logLine": "So professional, our bedbugs ask for consent.",
     "description": "[[Micah Twainrock|Micah]] and [[Maraika Twainrock]] run *the* premiere hotel accommodations for travelers staying or passing through [[Bullion]]. With how few and far between those have been lately, however, they've deigned to take in a few local full-time boarders as well. (But only the classy ones, mind you.) \n\nMicah's family's owned the inn and its sister property, the [[Twainrock Taproom]], since before the Ledge separating [[The Neck]] from [[Stoq Market]] was hewn. Now, the duo is on a real estate blitz to gobble up as much property as they can muster.",
     "layer": "zone",
@@ -2552,12 +2706,15 @@
       "Boris Fret",
       "Delia Truffleton",
       "Denise Truffleton"
-    ]
+    ],
+    "icon": {
+      "name": "lodging",
+      "scale": 0.85
+    }
   },
   {
     "id": "jawMine",
     "name": "Jawbreaker Mine",
-    "type": "Mine",
     "logLine": "Bullion's Stonemarrow quarry beneath Mt Mandible. How much could be left after all this time?",
     "description": "The first pick swung at Jawbreaker changed the course of [[Marrowminer]] culture. The hearty deposit of [[Stonemarrow]] ore inside [[Mt Mandible]] has sustained an entire religious order, city, and economy for generations. What such tale has *ever* ended poorly?! \n \n Every ounce of ore was paid for with hard work, bravery, and ingenuity. Whatever obstacle they encountered, they built their way around it. When the layers of Cobblebone were too hard for conventional iron picks, they developed diamond hand-drills. When a new operation unleashed a torrent from the [[Underrapids]], they built a remarkable series of [[Underlochs]] to reroute the aquifers. \n \n Those were innovations made during the mine's golden era. Lately, however, there are fewer and fewer armored carts coming up the lift--just iron, coal, and rubble.",
     "layer": "zone",
@@ -2608,12 +2765,15 @@
     },
     "characters": [
       "Heinrich Hardpan"
-    ]
+    ],
+    "icon": {
+      "name": "mine",
+      "scale": 0.78
+    }
   },
   {
     "id": "jeweler",
     "name": "Gilded Monocle",
-    "type": "Shop",
     "logLine": "Inquiries, Identification, and Appraisals for all things shiny (and valuable).",
     "description": "Even the most discerning customer might not have the trained eye to unpack the provenance of a rare gem or queer curio. It takes years of experience, education, and acumen to make an unknown object give up its name. \n\nFor all your \"What IS that?\" moments, [[Gemma Keengaze]] at the [[Gilded Monocle]] would be more than happy to take a peek--if you can pay her commission. What better place for a jeweler than in a town built around a Dwarven mining operation?",
     "layer": "zone",
@@ -2653,12 +2813,15 @@
     },
     "characters": [
       "Gemma Keengaze"
-    ]
+    ],
+    "icon": {
+      "name": "gem",
+      "scale": 0.89
+    }
   },
   {
     "id": "liftShop",
     "name": "Paper Crane Lifts",
-    "type": "Shop",
     "logLine": "Machine-grade \"Uppies.\"",
     "description": "[[Bullion]] isn't a very vertical setting, but that hasn't stopped its citizens from loving the convenience provided by [[Hubert Winch|Hubert]] and [[Bekka Winch]]'s much-needed addition to the [[Stoq Market]] service economy: [[Paper Crane Lifts]]. Old [[Oscar Shewin]] the cobbler, who's battled joint pain living in the upper market has called their opening a \"godsend.\"\n\nThe Winches were apprenticed at [[Roundabout Wheelworks]] in [[The Skirts]] by none other than rising star, [[Ahnna Nanana]]. Despite the bitter competition among business owners, even [[Maraika Twainrock]] bought a contract for a lift at the [[Twainrock Taproom]]. She's been so pleased that says she's finding space for another at the [[Twainrock Inn|Inn]].",
     "layer": "zone",
@@ -2705,12 +2868,15 @@
         "type": "path",
         "data": "M8172.96,5808.26c1.17-10.57-10.04,28.17,19.3,14.09,29.35-14.09,52.57-12.78,63.13-1.04,10.57,11.74,199.83-73.04,199.83-73.04l13.04-80.87,131.48,23.48-22.43,134.09-113.22-19.83-178.43,74.61s1.3,6.26-1.04,15.65,14.22,15.26,17.74,23.48,13.3,20.91,12,31.3c-1.18,9.39-34.17,48.65-50.61,52.17-16.43,3.52-71.87-67.7-82.43-73.57-10.57-5.87-71.48,18.26-71.48,18.26,0,0-22.96-51.78-22.96-55.3s-38.09-3.65-38.09-3.65l3.65-89.22,105.39-7.83,15.13,17.22Z"
       }
-    ]
+    ],
+    "icon": {
+      "name": "mechanism",
+      "scale": 0.69
+    }
   },
   {
     "id": "mortuary",
     "name": "Bullion Mortuary",
-    "type": "Shop",
     "logLine": "Not for the faint of heart. More for the still-of-heart.",
     "description": "For a species so comfortable with drinking broth made from a dead god's fossilized bones, [[Marrowminer|Marrowminers]] sure are cagey about their own remains and what happens to them after death. During the years of the [[Stoq Crusades]], rumors swirled that [[Steux]] worshippers would concoct terrible, virulent poisons from the bones of fallen kindred dwarves.\n\nThese rumors were much more than idle gossip. The hysteria around all things funereal spelled disaster for the former Dwarven undertaker, Joli. Accused of the grave crimes of grave-robbery and bone-embezzlement during the peak of the fervor, the old Dwarf didn't stand a chance. He was sentenced to remediation in the [[Basilica Dungeons]] and disappeared into the depths of the [[Bullion Basilica|Basilica]].  In all his wisdom as the leader of [[Bullion]]'s [[Court of Alms]], [[Ingmar Ironclad|Kettlekeep Ingmar]] has since entrusted the duties of town mortician to [[Kit Mournside]]--a human--to quell the fears of the superstitious. Just in case.\n\nHis first order of business was hiring [[Graveguard Gilly]] to tend the grounds of [[Gravel Downs]]. People are saying it's never looked better, and it's allowed Kit to focus on learning his own role. Handling death under any circumstances is trying, but in a city with many species, each with their own unique rituals to consider (let alone the plurality of perfectly valid afterlives), it's an even more delicate dance.",
     "layer": "zone",
@@ -2751,12 +2917,15 @@
     "characters": [
       "Kit Mournside",
       "Graveguard Gilly"
-    ]
+    ],
+    "icon": {
+      "name": "coffin",
+      "scale": 0.83
+    }
   },
   {
     "id": "mtHickory",
     "name": "mtHickory",
-    "type": "",
     "logLine": "",
     "description": "",
     "layer": "zone",
@@ -2781,12 +2950,14 @@
     },
     "interiors": [],
     "interiorBoundsMap": {},
-    "characters": []
+    "characters": [],
+    "icon": {
+      "name": ""
+    }
   },
   {
     "id": "mtMandible",
     "name": "Mt Mandible",
-    "type": "Mountain",
     "logLine": "If not jaw, then why jaw shaped?",
     "description": "A mountain? By the sea? How bizarre! To the North, [[Mt Chimney]] stands as a testament to years of pyroclastic flow--but what raised Mt Mandible? A natural oddity like this is exactly the kind of site sought by the [[Marrowminer]] [[Court of Alms]]. \n\nLong ago, a primordial titan roamed these lands, tending to them like a garden. One summer, as the heat grew fierce, the being watched as the sun appeared to grow larger and larger. The fireball ballooned and blotted out the blue sky beyond. It was a comet of epic proportions, come to destroy the titan and its wards on the world below. Everything would be consumed...unless...\n\nIn an act of ultimate sacrifice over this very landscape, the titan turned to face the comet and the two were obliterated. Gore rained across the terrain, battering the [[Kettlecrater Road|Craterlands]] with their trademark divets. The largest remnants were absorbed into the earth, covered with soil and stone, and transformed with time and pressure. Here lies the jaw of [[Stoq]]--the savior who thwarted [[The Bolide]]! \n\nFrom the outside at least, Mt Mandible's grandeur appears unspoiled even after all this time. But how hollow is it now after all these years of scraping ?",
     "layer": "zone",
@@ -2809,15 +2980,30 @@
       "type": "path",
       "data": "M1502.39,4245.39c97.43,68.09,26.11,492.13,3.13,509.09-32.87,24.26-122.09,157.3-122.87,322.43-.79,167.1-179.03,336.84-192.52,358.43-23.48,37.57-240.26,393.65-249.65,440.61-9.39,46.96-36,140.87-12.52,216,9.97,31.89,69.27,146.45,97.83,233.22,38.71,117.64,233.94,197.08,258.26,216,42.26,32.87-20.35,119.74-29.74,162-9.39,42.26-228.52,121.3-247.3,135.39-18.78,14.09-154.17,197.22-169.04,234.78-14.77,37.3,141.65,129.13,150.26,260.61,8.52,130.1-79.83,263.74-84.52,315.39-4.7,51.65-114.26,97.83-118.96,149.48-2.56,28.16-99.05,93.68-128.48,235.04-24.55,117.93-124.65,399.12-126.78,422.61-4.7,51.65-42.26,122.09-9.39,211.3,32.87,89.22,128.35,489.91,147.13,546.26,18.78,56.35,43.83,353.74,25.04,483.65-15.63,108.09,109.83,301.17,214.43,334.96,176.87,57.13,173.74,148.7,262.96,176.87,89.22,28.17,547.83-75.13,585.39-4.7,37.57,70.43,144,292.7,214.43,320.87,70.43,28.17,181.57,112.7,261.39,93.91,37.31-8.78,582.26,76.7,579.13,4.7-3.23-74.39-6.26-181.57,7.83-184.7,8.91-1.98,151.83,9.39,158.09-133.04,7.75-176.31-192-241.83-372.52-280.17-55.12-11.71-405.39-57.91-511.83-133.04-78.99-55.76-198.78-206.61-234.78-324-32.64-106.43-28.17-406.96-4.7-510.26,23.48-103.3,136.17-350.61,206.61-411.65,70.43-61.04,364.04-242.87,429.78-289.83s102.26-254.35,62.61-349.04c-39.94-95.39-139.3-233.22-139.3-313.04s-3.65-316.96,94.96-401.48c98.61-84.52,328.7-211.3,403.83-262.96,75.13-51.65,352.17-187.83,399.13-192.52s265.35-31.54,322.43-33.65c63.39-2.35,189.08,2.94,261.39,46.96,72,43.83,165.91,169.04,194.09,244.17,28.17,75.13-64.14,378.14-73.57,393.65-13.3,21.91,61.83,21.13,92.35,85.3,8.61-12.52,358-167.26,373.3-176.09,10.17-5.87,387.12,2.44,416.09-.78,42.26-4.7-256.7-316.17-275.48-386.61s36.3-192.82,46.96-252c14.09-78.26,75.13-460.17,46.96-560.35-24.29-86.36-179.53-285.58-134.61-320.87,87.65-68.87,161.22-34.43,217.57-53.22s280.17-98.61,341.22-140.87c65.97-45.67,244.17-212.87,300.52-283.3s383.48-101.74,449.22-120.52,292.7-90.78,386.61-100.17,211.3-20.35,248.87-154.96c33.2-118.98-123.63-209.15-198.78-198.78-90.78,12.52-226.96-21.91-266.09-68.87-50.03-60.04-108.17-206.17-217.57-241.04-108-34.43-222.26,9.39-319.3-43.83-60.79-33.34-261.39-98.61-291.13-181.57-36.48-101.76-59.48-134.61-26.61-247.3,32.87-112.7,42.26-142.43,34.43-198.78-8.42-60.64-25.04-197.22-20.35-267.65,4.7-70.43,25.04-267.65,81.39-366.26,8.45-14.79,103.48-115.02,180-175.3,51.65-40.7,215.15-117.55,320.87-129.91,76.89-8.99,45.65-92.89,37.57-140.87-5.55-32.94.02-105.6-79.83-81.39-82.18,24.91-201.88.13-208.17,6.26-59.48,57.91-498.57,40.51-474.26,134.61,6.87,26.61,15.19,39.58-4.7,54.78-53.22,40.7-455.15,129.19-468,133.04-62.61,18.78-353.74,43.83-428.87,42.26-22-.46-439.04-93.52-632.74-217.96-161.85-103.98-115.04-39.91-277.04-219.52-14.59-16.17-22.81-236.22,147.91-361.57,92.74-68.09,215.78-52.65,230.09-119.74,13.07-61.3-140.64-247.14-178.43-273.52-27.34-19.08-159.08-345.7-212.48-370.96-173.74-82.17-232.76,129.1-171.39,196.04,154.96,169.04,129.48,256.98,63.39,294.65-143.43,81.76-254.42-45.61-370.96-108-64.35-34.45-253.22-170.35-345.26-157.7-74.18,10.2-82.04,113.09-89.09,154.17-15.64,91.24,233.05,399,246.52,412.04,73.96,71.61-2.74,354.96-3.52,362.74-4.7,46.96,122.09,231.26,204.26,368.61,21.49,35.91,63.34,172.58,180.78,224.22,165.52,72.78,313.95-8.95,382.7,4.7,210.06,41.7,341.17,114.29,386.22,129.13,97.69,32.18,355.7,225.39,368.61,270,19.76,68.26,95.09,363.91,88.04,430.83-9.66,91.75-59.87,282.91-135,339.26-75.13,56.35-601.04-7.04-685.57-2.35-84.52,4.7-306.39-49.3-386.22-58.7-79.83-9.39-258.26-138.52-319.3-166.7-61.04-28.17-353.35-35.22-466.04-58.7-98.27-20.47-335.74,37.57-410.87,44.61-46.28,4.34-319.55,51.99-286.43,75.13Z"
     },
-    "interiors": [],
-    "interiorBoundsMap": {},
+    "interiors": [
+      "basilica"
+    ],
+    "interiorBoundsMap": {
+      "basilica": [
+        [
+          1360.15,
+          4999.34
+        ],
+        [
+          3838.85,
+          7410.75
+        ]
+      ]
+    },
     "characters": [],
-    "showAtAllZooms": true
+    "showAtAllZooms": true,
+    "icon": {
+      "name": "mountain"
+    }
   },
   {
     "id": "newspaper",
     "name": "The Gutentag",
-    "type": "Shop",
     "logLine": "Good morning, Greater Bullion!",
     "description": "Extra! Extra! Read all about it! If you're literate, that is. (*We've found that negging potential customers increases our subscription conversion rate by 5% or more.*) [[Bullion]]'s independent newspaper is known for its high-caliber investigative journalism. If there's a scoop to scoop somewhere in town, you know a hot-blooded, cool-headed, smooth-talking reporter from the *'Tag*'s already there with a warm spoon and a side of pebblepeach cobbler. \n\n[[Porter Daly]]'s turned the publication from a [[Court of Alms]] sycophant--preaching the [[Bullion Basilica|Basilica's]] propaganda *du jour*--into true-blue watchdog for the people. Now that they've got a reputation for raking muck, however, the rumor mill's slowed to a crawl and the townsfolk are clamming up. What measures will they resort to to get the story?",
     "layer": "zone",
@@ -2860,12 +3046,15 @@
       "Porter Daly",
       "Delia Truffleton",
       "Reed Allabow"
-    ]
+    ],
+    "icon": {
+      "name": "office",
+      "scale": 0.75
+    }
   },
   {
     "id": "oldLoch",
     "name": "Old Loch",
-    "type": "Landmark",
     "logLine": "It's a bridge. It's a dam. What can't it do?!",
     "description": "A relic of Dwarven engineering holding back and diverting much of [[Craw Creek]] as irrigation for the farmland around [[Chaffcrop Farm]] and [[Chaffcrop Mill|Mill]]. [[Unda Grangate]] pioneered the technology behind its construction and went on to employ it at an even grander scale in the [[Underlochs]]. With much of the river's course altered, [[Bullion]] absorbed the newly habitable low-lying wetlands around the city's southern edge. It would eventually go on to become [[The Skirts]].",
     "layer": "zone",
@@ -2892,12 +3081,15 @@
     "interiorBoundsMap": {},
     "characters": [
       "Unda Grangate"
-    ]
+    ],
+    "icon": {
+      "name": "mechanism",
+      "scale": 0.69
+    }
   },
   {
     "id": "orchard",
     "name": "Stonefruit Orchard",
-    "type": "Farm",
     "logLine": "What's a Dwarf's favorite snack? Stonefruits, of course!",
     "description": "[[Grace Newton|Grace]] and [[Florence Newton]] are growing more food than ever since they took over management of the orchard from the [[Valus Peachpit|Peachpit family]]. It seems like each tree's been grafted to bear an entire catalogue of truly stony fruits. Marbleplums? They've got 'em. Pomdegranites? Yup, those too. Pebblepit Peaches. Chalk Cherries. Shaleberries...the list goes on and on.\n\nThe operation's success has led it to expand ever further into [[Hickory Woods]] (to forester [[Wally Hax|Wally's]] protestation), and the Newtons have brought on two new associates to help them with their myriad farm chores. [[Timothy Glower]] and [[Darlene D'Porcine]] make for a dynamic harvesting duo. He shakes the trees and she gobbles up any bad fruit. With a little help from some Elven magic, they're able to pack in three growing seasons a year!",
     "layer": "zone",
@@ -2927,12 +3119,15 @@
       "Florence Newton",
       "Darlene D'Porcine",
       "Timothy Glower"
-    ]
+    ],
+    "icon": {
+      "name": "farm",
+      "scale": 0.95
+    }
   },
   {
     "id": "pantry",
     "name": "The Trough",
-    "type": "Food",
     "logLine": "Might not always taste like it, but it IS food.",
     "description": "The [[Bullion Mercantile Guild]] seems to be in denial about the spiraling state of affairs in the city. What might feel like a nuisance to the more secure members of the city feels like neglect to others. Lately, you can get maybe half a belly at most from your paycheck at [[Fullbelly Grocers|Fullbelly's]]. And what's being done about it?!\n\nIn [[The Skirts]], the food-relief enterprise is being spearheaded by [[Bab Ushka]] and her protégé [[Dora Diasplora]]. They've taken a novel approach to the problem: when food scarcity is driving up prices--just conjure more food! Every ounce of magic [[Bab Ushka|Babs]] can spare is poured into creating the community's next meal, bland though it may be. If you know the [[Prestidigitation]] spell or [[Goodberry]], now's your time to use them.",
     "layer": "zone",
@@ -2984,12 +3179,15 @@
     "characters": [
       "Bab Ushka",
       "Dora Diasplora"
-    ]
+    ],
+    "icon": {
+      "name": "food",
+      "scale": 0.75
+    }
   },
   {
     "id": "pawnShop",
     "name": "Rook's Pawns",
-    "type": "Shop",
     "logLine": "Some may call this stuff junk. Me? I call it [copyright infringement].",
     "description": "As far as [[Rook Bishop]] is concerned, there's only ever got to be one kind of shop: a pawn shop. That's why he quit his romping, roaming life at sea--to open the world's greatest one. He's succeeded in this several times over already if you ask him. Now his only competition's himself--well, him and [[Titfer Traders]] in [[Stoq Market]].",
     "layer": "zone",
@@ -3029,12 +3227,15 @@
     },
     "characters": [
       "Rook Bishop"
-    ]
+    ],
+    "icon": {
+      "name": "shop",
+      "scale": 0.69
+    }
   },
   {
     "id": "rangedShop",
     "name": "Aerial Advantage",
-    "type": "Shop",
     "logLine": "Why fight fair when you can fight far?",
     "description": "Arrows aren't in a Dwarf's typical arsenal, but then again, [[Stonemarrow|Marrowminers]] are no typical Dwarves. Despite an initial stint of standoffishness, battle-ready Bullioneers were won over by proprietor [[Pikesby Flyin]]'s culture-savvy rebrand: \"Don't think of them as 'arrows.' That's *so* Elven. Think of them like little daggers--just like the one's you'd usually throw...only with a string! Further! Faster! Harder!\" Now, the [[Bullion Guard]] carries crossbows on patrol and some pioneering hobbyists are beginning to flirt with shortbows.",
     "layer": "zone",
@@ -3074,12 +3275,15 @@
     },
     "characters": [
       "Pikesby Flyin"
-    ]
+    ],
+    "icon": {
+      "name": "smith",
+      "scale": 0.85
+    }
   },
   {
     "id": "riverWatch",
     "name": "Riverwatch",
-    "type": "Military",
     "logLine": "Bullion's easternmost guard tower which keeps watch over Craw Creek and the fields beyond.",
     "description": "All of the [[Bullion Guard]] towers are known for having a particular part to play. Suffice it to say, [[Riverwatch]] is not the \"action-packed\" one. \"Sleepy\" might be more apropos. It makes for a perfect training ground--or retirement pasture. It keeps watch over [[Craw Creek]] (where *nothing* ever happens) and [[Chaffcrop Farm]] (where *even less* happens). \n\nHot-blooded recruits will do anything to get out of being stuck on duty playing cards with [[Lynis Drounce|Lynis]] while he reminisces about his [[Stoq Crusades|Crusade]] years--even write the [[Glimpse of Fate|Ros sisters]] another citation for an \"unpermitted cast of Silence in a public setting.\"\n\nThings are a little more interesting at least since [[Cheddar Skim]] joined [[Albert Barrelsworth]] there as a fellow rookie. But they're also a little more cramped. Albert's trying to give him a break though. The poor guy's still a bit shellshocked by the fire at [[Roadwatch]] that sparked his reassignment.",
     "layer": "zone",
@@ -3132,12 +3336,15 @@
       "Lynis Drounce",
       "Albert Barrelsworth",
       "Cheddar Skim"
-    ]
+    ],
+    "icon": {
+      "name": "tower",
+      "scale": 0.70
+    }
   },
   {
     "id": "roadWatch",
     "name": "Roadwatch",
-    "type": "Military",
     "logLine": "Bullion's outermost guard checkpoint by the rotary. It's been ravaged by fire.",
     "description": "One of the [[Bullion Guard]]'s watchtowers near the city's Eastern --or at least, it used to be. It met a fiery end some time ago and has yet to be cleared, let alone rebuilt. [[Letitia Titfer]] & [[Cheddar Skim]], two newly minted recruits, barely made it out unscathed that night.\n\nSome say the fire was started by disgruntled peasants from [[The Skirts]], but the people there have their own theories as well about who would want to see that checkpoint erased. Either way, it lies in ruin--a clear statement that [[Bullion]]'s priorities are elsewhere.",
     "layer": "zone",
@@ -3165,12 +3372,15 @@
     "characters": [
       "Cheddar Skim",
       "Letitia Titfer"
-    ]
+    ],
+    "icon": {
+      "name": "tower",
+      "scale": 0.70
+    }
   },
   {
     "id": "school",
     "name": "Village Schoolhouse",
-    "type": "School",
     "logLine": "Conjunction junction what's your function?",
     "description": "The schoolhouse in [[The Neck]] wasn't a place of education until recently. Three short years ago, at the close of the [[Stoq Crusades]]--just when the fervor seemed to be dying down--the [[Court of Alms]] was hit with one last surprise. Homegrown [[Fornax/Dungeons and Dragons/Campaigns/Trouble in Bullion/Worldbuilding/Hearthstoker|Hearthstoker]] [[Gisela Connor]] and her [[Deacon]] husband, [[Otto Connor|Otto]] were discovered to be blaspheming [[Steux]] worshippers.\n\nThey were driven out of the city in a banishment deemed lenient for the severity of the crimes. The town seized their property and transformed it into a schoolhouse for the local village children who were still too young for apprenticeships. Now, the building's packed with kids and is home to a cohort of co-ed [[Court of Alms]] acolytes. Between the two groups, [[Wenda Emberley]], the aged (if not ancient) [[Kettlekeep]], is up to her neck in drama.",
     "layer": "zone",
@@ -3235,12 +3445,14 @@
       "Vivica Peachpit",
       "Milo Twainrock",
       "Moronica Twainrock"
-    ]
+    ],
+    "icon": {
+      "name": "school"
+    }
   },
   {
     "id": "scrawlworks",
-    "name": "Notes",
-    "type": "Shop",
+    "name": "Scrawlworks Accounting",
     "logLine": "All the proof you need that paper beats rock.",
     "description": "A stationary store is only as valuable to a community as its literacy rate. [[Constance Fret|Constance]] and [[Horace Fret]] learned early on in their [[Bullion]] business tenure that it would be best if they also handled the reading and writing in addition to the paper and ink itself. Now, they've transformed themselves into a fully fledged accounting firm and passed on the trade to their son [[Boris Fret|Boris]], who's branched into banking at [[Titfer Traders]].",
     "layer": "zone",
@@ -3293,12 +3505,15 @@
       "Constance Fret",
       "Boris Fret",
       "Horace Fret"
-    ]
+    ],
+    "icon": {
+      "name": "office",
+      "scale": 0.75
+    }
   },
   {
     "id": "seaWatch",
     "name": "Seawatch",
-    "type": "Military",
     "logLine": "The only time I get paid to look at anything other than the water is when I'm walking from one tower to the next.",
     "description": "There hasn't been a naval threat to watch for in these parts since the great sieges of [[The Old War]]. It's placid here most days. The rhythmic crash of the waves on the seawall has been known to lull a guard to sleep before the end of their shift. Unless there's a storm, all the action worth watching is on the other side of the tower--looking out at [[The Skirts]].",
     "layer": "zone",
@@ -3350,12 +3565,15 @@
     "characters": [
       "Billy Wanders",
       "Willy Wanders"
-    ]
+    ],
+    "icon": {
+      "name": "tower",
+      "scale": 0.70
+    }
   },
   {
     "id": "stables",
     "name": "Glower Stables",
-    "type": "Stable",
     "logLine": "For humble horses with low standards and a budget.",
     "description": "Not so much a proper stables as a lean-to that's earned its keep lodging livestock over the years, [[Timothy Glower]] keeps this pair of pens on the road between [[Bullion]] and [[Hickory Village]] ready-to-rent for whoever's got silver to spare. For a group of young adventurers on a budget who suddenly acquired two horses on the trek back to town, they're the perfect place to keep them hidden from prying parental eyes. \n\nFrideigh and Tuesdeigh seem to be settling into their new accommodations. [[Beata Glower]] (and her prodigious \"horse girl\" energy) is only too happy to look after them. The hay's fresh. The water's clean. Sometimes [[Darlene D'Porcine]] stops by with extra fruit from [[Stonefruit Orchard]]. Sure beats a bandit camp!",
     "layer": "zone",
@@ -3384,12 +3602,15 @@
       "Timothy Glower",
       "Frideigh",
       "Tuesdeigh"
-    ]
+    ],
+    "icon": {
+      "name": "stable",
+      "scale": 0.70
+    }
   },
   {
     "id": "trader",
     "name": "Titfer Traders",
-    "type": "Shop",
     "logLine": "Deals on deals on deals",
     "description": "At Titfer Traders, the wheeling and dealing has gone far beyond haggling over salt and cinnamon. The Titfers seem to have their hand in everything these days. [[Faustus Titfer|Faustus]] is the hero of [[Longshadow Harbor]] after pulling some diplomatic strings to establish [[Bullion]] on several international shipping routes. His wife [[Tamara Titfer|Tamara]] is an accomplished enchantress who successfully converted the city to an interdimensional pocket dimension banking system.\n\nTheir children are no slouches either. [[Letitia Titfer|Letitia]] is a prodigy in the [[Bullion Guard]] and rising quickly through the ranks. [[Todd Titfer|Todd]] holds down the fort at their shop, but is also making a political play for chair of the [[Bullion Mercantile Guild]] against formidable  incumbent [[Bullga Derfat]] of [[Butchest Meats]] fame.",
     "layer": "zone",
@@ -3434,12 +3655,15 @@
       "Todd Titfer",
       "Scarlett Titfer",
       "Boris Fret"
-    ]
+    ],
+    "icon": {
+      "name": "shop",
+      "scale": 0.69
+    }
   },
   {
     "id": "wheelworks",
     "name": "Roundabout Wheelworks",
-    "type": "Shop",
     "logLine": "You like us! You wheelie like us!",
     "description": "[[Ahnna Nanana]]'s nascent business empire has helped bring [[Bullion]] into the modern day (and finance her real-estate investments in [[The Skirts]]). Her artificer services are beginning to give [[Emback Armory]] a run for its money. \n\nThey might make a mean set of plate armor, but the Wheelworks employs refugees, trains new mechanics, and carries out public works contracts for the city when the [[Court of Alms]] has fallen through. [[Rufus Spokesby]] and [[Olly Urchin]] are two of her newest proteges, and two of her former students, [[Bekka Winch|Bekka]] and [[Hubert Winch]], have opened a [[Paper Crane Lifts|business of their own]] in [[Stoq Market]]. \n\nSome members of the [[Bullion Mercantile Guild]] are beginning to think it'd be better to bring them into the fold rather than continue to compete. Why fight progress when you can cash in on it?",
     "layer": "zone",
@@ -3484,12 +3708,15 @@
       "Rufus Spokesby",
       "Bekka Winch",
       "Hubert Winch"
-    ]
+    ],
+    "icon": {
+      "name": "mechanism",
+      "scale": 0.69
+    }
   },
   {
     "id": "windmill",
     "name": "Chaffcrop Mill",
-    "type": "Farm",
     "logLine": "They see me winding and grinding up on that hill...",
     "description": "The old windmill perched atop the hill at [[Chaffcrop Farm]] has twirled over the [[The Skirts]] since the area was still just marshland. It takes the wind off [[Craw Creek]] and uses it to grind [[Bullion]]'s finest flour--when it pleases, at least. \n\nEver since the land was purchased, it seems to have a mind of its own, and a particularly ornery disposition towards the farm's new owners, [[Zak Grist|Zak]] and [[Gerald Grist]]. Whether the breakdowns are caused by wear and tear or sheer spite is irrelevant--there's a harvest to preserve! \n\nRepairs need to be made--or peace needs to be brokered--whichever gets the mill back in business.",
     "layer": "zone",
@@ -3541,12 +3768,15 @@
     "characters": [
       "Zak Grist",
       "Gerald Grist"
-    ]
+    ],
+    "icon": {
+      "name": "windmill",
+      "scale": 0.69
+    }
   },
   {
     "id": "birds",
     "name": "birds",
-    "type": "POI",
     "logLine": "Bird's the word!",
     "description": "",
     "layer": "extra",
@@ -3568,12 +3798,15 @@
     "shape": null,
     "interiors": [],
     "interiorBoundsMap": {},
-    "characters": []
+    "characters": [],
+    "icon": {
+      "name": "poi",
+      "scale": 0.65
+    }
   },
   {
     "id": "grave",
     "name": "Exhumed Grave",
-    "type": "POI",
     "logLine": "Oh that can't be good.",
     "description": "The [[Crumbulina Leavenloaf|Leavenloaf]] family's bone-pit's been bone-pillaged! The remains of poor Crumbulina's husband Ryen and their son Pita--both lost in the [[Stoq Crusades]]--are missing, but the older generations appear to have gone undisturbed. Why them? Why now? And, if you're a very perplexed [[Graveguard Gilly]]: HOW?!",
     "layer": "extra",
@@ -3600,12 +3833,15 @@
     "interiorBoundsMap": {},
     "characters": [
       "Crumbulina Leavenloaf"
-    ]
+    ],
+    "icon": {
+      "name": "coffin",
+      "scale": 0.8
+    }
   },
   {
     "id": "landingSite",
     "name": "Hidden Cove",
-    "type": "POI",
     "logLine": "What's that doing here?",
     "description": "The curling arm of [[Mt Chimney]] wraps a small inlet in a calm embrace. Only to an experienced survivalist (or lucky onlooker) would traces of furtive campfire remain. Somebody's gone to great lengths to make it look like they were never here. A little boat's hidden in the brush, but poised to make an escape. There's a note buried nearby. Though it's begun to degrade, it reads:\n\n\"A--If you're reading this, we're on our way. Let's hope the old agreements still stand. It's been a while. Send word to where the stars shouldn't be: it's happening again. - G&O\"",
     "layer": "extra",
@@ -3633,12 +3869,15 @@
     "characters": [
       "Gisela Connor",
       "Otto Connor"
-    ]
+    ],
+    "icon": {
+      "name": "ship",
+      "scale": 0.8
+    }
   },
   {
     "id": "marketFountain",
     "name": "Stoq Market Fountain",
-    "type": "POI",
     "logLine": "Blub blub, b*tch",
     "description": "It's little more than a bird bath at a rotary now, but decades ago during the [[Broth Boom]], when there was plenty of [[Stonemarrow]] to go around, it's said that the [[Court of Alms]] would pipe the broth from the [[Bullion Basilica]] into the fountain for any and all who needed its restorative powers. Tall tales to most, but some remember.",
     "layer": "extra",
@@ -3663,12 +3902,15 @@
     },
     "interiors": [],
     "interiorBoundsMap": {},
-    "characters": []
+    "characters": [],
+    "icon": {
+      "name": "fountain",
+      "scale": 0.70
+    }
   },
   {
     "id": "relicanth",
     "name": "Relicanth",
-    "type": "POI",
     "logLine": "That's one big fish.",
     "description": "An enormous creature's been spotted off the southwest coast of [[Bullion]]--and it's not making much of an effort to hide. Quite the opposite. Any vessel that gets too close had better have a hull half as sturdy as this thing's head. It's ramming any boat--big or small. It's already dashed one to pieces, and nearly took [[Belinda Disdress|Bettina]] and [[Bettina Disdress]] with it.\n\nWhat were they doing on that side of the mountain, and how did they escape? They say they were only out on a \"[[Jelly Run]]\" for [[Bitterbite Apothecary]] in the [[Kettlecrater Road|Craterlands]]--but then why didn't they come back down the [[Sluice River|Sluice]]? \n\nFrom the descriptions they gave, some are saying it's a \"Relicanth.\" As in \"*You reli-canth be serious about sailing past this thing!*\"",
     "layer": "extra",
@@ -3693,12 +3935,15 @@
     },
     "interiors": [],
     "interiorBoundsMap": {},
-    "characters": []
+    "characters": [],
+    "icon": {
+      "name": "fish",
+      "scale": 0.85
+    }
   },
   {
     "id": "rotary",
     "name": "Grangate Rotary",
-    "type": "POI",
     "logLine": "Or 'Roundabout' if you prefer",
     "description": "What should have been a public works project for the [[Court of Alms]] was instead [[Ahnna Nanana]]'s debut to the [[Bullion]] social scene--financed by breakout success of [[Roundabout Wheelworks]]. The monument's dedicated to her muse, posthumous mentor, and unofficial creatrix of [[The Skirts]], [[Unda Grangate]].",
     "layer": "extra",
@@ -3726,12 +3971,15 @@
     "characters": [
       "Unda Grangate",
       "Ahnna Nanana"
-    ]
+    ],
+    "icon": {
+      "name": "landmark",
+      "scale": 0.65
+    }
   },
   {
     "id": "shipwreck",
     "name": "The Kermie",
-    "type": "Ship",
     "logLine": "Oh, Kermie!",
     "description": "[[Bettina Disdress|Belinda]] and [[Bettina Disdress]] are down a boat, but at least they didn't lose their lives. They were only ones so far to survive an encounter with a mysterious beast lurking beneath the surf. The ship's been smashed to smithereens, and what wasn't already broken's been battered to bits by the waves. They're being cagey about how they escaped a similar fate and just what brought them to that side of [[Longshadow Harbor]] in the first place.",
     "layer": "extra",
@@ -3760,12 +4008,15 @@
       "Belinda Disdress",
       "Bettina Disdress",
       "Maybelle Disdress"
-    ]
+    ],
+    "icon": {
+      "name": "ship",
+      "scale": 0.8
+    }
   },
   {
     "id": "skirtsWellA",
     "name": "Fume Well",
-    "type": "POI",
     "logLine": "And you're SURE this burns clean?",
     "description": "The crumbling old well outside [[Stillwell's Liquor & Cleaning Supply]] is part of its namesake. When it ran dry pulling water out, [[Papa Stillwell]] decided it was time to throw stuff in. Like so many earnest strokes of genius, innovation began with idiocy.\n\nAt first, he sought out to create a massive still, but his apprentice [[Myles Guile|Myles]] helped him see the bigger picture. Instead, he'd made a bio-reactor (with some memorably stinky weeks in the middle there). Throw in some whimsical steampunk (and stinkproof) tubing, and now [[The Skirts]] shines just as bright as the rest of the city--all without a drop of oil. So long as the citizen keep feeding in the right mix of scraps, the well belches up gas aplenty.",
     "layer": "extra",
@@ -3793,12 +4044,15 @@
     "characters": [
       "Papa Stillwell",
       "Hans Sporridge"
-    ]
+    ],
+    "icon": {
+      "name": "poi",
+      "scale": 0.65
+    }
   },
   {
     "id": "skirtsWellB",
     "name": "Foul Well",
-    "type": "POI",
     "logLine": "Kinda smells like teen spirit, NGL",
     "description": "[[The Skirts]] is down to its last source of water now that the [[Fume Well]] has...specialized. The water itself is suitably clean, clear, and potable, but the smell is anything but. Why do the citizens still continue to use it despite the offensive odor? Has necessity stuffed up their noses or do they know something we don't?",
     "layer": "extra",
@@ -3823,12 +4077,15 @@
     },
     "interiors": [],
     "interiorBoundsMap": {},
-    "characters": []
+    "characters": [],
+    "icon": {
+      "name": "poi",
+      "scale": 0.65
+    }
   },
   {
     "id": "smugglers",
     "name": "Mysterious Ship",
-    "type": "POI",
     "logLine": "Seems sus to me",
     "description": "Awfully strange for a ship to be anchored on this side of [[Mt Mandible]]. It's unlikely anyone's noticed it's there, especially not when there's a [[Relicanth]] lurking nearby. Maybe they're innocent sailors just trying to wait it out until the creature moves on? Sure. Let's go with that.",
     "layer": "extra",
@@ -3858,12 +4115,15 @@
       "Miso Scawy",
       "Spaz",
       "Gulp"
-    ]
+    ],
+    "icon": {
+      "name": "unknown",
+      "scale": 0.8
+    }
   },
   {
     "id": "waterTower",
     "name": "Loftwell Water Tower",
-    "type": "POI",
     "logLine": "You just know that makes for good water pressure",
     "description": "No good deed goes...unpublished. That's the saying, right? [[Maraika Twainrock]] wants *you* (yes you) to know that you have her to thank for this pristine new source of drinking water up at the Ledge. \n\nSo that's where the water goes! Because it almost looks like the pipes all flow down to [[Twainrock Taproom]]--but I'm no engineer.",
     "layer": "extra",
@@ -3890,12 +4150,15 @@
     "interiorBoundsMap": {},
     "characters": [
       "Maraika Twainrock"
-    ]
+    ],
+    "icon": {
+      "name": "watertower",
+      "scale": 0.70
+    }
   },
   {
     "id": "bullion",
     "name": "Bullion",
-    "type": "Region",
     "logLine": "Enclave of the Marrowminers",
     "description": "Bullion's origin story is much the same as any other [[Marrowminer]] Dwarf enclave: clerics from the [[Court of Alms]] determined the area around [[Mt Mandible]] to be a holy site and source of precious [[Stonemarrow]]--the fossilized remnants of a powerful and enigmatic deity. It's believed that the marrow from this site contains prophetic and divine communication properties in addition to the traditional healing ones. \n\nThese locations are too remote for any commercial activity to coexist alongside the open fundamentalism, but Bullion's seaside location puts secular merchants within walking distance to a panacea powerhouse. The blend of the two perspectives produced research leading to both the creation of [[Bullion Cube]] and the [[Marrow Hags]], book-ending the era of alchemical research and sparking the divisive civil conflict of the [[Stoq Crusades]]. \n\nSelling the holy broth to the unfaithful doesn't sit well with everyone, but it is certainly lucrative. Proud past. Uncertain future. What will the new generation do to shape Bullion?",
     "layer": "",
@@ -3920,12 +4183,15 @@
     },
     "interiors": [],
     "interiorBoundsMap": {},
-    "characters": []
+    "characters": [],
+    "icon": {
+      "name": "region",
+      "scale": 0.70
+    }
   },
   {
     "id": "casaFata",
     "name": "Fata Residence",
-    "type": "Camp",
     "logLine": "Oh to see what's beyond that horizon...",
     "description": "In [[Bullion]], people come and go all the time. Refugees, merchants, ships--[[Morgana Fata|Morgana]]'s watched them appear and disappear like the twinkle of fireflies in the reeds. Her heart quickens whenever she treads the docks at [[Longshadow Harbor]]. She can smell the salt of far-off seas when new crews arrive. Each time, she thinks \"this is it.\"\n\nAll too soon, the boxes are moved, and the ships move on. They leave with ores, gems, and even precious [[Bullion Cube|Bullion Cubes]], but they never leave with Morgana. She already sleeps in a hammock. She already knows her knots--what's keeping her tied to [[The Skirts]]?",
     "layer": "zone",
@@ -3952,12 +4218,15 @@
     "interiorBoundsMap": {},
     "characters": [
       "Morgana Fata"
-    ]
+    ],
+    "icon": {
+      "name": "camp",
+      "scale": 0.75
+    }
   },
   {
     "id": "casaLongodds",
     "name": "Longodds Residence",
-    "type": "Camp",
     "logLine": "You're only as good as your worst wager.",
     "description": "Gambling isn't illegal. Chance checked with [[Willy Wanders|Willy]] and [[Billy Wanders]]--and they're *always* playing cards. So what harm could some dice be? \n\nSo go on, get into the spirit and see if fortune favors your boldness! It's just a *coincidence* that all the games take place between the guard patrols. You're a skittish one!",
     "layer": "zone",
@@ -3984,12 +4253,15 @@
     "interiorBoundsMap": {},
     "characters": [
       "Chance Longodds"
-    ]
+    ],
+    "icon": {
+      "name": "dice",
+      "scale": 0.75
+    }
   },
   {
     "id": "mtChimney",
     "name": "Mt Chimney",
-    "type": "Mountain",
     "logLine": "Bullion's red-headed step-mountain.",
     "description": "Mount Chimney fumes over the [[Sluice River]] valley from the North. Its steep slopes climb up in a sheer screen of cliff and greenery. Though it's remained dormant now for at least half a century, its lengthy volcanic history has transformed the surrounding area above ground and below. \n\nThe people of [[Hickory Village]] might not treat it like a threat, but they do offer it the kind of deference due to all violent forces of nature. It's not uncommon to catch a whiff of hickory smoke on the breeze from some unlucky branch or log's run in with a burst of superheated gas. By night, the howls of lonesome wolves haunt the valley.",
     "layer": "zone",
@@ -4017,12 +4289,14 @@
     "characters": [
       "Shagworn",
       "Bloodmuzzle"
-    ]
+    ],
+    "icon": {
+      "name": "mountain"
+    }
   },
   {
     "id": "boutique",
     "name": "Ninth Life Boutique",
-    "type": "Shop",
     "logLine": "Nothing's really 'original,' if you think about it.",
     "description": "New? New is for rich people. You might need a button sewn back on. You might need a zipper fixed. Maybe you split your favorite pants dancing. You don't need new. You don't need it even if you *could* afford it.\n\nRestored is *cool*. Refurbished is *in.* Reclaimed is *hot*. We're wearing meemaw's old frock as a pantsuit and it's chic as hell. What are *you* wearing?\n\nEven though [[Salia Stitch|Salia's]] eyesight isn't what it used to be, her sense of style is better than ever. Where does she get her inspiration? As far as extra hands and eyes--she gets those from [[Dante Rivera]] and [[Capricia Vox]]--two locals of [[The Skirts]] who each have their own way with connecting threads. (Though one's a tad more invested than the other.)",
     "layer": "zone",
@@ -4051,12 +4325,15 @@
       "Salia Stitch",
       "Dante Rivera",
       "Capricia Vox"
-    ]
+    ],
+    "icon": {
+      "name": "sewing",
+      "scale": 0.69
+    }
   },
   {
     "id": "casaRivera",
     "name": "Rivera Residence",
-    "type": "Camp",
     "logLine": "To live is to move",
     "description": "It's a spartan abode where it seems like someone's trying very hard not to spend much time. There's little more in there than a cot and some generic belongings that no one'd bother stealing. You likely won't find Dante there though. Try next door at the [[Ninth Life Boutique]]. He's probably in the thrall of his latest tailoring project. That man loves an unconventional materials challenge.",
     "layer": "zone",
@@ -4083,12 +4360,15 @@
     "interiorBoundsMap": {},
     "characters": [
       "Dante Rivera"
-    ]
+    ],
+    "icon": {
+      "name": "camp",
+      "scale": 0.75
+    }
   },
   {
     "id": "casaVox",
     "name": "Vox Residence",
-    "type": "Camp",
     "logLine": "The letter 'P' and a wonky eye drawing are painted on the tent flap",
     "description": "If she's not plucking threads at [[Ninth Life Boutique]] with [[Dante Rivera|Dante]], she's tugging at strands of an investigation in her office (read: roadside tent behind the [[Roundabout Wheelworks|wheelworks]]). Sure, there's a team of journalists at [[The Gutentag]] who are experts at finding the scoop, but who's watching the watchers?\n\nCapricia, that's who. Something stinks, and for once it's not just all the old broth and raw medieval sewage. She suspects something big is brewing in [[Bullion]] and that the even the outspoken critics at the newspaper are holding something back.",
     "layer": "zone",
@@ -4115,6 +4395,10 @@
     "interiorBoundsMap": {},
     "characters": [
       "Capricia Vox"
-    ]
+    ],
+    "icon": {
+      "name": "camp",
+      "scale": 0.75
+    }
   }
 ]
