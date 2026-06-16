@@ -1284,19 +1284,25 @@ function iconInfo(loc) {
 
 
 // ─── WIKILINK RESOLUTION ────────────────────────────────────────────────────────
-// locationNameMap is built once from LOCATIONS at load (zone names are global
-// and stable). currentZoneId / currentCharacterMap are set fresh by openPanel()
-// each time a panel is populated, since character-portrait hovers should only
-// resolve against the CURRENT location's cast — a character mentioned in a
-// description isn't necessarily in that location's `characters` array.
-let locationNameMap   = {}; // lower(name) -> location id
-let currentZoneId     = null;
-let currentCharacterMap = {}; // lower(name) -> canonical character name, scoped to open panel
+// locationNameMap and characterNameMap are built once from LOCATIONS at load.
+// currentZoneId is set fresh by openPanel() each time a panel is populated.
+// currentCharacterMap remains scoped to the open panel's cast — used only for
+// the portrait strip. Wikilink char-link resolution uses the global map so that
+// any character mentioned anywhere in a description resolves correctly, not just
+// those in the current location's `characters` array.
+let locationNameMap     = {}; // lower(name) -> location id
+let characterNameMap    = {}; // lower(name) -> canonical character name, global
+let currentZoneId       = null;
+let currentCharacterMap = {}; // lower(name) -> canonical name, scoped to open panel (portrait strip only)
 
 function buildWikiLookups(locations) {
-  locationNameMap = {};
+  locationNameMap  = {};
+  characterNameMap = {};
   locations.forEach(loc => {
     if (loc.name) locationNameMap[loc.name.toLowerCase()] = loc.id;
+    (loc.characters || []).forEach(name => {
+      characterNameMap[name.toLowerCase()] = name;
+    });
   });
 }
 
@@ -1327,13 +1333,13 @@ function resolveWikilink(raw) {
     return `<span class="zone-ref">${display}</span>`;
   }
 
-  const charName = currentCharacterMap[key];
+  const charName = characterNameMap[key];
   if (charName) {
     return `<span class="char-link" data-char-name="${escapeHtml(charName)}">${display}</span>`;
   }
 
-  // Neither a known zone nor a character in THIS location's cast — render the
-  // alias/title as plain (visually distinguished, non-interactive) text.
+  // Neither a known zone nor a known character anywhere — render as plain
+  // (visually distinguished, non-interactive) text.
   return `<span class="wiki-plain">${display}</span>`;
 }
 
