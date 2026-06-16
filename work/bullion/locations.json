@@ -254,7 +254,7 @@
     ],
     "icon": {
       "name": "apothecary",
-      "scale": 0.75
+      "scale": 0.72
     }
   },
   {
@@ -314,7 +314,7 @@
     ],
     "icon": {
       "name": "bird",
-      "scale": 0.85
+      "scale": 0.80
     }
   },
   {
@@ -1978,7 +1978,7 @@
     ],
     "icon": {
       "name": "farm",
-      "scale": 0.95
+      "scale": 0.90
     }
   },
   {
@@ -2078,7 +2078,7 @@
     "id": "distillery",
     "name": "Stillwell's Liquor & Cleaning Supply",
     "logLine": "Everything's potable; just a matter of how many times.",
-    "description": "Stillwell's isn't for the faint of heart. [[Papa Stillwell]] prefers it that way, at least while his apprentice [[Myles Guile|Myles]] is off-duty. It's a notorious gathering place for ruffians, thugs, and hooligans of all kind. Part speakeasy and part industrial cleaning chemical wholesale supplier--it really just depends on how much the hooch burns that week. Some days the [[Fume Well]] is extra spicy. \n\nIt's an atmosphere so convivial it'll make your eyes sting. Its libations can send even the most hardened criminal lurching for a bucket, and many a fight (and the contents of the last tankard) have spilled out into the street. The guards at [[Harborwatch]] have the perfect view to intervene, but let the scene play out in all but the most serious confrontations. [[Soris]] the bard is no stranger to playing double duty as musical act and bouncer and is more than capable of brokering truces between rowdy tavern brawlers without uttering a word.",
+    "description": "Stillwell's isn't for the faint of heart. [[Papa Stillwell]] prefers it that way, at least while his apprentice [[Myles Guile|Myles]] is off-duty. It's a notorious gathering place for ruffians, thugs, and hooligans of all kinds. Part speakeasy and part industrial cleaning chemical wholesale supplier--it really just depends on how much the hooch burns that week. Some days, the [[Fume Well]] is extra spicy. \n\nIt's an atmosphere so convivial it'll make your eyes sting. Its libations can send even the most hardened criminal lurching for a bucket, and many a fight (and the contents of the last tankard) have spilled out into the street. The guards at [[Harborwatch]] have the perfect view to intervene, but let the scene play out in all but the most serious confrontations. [[Soris]] the bard is no stranger to playing double duty as musical act and bouncer and is more than capable of brokering truces between rowdy tavern brawlers without uttering a word.",
     "layer": "zone",
     "region": "theSkirts",
     "center": [
@@ -2204,7 +2204,7 @@
     ],
     "icon": {
       "name": "runes",
-      "scale": 0.75
+      "scale": 0.71
     }
   },
   {
@@ -2303,7 +2303,7 @@
     ],
     "icon": {
       "name": "crystalball",
-      "scale": 0.84
+      "scale": 0.78
     }
   },
   {
@@ -2400,8 +2400,8 @@
       "Victor Peachpit"
     ],
     "icon": {
-      "name": "shop",
-      "scale": 0.69
+      "name": "grocers",
+      "scale": 0.75
     }
   },
   {
@@ -2605,8 +2605,8 @@
       "Kit Mournside"
     ],
     "icon": {
-      "name": "landmark",
-      "scale": 0.65
+      "name": "tree",
+      "scale": 0.80
     }
   },
   {
@@ -2768,7 +2768,7 @@
     ],
     "icon": {
       "name": "mine",
-      "scale": 0.78
+      "scale": 0.71
     }
   },
   {
@@ -2816,7 +2816,7 @@
     ],
     "icon": {
       "name": "gem",
-      "scale": 0.89
+      "scale": 0.92
     }
   },
   {
@@ -3121,8 +3121,8 @@
       "Timothy Glower"
     ],
     "icon": {
-      "name": "farm",
-      "scale": 0.95
+      "name": "fruit",
+      "scale": 0.72
     }
   },
   {
@@ -3229,8 +3229,8 @@
       "Rook Bishop"
     ],
     "icon": {
-      "name": "shop",
-      "scale": 0.69
+      "name": "pawn",
+      "scale": 0.70
     }
   },
   {
@@ -3277,8 +3277,8 @@
       "Pikesby Flyin"
     ],
     "icon": {
-      "name": "smith",
-      "scale": 0.85
+      "name": "quiver",
+      "scale": 0.75
     }
   },
   {
@@ -3657,8 +3657,8 @@
       "Boris Fret"
     ],
     "icon": {
-      "name": "shop",
-      "scale": 0.69
+      "name": "pouch",
+      "scale": 0.75
     }
   },
   {
@@ -4046,8 +4046,8 @@
       "Hans Sporridge"
     ],
     "icon": {
-      "name": "poi",
-      "scale": 0.65
+      "name": "well",
+      "scale": 0.70
     }
   },
   {
@@ -4079,8 +4079,8 @@
     "interiorBoundsMap": {},
     "characters": [],
     "icon": {
-      "name": "poi",
-      "scale": 0.65
+      "name": "well",
+      "scale": 0.70
     }
   },
   {
@@ -4256,7 +4256,7 @@
     ],
     "icon": {
       "name": "dice",
-      "scale": 0.75
+      "scale": 0.78
     }
   },
   {

@@ -33,23 +33,24 @@
       /* ── Type accent palette ───────────────────────────── */
       /* region overlays */
       --type-theSkirts:  #60E3E8;
-      --type-keep:       #e8c060;   /* same as --gold-light */
-      --type-village:    #A6E860;
-      --type-market:     #60E8AF;
-      --type-theNeck:    #EB8F44;
+      --type-keep:       #f7cd6b;   
+      --type-village:    #a88eff;
+      --type-market:     #e860c4;
+      --type-theNeck:    #ffa75e;
 
-      /* zone stroke groups */
-      --accent-gold:      #e8c060;  /* POI, landmark, church */
-      --accent-lime:      #7ae847;  /* farm, forest, cave, mountain */
-      --accent-orange:    #EB8F44;  /* home, camp */
-      --accent-teal:      #5cebc5;  /* shop, candle */
-      --accent-cyan:      #74ecf0;  /* mechanism, bird, medical, mine, stable */
-      --accent-sky:       #73d1f4;  /* ship, fish, alcohol */
-      --accent-periwinkle:#6f8aff;  /* lodging, office, school */
-      --accent-purple:    #b46dff;  /* graveyard, unknown */
-      --accent-magenta:   #e65aff;  /* apothecary, gem, crystalBall, runes */
-      --accent-pink:      #E860BB;  /* food, bread, meat */
-      --accent-red:       #ff5a5a;  /* military, smith */
+      /* zone stroke colors to assign to groups */
+      --accent-gold:      #f4c967;  /* POI, landmark, church */
+      --accent-lime:      #83ed52;  /* farm, forest, cave, mountain */
+      --accent-orange:    #fc9f52;  /* home, camp */
+      --accent-teal:      #69ffd7;  /* shop, candle */
+      --accent-cyan:      #8afbff;  /* mechanism, bird, medical, mine, stable */
+      --accent-sky:       #7bdcff;  /* ship, fish, alcohol */
+      --accent-periwinkle:#768fff;  /* lodging, office, school */
+      --accent-purple:    #b876fe;  /* graveyard, unknown */
+      --accent-magenta:   #ea70ff;  /* apothecary, gem, crystalball, runes */
+      --accent-pink:      #fc75cf;  /* food, bread, meat */
+      --accent-red:       #ff5a5a;  /* military, tower */
+      --accent-gray:       #dedddd;  /* smith, mine */
 
       /* active accent — set per-panel via JS */
       --accent: var(--accent-gold);
@@ -1183,18 +1184,22 @@ const TYPE_ACCENT = {
   // gold (default / POI / landmark / church)
   poi:         '--accent-gold',
   landmark:    '--accent-gold',
+  tree:    '--accent-gold',
   church:      '--accent-gold',
+  well:      '--accent-gold',
   // lime
   farm:        '--accent-lime',
   forest:      '--accent-lime',
   cave:        '--accent-lime',
-  mountain:    '--accent-lime',
+  fruit:       '--accent-lime',
   // orange
   home:        '--accent-orange',
   camp:        '--accent-orange',
   // teal
   shop:        '--accent-teal',
+  grocers:     '--accent-teal',
   candle:      '--accent-teal',
+  pouch:      '--accent-teal',
   // cyan
   mechanism:   '--accent-cyan',
   bird:        '--accent-cyan',
@@ -1206,8 +1211,8 @@ const TYPE_ACCENT = {
   // sky
   ship:        '--accent-sky',
   fish:        '--accent-sky',
-  alcohol:     '--accent-sky',
   fountain:     '--accent-sky',
+  watertower:     '--accent-sky',
   // periwinkle
   lodging:     '--accent-periwinkle',
   office:      '--accent-periwinkle',
@@ -1226,10 +1231,16 @@ const TYPE_ACCENT = {
   food:        '--accent-pink',
   bread:       '--accent-pink',
   meat:        '--accent-pink',
+  alcohol:     '--accent-pink', 
   // red
   military:    '--accent-red',
   tower:       '--accent-red',
-  smith:       '--accent-red',
+  // gray
+  mine:    '--accent-gray',
+  quiver:       '--accent-gray',
+  smith:       '--accent-gray',
+  cave:       '--accent-gray',
+  mountain:       '--accent-gray',
 };
 
 // Region fill colors (by location id for the special regions, or by type otherwise)
@@ -1254,6 +1265,7 @@ const ACCENT_HEX = {
   '--accent-magenta':    '#D460E8',
   '--accent-pink':       '#E860BB',
   '--accent-red':        '#E34D4D',
+  '--accent-gray':       '#DEDDDD',
 };
 
 const R2_ICONS = `icons`;
