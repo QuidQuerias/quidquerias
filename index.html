@@ -3,107 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>quidquerias</title>
+  <title>David Riemer · quidquerias</title>
+  <meta name="description" content="David Riemer — Digital Creative Producer. Video, podcasts, and animation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;1,400&family=Playfair+Display:wght@700&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: #1a1a1a;
-      color: #c8c8c8;
-      font-family: 'Courier Prime', 'Courier New', monospace;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 24px;
-      text-align: center;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(0,0,0,0.75) 100%);
-      pointer-events: none;
-    }
-
-    .content {
-      position: relative;
-      z-index: 1;
-      max-width: 520px;
-    }
-
-    .logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 32px;
-      font-weight: 700;
-      color: #e8e8e8;
-      letter-spacing: 0.03em;
-      margin-bottom: 40px;
-    }
-
-    .divider {
-      width: 48px;
-      height: 1px;
-      background: #D84D06;
-      margin: 0 auto 40px;
-      opacity: 0.8;
-    }
-
-    .message {
-      font-size: 15px;
-      line-height: 1.9;
-      color: rgba(200,200,200,0.6);
-      margin-bottom: 48px;
-    }
-
-    .message em {
-      color: #c8c8c8;
-      font-style: italic;
-    }
-
-    .links {
-      display: flex;
-      gap: 32px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .link {
-      font-family: 'Josefin Sans', sans-serif;
-      font-size: 9px;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: rgba(200,200,200,0.3);
-      text-decoration: none;
-      border-bottom: 1px solid transparent;
-      padding-bottom: 2px;
-      transition: color 0.3s, border-color 0.3s;
-    }
-
-    .link:hover {
-      color: #D84D06;
-      border-color: rgba(216,77,6,0.4);
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="content">
-    <div class="logo">quidquerias</div>
-    <div class="divider"></div>
-    <p class="message">
-      Pardon the appearance — rebuilding from the ground up.<br>
-      <em>Adapting this portfolio to reflect a shift<br>
-      from video editing into game design.</em><br><br>
-      Something more interesting is on its way. (But I mean...what a low bar!)
-    </p>
-    <div class="links">
-      <a href="https://www.linkedin.com/in/david-riemer-32958139/" class="link">LinkedIn</a>
-      <a href="https://www.instagram.com/quidquerias/" class="link">Instagram</a>
-      <a href="mailto:driemer10@gmail.com" class="link">Get in touch</a>
-    </div>
-  </div>
+  <main class="home">
+
+    <header class="intro">
+      <p class="label">quidquerias</p>
+      <h1>David Riemer</h1>
+      <p class="role">Digital Creative Producer / S-Tier Nerd</p>
+      <div class="divider"></div>
+
+      <!-- DRAFT intro: refreshed from the 2025 Google Sites bio. Edit freely. -->
+      <div class="bio">
+        <p>I'm an agency-tested video editor turned digital alchemist, with over a decade of hands-on time in Premiere Pro, After Effects, and Photoshop. A lot of that came up in the byte-sized content boom&mdash;the kind of video where you glance down around the 30-second mark to make sure it's only two minutes. (Don't worry...it was!)</p>
+        <p>These days I'm drawn to what can't be crafted with the click of a button: long-form, deep-dive work and the impossible stories it gets to tell. Podcasts snuck their way in there, too. The tools keep getting more powerful and more accessible, but bespoke solutions have always been the best ones&mdash;and they still are.</p>
+      </div>
+    </header>
+
+    <section class="reel" aria-label="Reel">
+      <div class="reel-frame">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/4yBQyJWi5Xk?rel=0"
+          title="David Riemer — reel"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen></iframe>
+      </div>
+      <span class="label">Latest reel</span>
+    </section>
+
+    <footer class="links">
+      <a href="https://www.linkedin.com/in/david-riemer-32958139/">LinkedIn</a>
+      <a href="https://www.instagram.com/quidquerias/">Instagram</a>
+      <a href="mailto:driemer10@gmail.com">Get in touch</a>
+    </footer>
+
+  </main>
 </body>
 </html>
