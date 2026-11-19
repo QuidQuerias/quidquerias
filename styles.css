@@ -623,6 +623,18 @@ figcaption .fig-no { color: var(--bright); }
   body { font-size: 18px; }
   .brand-role { display: none; }
   .site-header-inner { padding-top: 14px; padding-bottom: 14px; gap: 6px 20px; }
+
+  /* Dropdowns span the header's width on phones, so long entries never run off-screen */
+  .site-header-inner { position: relative; }
+  .nav-group { position: static; }
+  .nav-menu {
+    top: 100%;
+    left: var(--gutter);
+    right: var(--gutter);
+    min-width: 0;
+  }
+  .site-nav .nav-menu a { white-space: normal; }
+  .nav-menu-label { white-space: normal; }
   .site-nav { gap: 6px 20px; }
   .facts { gap: 16px 18px; }
   .card-media,
