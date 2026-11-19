@@ -4,47 +4,90 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>David Riemer · quidquerias</title>
-  <meta name="description" content="David Riemer — Digital Creative Producer. Video, podcasts, and animation.">
+  <meta name="description" content="David Riemer — Digital Creative Producer. Video, podcasts, and creative work.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;1,400&family=Playfair+Display:wght@700&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&amp;family=Courier+Prime:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="site.js" defer></script>
 </head>
 <body>
-  <main class="home">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="./">
+        <span class="brand-name">David Riemer</span>
+        <span class="brand-role">Digital Creative Producer</span>
+      </a>
+      <nav class="site-nav" aria-label="Site">
+        <div class="nav-group">
+          <a href="work/video/">Video</a>
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="menu-video" aria-label="Show Video pages"><svg aria-hidden="true" viewBox="0 0 10 6" width="10" height="6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+          <ul class="nav-menu" id="menu-video">
+            <li class="nav-menu-label" aria-hidden="true">Pennant Video</li>
+            <li><a href="work/video/babson-arthur-blank-tribute/">Babson College</a></li>
+            <li><a href="work/video/eo-care-ethan-zohn/">EO Care</a></li>
+            <li><a href="work/video/extreme-networks/">Extreme Networks</a></li>
+            <li><a href="work/video/nasuni-world-without-limits/">Nasuni</a></li>
+            <li><a href="work/video/tough-tech-week-2024/">The Engine @ MIT</a></li>
+            <li><a href="work/video/unh-online-video-suite/">University of New Hampshire</a></li>
+            <li class="nav-menu-label" aria-hidden="true">Matter Communications</li>
+            <li><a href="work/video/hitachi-energy-harbor/">Hitachi: Energy Harbor</a></li>
+            <li><a href="work/video/hitachi-lumada/">Hitachi: Lumada</a></li>
+            <li><a href="work/video/microtec-lucidyne-merger/">MiCROTEC</a></li>
+            <li><a href="work/video/rsm-rockwater/">RSM</a></li>
+            <li><a href="work/video/vicarious-surgical-spac/">Vicarious Surgical</a></li>
+            <li><a href="work/video/xandr-inside-together/">Xandr</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <a href="work/podcasts/">Podcasts</a>
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="menu-podcasts" aria-label="Show Podcasts pages"><svg aria-hidden="true" viewBox="0 0 10 6" width="10" height="6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+          <ul class="nav-menu" id="menu-podcasts">
+            <li><a href="work/podcasts/sheila-for-malden-1/">Sheila for Malden, Part 1</a></li>
+            <li><a href="work/podcasts/sheila-for-malden-2/">Sheila for Malden, Part 2</a></li>
+            <li><a href="work/podcasts/freedom-unfinished/">Freedom Unfinished</a></li>
+            <li><a href="work/podcasts/more-capable/">More Capable</a></li>
+          </ul>
+        </div>
+        <span class="soon" title="Coming soon" aria-disabled="true">Creative</span>
+      </nav>
+    </div>
+  </header>
 
-    <header class="intro">
-      <p class="label">quidquerias</p>
-      <h1>David Riemer</h1>
-      <p class="role">Digital Creative Producer / S-Tier Nerd</p>
-      <div class="divider"></div>
+  <main class="page">
+    <div class="column">
+      <header class="page-head intro-head">
+        <img class="portrait" src="assets/david-riemer-portrait.webp" alt="Portrait of David Riemer" width="512" height="512">
+        <div class="intro-text">
+          <p class="kicker">Digital Creative Producer / S-Tier Nerd</p>
+          <h1 class="title">David Riemer</h1>
+        </div>
+      </header>
 
-      <!-- DRAFT intro: refreshed from the 2025 Google Sites bio. Edit freely. -->
-      <div class="bio">
-        <p>I'm an agency-tested video editor turned digital alchemist, with over a decade of hands-on time in Premiere Pro, After Effects, and Photoshop. A lot of that came up in the byte-sized content boom&mdash;the kind of video where you glance down around the 30-second mark to make sure it's only two minutes. (Don't worry...it was!)</p>
-        <p>These days I'm drawn to what can't be crafted with the click of a button: long-form, deep-dive work and the impossible stories it gets to tell. Podcasts snuck their way in there, too. The tools keep getting more powerful and more accessible, but bespoke solutions have always been the best ones&mdash;and they still are.</p>
+      <div class="prose" style="padding-top: 28px">
+        <p>I'm an agency-tested video editor turned digital alchemist, with over a decade's worth of experience using Premiere Pro, After Effects, and Photoshop. These days I'm drawn to what can't be crafted with the click of a button: deep-dive research and complex content coordination. The tools are only going to get more powerful, but bespoke solutions have always been the best ones. And they still are!</p>
       </div>
-    </header>
 
-    <section class="reel" aria-label="Reel">
-      <div class="reel-frame">
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/4yBQyJWi5Xk?rel=0"
-          title="David Riemer — reel"
-          loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen></iframe>
+      <figure class="reel">
+        <div class="video-frame">
+          <iframe src="https://www.youtube-nocookie.com/embed/4yBQyJWi5Xk?rel=0" title="Video Cover Letter 2027" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+      </figure>
+
+      <div class="prose reel-after">
+        <p>This video is not the CV you're looking for. It's not here to name-drop clients, explain techniques, or dazzle with polish and refinement. This video is for me to show folks more of what I do as an extension of who I am. It's to distill hours of early morning heutagogy into a few flashy frames. It's to demonstrate that my initiative doesn't come from a direct deposit. And perhaps most importantly, it's a sanctuary for puns like "JSTOR-acle" (which are an endangered species).</p>
       </div>
-      <span class="label">Latest reel</span>
-    </section>
-
-    <footer class="links">
-      <a href="https://www.linkedin.com/in/david-riemer-32958139/">LinkedIn</a>
-      <a href="https://www.instagram.com/quidquerias/">Instagram</a>
-      <a href="mailto:driemer10@gmail.com">Get in touch</a>
-    </footer>
-
+    </div>
   </main>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <nav aria-label="Contact">
+        <a href="https://www.linkedin.com/in/david-riemer-32958139/">LinkedIn</a>
+        <a href="https://www.instagram.com/quidquerias/">Instagram</a>
+        <a href="mailto:driemer10@gmail.com">Get in touch</a>
+      </nav>
+    </div>
+  </footer>
 </body>
 </html>
