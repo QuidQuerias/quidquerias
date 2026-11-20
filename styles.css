@@ -619,9 +619,70 @@ figcaption .fig-no { color: var(--bright); }
 
 /* ---------- Phones ---------- */
 
+/* ---------- Resume ---------- */
+
+.resume-meta {
+  padding-top: 24px;
+  font-family: var(--mono);
+  font-size: var(--fs-ui);
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.resume-meta p + p { margin-top: 6px; }
+
+.resume-meta a {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-color: var(--link-line);
+  text-underline-offset: 0.22em;
+}
+
+.resume-meta a:hover,
+.resume-meta a:focus-visible { text-decoration-color: var(--link); outline: none; }
+
+.resume strong { font-weight: 600; color: var(--bright); }
+
+.resume > h2 + .role { margin-top: 28px; }
+
+.resume > .role + .role { margin-top: 44px; }
+
+.resume .role > * + * { margin-top: 14px; }
+
+.resume h3 {
+  font-family: var(--serif);
+  font-size: var(--fs-heading);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--bright);
+}
+
+.resume .role-sep { color: var(--muted); font-weight: 300; padding: 0 2px; }
+
+.resume .role > .role-meta {
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: var(--fs-ui);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.resume ul { padding-left: 1.2em; }
+
+.resume li + li { margin-top: 10px; }
+
+.resume li::marker { color: var(--muted); }
+
+.resume .award-list { list-style: none; padding-left: 0; }
+
+.resume .award-list li { display: flex; gap: 10px; align-items: baseline; }
+
+.resume .award-list .award-icon { position: relative; top: 2px; }
+
 @media (max-width: 560px) {
   body { font-size: 18px; }
   .brand-role { display: none; }
+  .site-nav .soon { display: none; }   /* placeholder items stay off phones so the live ones fit on one row */
   .site-header-inner { padding-top: 14px; padding-bottom: 14px; gap: 6px 20px; }
 
   /* Dropdowns span the header's width on phones, so long entries never run off-screen */
